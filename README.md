@@ -16,8 +16,8 @@ The recipe has not been merged yet. See: https://github.com/symfony/recipes-cont
 # config/packages/doctrine.yaml
   orm:
     resolve_target_entities:                                                              
-      Psys\OrderInvoiceBundle\Model\CustomerInterface: App\Entity\YourCustomerEntity
-      Psys\OrderInvoiceBundle\Model\FileInterface: App\Entity\YourFileEntity
+        Psys\OrderInvoiceBundle\Model\CustomerInterface: App\Entity\YourCustomerEntity
+        Psys\OrderInvoiceBundle\Model\FileInterface: App\Entity\YourFileEntity
 ```
 - YourFileEntity needs to implement the FileInterface
 
@@ -133,8 +133,8 @@ Set the template path and choose the engine:
 # config/packages/psys_order_invoice.yaml
 psys_order_invoice:
     pdf_exporter:
-      engine: mpdf
-      template_path: invoice/oi_default.html.twig
+        engine: mpdf
+        template_path: invoice/oi_default.html.twig
 ```
 **Available exporter engines:** mpdf
 
@@ -143,7 +143,7 @@ Or you can create your custom exporter by implementing the `Psys\OrderInvoiceBun
 # config/packages/psys_order_invoice.yaml
 psys_order_invoice:
     pdf_exporter:
-      class: App\Lib\MyExporter
+        class: App\Lib\MyExporter
 ```
 
 Example using the mpdf exporter:
