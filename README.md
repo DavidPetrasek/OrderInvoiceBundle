@@ -14,10 +14,10 @@ The recipe has not been merged yet. See: https://github.com/symfony/recipes-cont
 ### 1. Set your target entities
 ``` yaml
 # config/packages/doctrine.yaml
-  orm:
-    resolve_target_entities:                                                              
-        Psys\OrderInvoiceBundle\Model\CustomerInterface: App\Entity\YourCustomerEntity
-        Psys\OrderInvoiceBundle\Model\FileInterface: App\Entity\YourFileEntity
+    orm:
+        resolve_target_entities:                                                              
+            Psys\OrderInvoiceBundle\Model\CustomerInterface: App\Entity\YourCustomerEntity
+            Psys\OrderInvoiceBundle\Model\FileInterface: App\Entity\YourFileEntity
 ```
 - YourFileEntity needs to implement the FileInterface
 
