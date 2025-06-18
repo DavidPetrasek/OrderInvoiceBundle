@@ -19,7 +19,7 @@ The recipe has not been merged yet. See: https://github.com/symfony/recipes-cont
             Psys\OrderInvoiceBundle\Model\CustomerInterface: App\Entity\YourCustomerEntity
             Psys\OrderInvoiceBundle\Model\FileInterface: App\Entity\YourFileEntity
 ```
-- YourFileEntity needs to implement the FileInterface
+- And let them implement the interfaces mentioned
 
 
 ### 2. Init database
