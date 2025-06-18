@@ -9,7 +9,7 @@
 
 `composer req psys/order-invoice-bundle`
 
-The recipe has not been merged yet. See: https://github.com/symfony/recipes-contrib/pull/1818
+The recipe has not been merged yet. See: https://github.com/symfony/recipes-contrib/pull/1820
 
 ### 1. Set your target entities
 ``` yaml
