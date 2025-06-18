@@ -108,7 +108,6 @@ public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceMan
         ->setInvoiceSeller
         (
             (new InvoiceSeller())
-            ->setFullName('Some Seller')
             ->setOrganization('Seller Organization')
             ->setStreetAddress1('Street 123')
             ->setStreetAddress2('123')
