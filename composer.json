@@ -1,0 +1,32 @@
+{
+    "name": "psys/order-invoice-bundle",
+    "description": "Symfony bundle for managing orders & invoices in non-shop environments",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Psys\\OrderInvoiceBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "David Petrásek",
+            "email": "davidpetrasek@hotmail.cz"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": 
+    {
+        "php": ">=8.2",
+        "doctrine/orm": "^3.3",
+        "doctrine/doctrine-bundle": "^2.14",
+        "twig/twig": "^3.21",
+        "psys/utils": "^1.0.10"
+    },
+    "suggest": {
+        "mpdf/mpdf": "Needed for the MpdfExporter"
+    },
+    "require-dev": {
+        "rector/rector": "^2.0"
+    }
+}

@@ -1,0 +1,181 @@
+<html>
+<head>
+	<meta charset="UTF-8">	
+	{# <link rel="stylesheet" href="{{ assetsDir }}/css/pdf/whatever.css"> #}
+</head>
+
+<body>
+
+	<div class="header">
+	 	<h1>{% if invoiceType == 'PROFORMA' %}PROFORMA{% endif %} INVOICE - reference number:
+	 	
+	 	{% if invoiceType == 'PROFORMA' %}
+	
+    		{{ ent_Order.invoice.invoiceProforma.referenceNumber }}
+    	
+    	{% elseif invoiceType == 'FINAL' %}
+    	
+    		{{ ent_Order.invoice.invoiceFinal.referenceNumber }}
+    		
+    	{% endif %}
+	 	
+	 	</h1>
+	</div>
+
+	<table class="seller-buyer-detail">
+    	
+    	<tr class="seller-buyer">
+    		<td class="seller">            	
+            	
+            	<h3>Seller</h3>
+            	<div class="address">           	
+                    {{ ent_Order.invoice.invoiceSeller.fullName }}
+                	<br>{{ ent_Order.invoice.invoiceSeller.streetAddress1 }}
+                	<br>{{ ent_Order.invoice.invoiceSeller.postcode }} {{ ent_Order.invoice.invoiceSeller.city }}
+                	{% if ent_Order.invoice.invoiceSeller.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.invoice.invoiceSeller.companyIdentificationNumber }}{% endif %}
+                	{% if ent_Order.invoice.invoiceSeller.vatIdentificationNumber is not empty %}<br>VIN: {{ ent_Order.invoice.invoiceSeller.vatIdentificationNumber }}{% endif %}
+                    {% if ent_Order.invoice.invoiceSeller.legalEntityRegistrationDetails is not empty %}<br>{{ ent_Order.invoice.invoiceSeller.legalEntityRegistrationDetails }}{% endif %}
+            	</div>
+
+        	</td> 
+        	<td class="buyer">
+            	
+            	<h3>Buyer</h3>
+            	<div class="address">
+					{{ ent_Order.invoice.invoiceBuyer.fullName }}
+                	<br>{{ ent_Order.invoice.invoiceBuyer.streetAddress1 }}
+                	<br>{{ ent_Order.invoice.invoiceBuyer.postcode }} {{ ent_Order.invoice.invoiceBuyer.city }}
+                	{% if ent_Order.invoice.invoiceBuyer.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.invoice.invoiceBuyer.companyIdentificationNumber }}{% endif %}
+                	{% if ent_Order.invoice.invoiceBuyer.vatIdentificationNumber is not empty %}<br>VIN: {{ ent_Order.invoice.invoiceBuyer.vatIdentificationNumber }}{% endif %}
+            	</div>
+				
+        	</td>
+        </tr>
+	
+		<tr>        	
+        	<td colspan="2">
+        	
+        		<table class="detail">
+        			<tr>
+        				
+        				{% if invoiceType == 'PROFORMA' %}
+        			
+                    		<td>Payment mode</td>
+                        	<td>{% if ent_Order.paymentMode.value == 1 %}bank account{% endif %}</td>
+                    	
+                    	{% elseif invoiceType == 'FINAL' %}
+                    	
+                    		<td>{% if ent_Order.paymentMode.value == 1 %}Paid via{% endif %}</td>
+                    		<td>{% if ent_Order.paymentMode.value == 1 %}bank account{% endif %}</td>
+                    		
+                    	{% endif %}
+                    </tr>
+                    
+                    {% if ent_Order.paymentMode.value == 1  and  invoiceType == 'PROFORMA' %}
+                    
+                    	<tr>
+                    		<td>Bank account</td>
+                        	<td>{{ ent_Order.paymentModeBankAccount }}</td>
+                        </tr>
+                        <tr>
+                    		<td>Variable symbol</td>
+                        	<td>{{ ent_Order.invoice.variableSymbol }}</td>
+                        </tr>
+                    
+                    {% elseif invoiceType == 'FINAL' %}       
+                    	<tr>
+                    		<td>Already paid</td>
+                        </tr>
+                    {% endif %}
+                    
+            		<tr>
+                		<td>Issued at</td>
+                    	<td>
+                            {% if ent_Order.invoice.invoiceProforma %}
+                            
+                                {{ ent_Order.invoice.invoiceProforma.createdAt|format_datetime(pattern="d. MMMM y") }}
+                            
+                            {% elseif ent_Order.invoice.invoiceFinal %}
+
+                                {{ ent_Order.invoice.invoiceFinal.createdAt|format_datetime(pattern="d. MMMM y") }}
+                            
+                            {% endif %}
+                        </td>
+                    </tr>
+                    
+                    {% if invoiceType == 'PROFORMA' %}
+                        <tr>
+                    		<td>Due date</td>
+                        	<td>{{ ent_Order.invoice.invoiceProforma.dueDate|format_datetime(pattern="d. MMMM y") }}</td>
+                        </tr>
+            		    
+        		    {% endif %}
+                    
+            	</table>
+            	
+        	</td>
+    	</tr>
+	
+	</table>
+	
+	
+	<table class="items">
+		<tr>
+    		<th class="amount">Amount</th>
+        	<th class="short-description">Short description</th>
+        	<th class="price-vat-excluded">Price VAT excluded</th>
+        	<th>VAT %</th>
+        	<th>VAT</th>
+        	<th>Price VAT included</th>
+        </tr>
+	
+		{% for orderItem in ent_Order.orderItems %}
+    
+    		<tr class="item">
+        		<td class="amount">{{ orderItem.amount }}</td>
+            	<td class="short-description">
+            		
+            		    {{ orderItem.name }}
+            		    
+            		    {% if invoiceType == 'FINAL' %}
+            		    	
+            		    	<br>
+            		    	{{ orderItem.shortDescription }}
+            		    
+            		    {% endif %}
+            		
+            	</td>
+            	<td class="price-vat-excluded">{{ orderItem.priceVatExcluded|number_format(1, '.', ' ') }}</td>
+            	<td>{{ orderItem.vatRate }} %</td>
+            	<td>{{ orderItem.vat|number_format(1, '.', ' ') }}</td>
+            	<td>{{ orderItem.priceVatIncluded|number_format(1, '.', ' ') }}</td>
+            </tr>
+    	
+        {% endfor %}
+	</table>
+    
+	
+	<table class="totals">
+		<tr>
+    		<th>Total</th>
+        	<th>Total (VAT included)</th>
+        	
+            {% if invoiceType == 'FINAL' %}
+        		<th>VAT base</th>
+            	<th>VAT</th>
+            {% endif %}
+        </tr>
+		<tr>
+    		<td>{{ ent_Order.priceVatExcluded|number_format(2, '.', ' ') }}</td>
+        	<td>{{ ent_Order.priceVatIncluded|number_format(2, '.', ' ') }}</td>
+        	
+        	{% if invoiceType == 'FINAL' %}
+        		<td>{{ ent_Order.priceVatBase|number_format(2, '.', ' ') }}</td>
+        		<td>{{ ent_Order.priceVat|number_format(2, '.', ' ') }}</td>  
+        	{% endif %}                  	
+        </tr>
+        
+	</table>	
+
+</body>
+</html>

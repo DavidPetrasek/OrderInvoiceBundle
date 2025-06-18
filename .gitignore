@@ -1,0 +1,8 @@
+
+/vendor/
+rector.php
+
+
+###> Local files ###
+/.directory
+###< Local files ###
