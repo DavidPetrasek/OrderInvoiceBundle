@@ -2,8 +2,8 @@
 ## Use case
 - You're not running a typical online store — full-featured e-commerce platforms would be overkill.
 ## Features
-- You need to manage orders and associated invoices.
-- You need to export invoices.
+- manages orders and associated invoices
+- exports invoices
 
 ## Installation
 
