@@ -27,7 +27,7 @@ The recipe has not been merged yet. See: https://github.com/symfony/recipes-cont
 ``` command
 symfony console make:migration
 ```
-Then rename the `migrations/VersionOimbInit.php` (also the class inside), so it runs just after the migration you've just created.
+Then rename the `migrations/VersionOrderInvoiceInit.php` (also the class inside), so it runs just after the migration you've just created.
 ``` command
 symfony console doctrine:migrations:migrate
 ```
