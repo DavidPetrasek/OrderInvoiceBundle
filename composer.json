@@ -17,7 +17,7 @@
     "minimum-stability": "stable",
     "require": 
     {
-        "php": ">=8.2",
+        "php": ">=8.1",
         "doctrine/orm": "^3.3",
         "doctrine/doctrine-bundle": "^2.14",
         "twig/twig": "^3.21",
