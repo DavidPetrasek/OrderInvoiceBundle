@@ -124,9 +124,9 @@
     		<th class="amount">Amount</th>
         	<th class="short-description">Short description</th>
         	<th class="price-vat-excluded">Price VAT excluded</th>
-        	<th>VAT %</th>
-        	<th>VAT</th>
-        	<th>Price VAT included</th>
+        	<th>VAT rate</th>
+        	<th>VAT total</th>
+        	<th>Total (VAT included)</th>
         </tr>
 	
 		{% for orderItem in ent_Order.orderItems %}
@@ -157,12 +157,12 @@
 	
 	<table class="totals">
 		<tr>
-    		<th>Total</th>
+    		<th>Total (VAT excluded)</th>
         	<th>Total (VAT included)</th>
         	
             {% if invoiceType == 'FINAL' %}
         		<th>VAT base</th>
-            	<th>VAT</th>
+            	<th>VAT total</th>
             {% endif %}
         </tr>
 		<tr>
