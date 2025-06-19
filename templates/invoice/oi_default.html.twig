@@ -61,12 +61,12 @@
         				{% if invoiceType == 'PROFORMA' %}
         			
                     		<td>Payment mode</td>
-                        	<td>{% if ent_Order.paymentMode.value == 1 %}bank account{% endif %}</td>
+                        	<td>{% if ent_Order.paymentMode.value == 1 %}bank transfer{% endif %}</td>
                     	
                     	{% elseif invoiceType == 'FINAL' %}
                     	
                     		<td>{% if ent_Order.paymentMode.value == 1 %}Paid via{% endif %}</td>
-                    		<td>{% if ent_Order.paymentMode.value == 1 %}bank account{% endif %}</td>
+                    		<td>{% if ent_Order.paymentMode.value == 1 %}bank transfer{% endif %}</td>
                     		
                     	{% endif %}
                     </tr>
