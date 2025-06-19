@@ -28,8 +28,8 @@
     		<td class="seller">            	
             	
             	<h3>Seller</h3>
-            	<div class="address">           	
-                    {{ ent_Order.invoice.invoiceSeller.fullName }}
+            	<div class="address">
+                    {{ ent_Order.invoice.invoiceSeller.organization }}
                 	<br>{{ ent_Order.invoice.invoiceSeller.streetAddress1 }}
                 	<br>{{ ent_Order.invoice.invoiceSeller.postcode }} {{ ent_Order.invoice.invoiceSeller.city }}
                 	{% if ent_Order.invoice.invoiceSeller.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.invoice.invoiceSeller.companyIdentificationNumber }}{% endif %}
