@@ -20,11 +20,11 @@
         "php": ">=8.1",
         "doctrine/orm": "^3.3",
         "doctrine/doctrine-bundle": "^2.14",
-        "twig/twig": "^3.21",
         "psys/utils": "^1.0.10"
     },
     "suggest": {
-        "mpdf/mpdf": "Needed for the MpdfExporter"
+        "mpdf/mpdf": "Needed for the MpdfExporter",
+        "twig/twig": "Needed for the MpdfExporter"
     },
     "require-dev": {
         "rector/rector": "^2.0"
