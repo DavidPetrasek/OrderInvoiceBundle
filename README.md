@@ -160,11 +160,11 @@ public function saveInvoice (MpdfExporter $mpdfExporter, Filesystem $filesystem,
     
     $mpdfExporter->export($ent_Order, InvoiceType::PROFORMA, ExportMode::FILE, '', $absPath);
     
-    $ent_File = new File();
-    $ent_File->setMimeType('application/pdf');
-    $ent_File->setNameFileSystem(basename($absPath));
-    $ent_File->setNameDisplay('my_invoice.pdf');
-    $ent_File->setCreatedAt();
+    $ent_File = (new File())
+        ->setMimeType('application/pdf')
+        ->setNameFileSystem(basename($absPath))
+        ->setNameDisplay('my_invoice.pdf')
+        ->setCreatedAt();
 
     $ent_InvoiceProforma = $ent_Order->getInvoice()->getInvoiceProforma();
     $ent_InvoiceProforma->setFile($ent_File);
