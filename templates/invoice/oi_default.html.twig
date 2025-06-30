@@ -145,10 +145,10 @@
             		    {% endif %}
             		
             	</td>
-            	<td class="price-vat-excluded">{{ orderItem.priceVatExcluded|number_format(1, '.', ' ') }}</td>
+            	<td class="price-vat-excluded">{{ orderItem.priceVatExcluded|format_currency(ent_Order.currency) }}</td>
             	<td>{{ orderItem.vatRate }} %</td>
-            	<td>{{ orderItem.vat|number_format(1, '.', ' ') }}</td>
-            	<td>{{ orderItem.priceVatIncluded|number_format(1, '.', ' ') }}</td>
+            	<td>{{ orderItem.vat|format_currency(ent_Order.currency) }}</td>
+            	<td>{{ orderItem.priceVatIncluded|format_currency(ent_Order.currency) }}</td>
             </tr>
     	
         {% endfor %}
@@ -166,12 +166,12 @@
             {% endif %}
         </tr>
 		<tr>
-    		<td>{{ ent_Order.priceVatExcluded|number_format(2, '.', ' ') }}</td>
-        	<td>{{ ent_Order.priceVatIncluded|number_format(2, '.', ' ') }}</td>
+    		<td>{{ ent_Order.priceVatExcluded|format_currency(ent_Order.currency) }}</td>
+        	<td>{{ ent_Order.priceVatIncluded|format_currency(ent_Order.currency) }}</td>
         	
         	{% if invoiceType == 'FINAL' %}
-        		<td>{{ ent_Order.priceVatBase|number_format(2, '.', ' ') }}</td>
-        		<td>{{ ent_Order.priceVat|number_format(2, '.', ' ') }}</td>  
+        		<td>{{ ent_Order.priceVatBase|format_currency(ent_Order.currency) }}</td>
+        		<td>{{ ent_Order.priceVat|format_currency(ent_Order.currency) }}</td>  
         	{% endif %}                  	
         </tr>
         
