@@ -2,6 +2,7 @@
     "name": "psys/order-invoice-bundle",
     "description": "Symfony bundle for managing orders & invoices in non-shop environments",
     "type": "symfony-bundle",
+    "keywords": ["symfony", "symfony-bundle", "invoice-generator", "order-management", "invoice-management"],
     "license": "MIT",
     "autoload": {
         "psr-4": {

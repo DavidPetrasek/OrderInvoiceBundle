@@ -33,9 +33,10 @@ symfony console doctrine:migrations:migrate
 ### 3. Define categories for orders and/or its items (OPTIONAL)
 
 ``` php
-namespace App\Lib;
+namespace App\Model;
+use Psys\OrderInvoiceBundle\Model\Order\CategoryInterface;
 
-enum MyOrderCategory :int
+enum MyOrderCategory :int implements CategoryInterface 
 {
     case FOO = 1;
     case BAR = 2;
@@ -59,18 +60,19 @@ use Psys\OrderInvoiceBundle\Model\Order\State;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
 use Symfony\Bundle\SecurityBundle\Security;
-use App\Lib\MyOrderCategory;
+use App\Model\MyOrderCategory;
 
 
 public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceManager, Security $security) : void
 {       
-    $ent_Order = new Order();
-    $ent_Order->setCategory(MyOrderCategory::FOO);
-    $ent_Order->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR);
-    $ent_Order->setPaymentModeBankAccount('5465878565/6556');
-    $ent_Order->setCustomer($security->getUser()); // Customer can be null
-    $ent_Order->setCreatedAt(new \DateTimeImmutable());
-    $ent_Order->setState(State::NEW);
+    $ent_Order = (new Order())
+        ->setCategory(MyOrderCategory::FOO)
+        ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
+        ->setPaymentModeBankAccount('5465878565/6556')
+        ->setCustomer($security->getUser()) // Customer can be also null
+        ->setCreatedAt(new \DateTimeImmutable())
+        ->setState(State::NEW)
+        ->setCurrency('USD');
 
     $ent_Order->addOrderItem(
         (new OrderItem())
@@ -140,7 +142,7 @@ Or you can create your custom exporter by implementing the `Psys\OrderInvoiceBun
 # config/packages/psys_order_invoice.yaml
 psys_order_invoice:
     pdf_exporter:
-        class: App\Lib\MyExporter
+        class: App\Service\MyExporter
 ```
 
 Example using the mpdf exporter:
@@ -175,7 +177,7 @@ public function saveInvoice (MpdfExporter $mpdfExporter, Filesystem $filesystem,
 
 ### Reseting sequential numbers:
 ``` php
-use App\Lib\InvoiceManager;
+use App\Service\InvoiceManager;
 
 public function resetSequentialNumbers (InvoiceManager $invoiceManager) : void
 {       

@@ -2,7 +2,6 @@
 
 namespace Psys\OrderInvoiceBundle\Entity;
 
-use BackedEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psys\OrderInvoiceBundle\Repository\OrderRepository;
 use Doctrine\DBAL\Types\Types;
@@ -12,7 +11,7 @@ use Doctrine\Common\Collections\Collection;
 use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
 use Psys\OrderInvoiceBundle\Model\Order\State;
 use Psys\OrderInvoiceBundle\Model\CustomerInterface;
-
+use Psys\OrderInvoiceBundle\Model\Order\CategoryInterface;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table (name: 'oi_order')]
@@ -40,6 +39,9 @@ class Order
     
     #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
     private ?string $price_vat = '0.00';
+
+    #[ORM\Column(length: 3, options:["fixed" => true, "comment" => "Three-letter alphabetic code (ISO 4217)"])]
+    private ?string $currency = null;
     
     #[ORM\Column]
     private \DateTimeImmutable $created_at;
@@ -166,6 +168,18 @@ class Order
         
         return $this;
     }
+
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
+    }
+    
+    public function setCurrency(?string $currency): self
+    {
+        $this->currency = $currency;
+        
+        return $this;
+    }
     
     public function getCreatedAt(): \DateTimeImmutable
     {
@@ -204,14 +218,14 @@ class Order
         return $this;
     }
 
-    public function getCategory(): ?BackedEnum
+    public function getCategory(): ?CategoryInterface
     {
-        return BackedEnum::from($this->category);
+        return CategoryInterface::from($this->category);
     }
 
-    public function setCategory(int|BackedEnum|null $category): self
+    public function setCategory(int|CategoryInterface|null $category): self
     {
-        if ($category instanceof BackedEnum) {$category = $category->value;}
+        if ($category instanceof CategoryInterface) {$category = $category->value;}
         
         $this->category = $category;
 

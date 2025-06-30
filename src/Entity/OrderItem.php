@@ -2,11 +2,11 @@
 
 namespace Psys\OrderInvoiceBundle\Entity;
 
-use BackedEnum;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Model\OrderItem\AmountType;
+use Psys\OrderInvoiceBundle\Model\OrderItem\CategoryInterface;
 use Psys\OrderInvoiceBundle\Repository\OrderItemRepository;
 
 #[ORM\Entity(repositoryClass: OrderItemRepository::class)]
@@ -91,14 +91,14 @@ class OrderItem
         return $this;
     }
 
-    public function getCategory(): ?BackedEnum
+    public function getCategory(): ?CategoryInterface
     {
-        return BackedEnum::from($this->category);
+        return CategoryInterface::from($this->category);
     }
 
-    public function setCategory(int|BackedEnum|null $category): self
+    public function setCategory(int|CategoryInterface|null $category): self
     {
-        if ($category instanceof BackedEnum) {$category = $category->value;}
+        if ($category instanceof CategoryInterface) {$category = $category->value;}
         
         $this->category = $category;
 
