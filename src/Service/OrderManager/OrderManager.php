@@ -29,13 +29,6 @@ class OrderManager
         $this->entityManager->persist($ent_Order);        
         $this->entityManager->flush();
     }
-
-    // TODO
-    // function remove(Order $ent_Order)
-    // {
-    //     $this->entityManager->remove($ent_Order);        
-    //     $this->entityManager->flush();
-    // }
     
     public function calculateOrderTotals(Order $ent_Order): array
     {
