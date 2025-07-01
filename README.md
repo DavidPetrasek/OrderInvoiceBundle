@@ -1,4 +1,4 @@
-![Packagist Downloads](https://img.shields.io/packagist/dm/psys/order-invoice-bundle?style=flat)
+[![Packagist Downloads](https://img.shields.io/packagist/dm/psys/order-invoice-bundle?style=flat)](https://packagist.org/packages/psys/order-invoice-bundle)
 
 
 # OrderInvoiceBundle : A Symfony Bundle
