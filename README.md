@@ -88,8 +88,8 @@ public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceMan
     );
 
     $ent_InvoiceProforma = (new InvoiceProforma())
-    ->setCreatedAt(new \DateTimeImmutable())
-    ->setDueDate(new \DateTimeImmutable('+14 days'));
+        ->setCreatedAt(new \DateTimeImmutable())
+        ->setDueDate(new \DateTimeImmutable('+14 days'));
     $invoiceManager->setSequentialNumber($ent_InvoiceProforma);
 
     // Use custom formatting for the reference number
