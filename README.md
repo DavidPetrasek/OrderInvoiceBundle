@@ -47,7 +47,7 @@ enum MyOrderCategory :int implements CategoryInterface
 ```
 
 
-## How to use
+## Usage
 
 ### Creating a new order and its proforma invoice:
 ``` php
