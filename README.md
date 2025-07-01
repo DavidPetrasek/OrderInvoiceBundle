@@ -1,3 +1,6 @@
+![Packagist Downloads](https://img.shields.io/packagist/dm/psys/order-invoice-bundle?style=flat)
+
+
 # OrderInvoiceBundle : A Symfony Bundle
 ## Use case
 - You're not running a typical online store — full-featured e-commerce platforms would be overkill.
