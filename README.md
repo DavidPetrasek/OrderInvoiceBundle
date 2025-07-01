@@ -17,8 +17,8 @@
 # config/packages/doctrine.yaml
     orm:
         resolve_target_entities:                                                              
-            Psys\OrderInvoiceBundle\Model\CustomerInterface: App\Entity\YourCustomerEntity
-            Psys\OrderInvoiceBundle\Model\FileInterface: App\Entity\YourFileEntity
+            Psys\OrderInvoiceBundle\Model\CustomerInterface: App\Entity\MyCustomerEntity
+            Psys\OrderInvoiceBundle\Model\FileInterface: App\Entity\MyFileEntity
 ```
 - And let them implement the interfaces mentioned
 
@@ -156,6 +156,7 @@ use Psys\OrderInvoiceBundle\Model\Invoice\ExportMode;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\MyFileEntity;
 
 public function exportInvoiceToPdf (MpdfExporter $mpdfExporter, Filesystem $filesystem, Order $ent_Order, EntityManagerInterface $entityManager) : void
 {
@@ -163,7 +164,7 @@ public function exportInvoiceToPdf (MpdfExporter $mpdfExporter, Filesystem $file
     
     $mpdfExporter->export($ent_Order, InvoiceType::PROFORMA, ExportMode::FILE, '', $absPath);
     
-    $ent_File = (new File())
+    $ent_File = (new MyFileEntity())
         ->setMimeType('application/pdf')
         ->setNameFileSystem(basename($absPath))
         ->setNameDisplay('my_invoice.pdf')
