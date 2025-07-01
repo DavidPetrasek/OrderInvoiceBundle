@@ -157,7 +157,7 @@ use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\ORM\EntityManagerInterface;
 
-public function saveInvoice (MpdfExporter $mpdfExporter, Filesystem $filesystem, Order $ent_Order, EntityManagerInterface $entityManager) : void
+public function exportInvoiceToPdf (MpdfExporter $mpdfExporter, Filesystem $filesystem, Order $ent_Order, EntityManagerInterface $entityManager) : void
 {
     $absPath = $filesystem->tempnam('/some/dir', '', '.pdf'); 
     
