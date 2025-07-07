@@ -1,6 +1,7 @@
 
 /vendor/
 rector.php
+composer.lock
 
 
 ###> Local files ###

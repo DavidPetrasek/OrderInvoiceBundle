@@ -24,8 +24,7 @@
         "psys/utils": "^1.0.10"
     },
     "suggest": {
-        "mpdf/mpdf": "Needed for the MpdfExporter",
-        "twig/twig": "Needed for the MpdfExporter"
+        "mpdf/mpdf": "Required by the MpdfGenerator"
     },
     "require-dev": {
         "rector/rector": "^2.0"

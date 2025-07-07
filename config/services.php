@@ -1,10 +1,10 @@
 <?php
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Psys\OrderInvoiceBundle\Repository\InvoiceRepository;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
 use Psys\OrderInvoiceBundle\Repository\OrderRepository;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
+use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
 use Psys\Utils\Math;
 
 return function(ContainerConfigurator $container): void 
@@ -33,5 +33,9 @@ return function(ContainerConfigurator $container): void
         
 
         ->set('psys_utils.math', Math::class)
+
+
+         ->set('oi.mpdf_generator', MpdfGenerator::class)
+            ->alias(MpdfGenerator::class, 'oi.mpdf_generator')
     ;
 }; 

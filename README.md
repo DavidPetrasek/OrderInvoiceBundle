@@ -6,7 +6,7 @@
 - You're not running a typical online store — full-featured e-commerce platforms would be overkill.
 ## Features
 - manages orders and associated invoices
-- exports invoices
+- generates invoices in PDF format
 
 ## Installation
 
@@ -33,7 +33,7 @@ Then rename the `migrations/VersionOrderInvoiceInit.php` (also the class inside)
 symfony console doctrine:migrations:migrate
 ```
 
-### 3. Define categories for orders and/or its items (OPTIONAL)
+### 3. (Optional) Define categories for orders and/or its items
 
 ``` php
 namespace App\Model;
@@ -49,7 +49,7 @@ enum MyOrderCategory :int implements CategoryInterface
 
 ## Usage
 
-### Creating a new order and its proforma invoice:
+### Creating a new order and its proforma invoice
 ``` php
 use Psys\OrderInvoiceBundle\Entity\Invoice;
 use Psys\OrderInvoiceBundle\Entity\InvoiceBuyer;
@@ -129,44 +129,35 @@ public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceMan
 }
 ```
 
-### Exporting an invoice:
-Set the template path and choose the engine:
-``` yaml
-# config/packages/psys_order_invoice.yaml
-psys_order_invoice:
-    pdf_exporter:
-        engine: mpdf
-        template_path: invoice/oi_default.html.twig
-```
-**Available exporter engines:** mpdf
+### PDF generation
+Available generators: MpdfGenerator
 
-Or you can create your custom exporter by implementing the `Psys\OrderInvoiceBundle\Service\InvoiceExporter\ExporterInterface` and adjusting the config to:
-``` yaml
-# config/packages/psys_order_invoice.yaml
-psys_order_invoice:
-    pdf_exporter:
-        class: App\Service\MyExporter
-```
-
-Example using the mpdf exporter:
+Example using the MpdfGenerator:
 
 ``` php
-use Psys\OrderInvoiceBundle\Service\InvoiceExporter\MpdfExporter;
-use Psys\OrderInvoiceBundle\Model\Invoice\ExportMode;
-use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\ORM\EntityManagerInterface;
+use Twig\Environment;
+use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
+use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use App\Entity\MyFileEntity;
 
-public function exportInvoiceToPdf (MpdfExporter $mpdfExporter, Filesystem $filesystem, Order $ent_Order, EntityManagerInterface $entityManager) : void
+public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesystem $filesystem, Order $order, EntityManagerInterface $entityManager, Environment $twig) : void
 {
-    $absPath = $filesystem->tempnam('/some/dir', '', '.pdf'); 
+    // Generate PDF and save it to disk
+    $htmlPDF = $this->twig->render('invoice/oi_default.html.twig', 
+        [
+            'ent_Order'  => $order,
+            'invoiceType'  => InvoiceType::PROFORMA->name,
+        ]); 
+    $binaryPDF = $mpdfGenerator->generate($htmlPDF);
+    $pdfAbsPath = $filesystem->tempnam('/some/dir', '', '.pdf'); 
+    $filesystem->appendToFile($pdfAbsPath, $binaryPDF);
     
-    $mpdfExporter->export($ent_Order, InvoiceType::PROFORMA, ExportMode::FILE, '', $absPath);
-    
+    // Save generated PDF in databse
     $ent_File = (new MyFileEntity())
         ->setMimeType('application/pdf')
-        ->setNameFileSystem(basename($absPath))
+        ->setNameFileSystem(basename($pdfAbsPath))
         ->setNameDisplay('my_invoice.pdf')
         ->setCreatedAt();
 
@@ -179,7 +170,8 @@ public function exportInvoiceToPdf (MpdfExporter $mpdfExporter, Filesystem $file
 }
 ```
 
-### Reseting sequential numbers:
+
+### Reseting sequential numbers
 ``` php
 use App\Service\InvoiceManager;
 
