@@ -145,9 +145,9 @@ public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesy
 
 
 ### Reseting sequential numbers
-Either create a cron controller: `symfony console make:oib:cron_controller` 
+Either create a ready-to-use cron controller: `symfony console make:oib:cron_controller` 
 
-Or reset them anytime you want:
+or reset them by:
 ``` php
 use App\Service\InvoiceManager;
 ...
