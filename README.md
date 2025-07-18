@@ -43,7 +43,7 @@ use App\Model\MyOrderCategory;
 public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceManager, Security $security) : void
 {       
     $ent_Order = (new Order())
-        ->setCategory(MyOrderCategory::FOO)
+        ->setCategory(MyOrderCategory::SECOND_CATEGORY)
         ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
         ->setPaymentModeBankAccount('5465878565/6556')
         ->setCustomer($security->getUser()) // Customer can be also null
