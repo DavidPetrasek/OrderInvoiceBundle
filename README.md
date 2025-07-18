@@ -64,9 +64,8 @@ public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceMan
     $ent_InvoiceProforma = (new InvoiceProforma())
         ->setCreatedAt(new \DateTimeImmutable())
         ->setDueDate(new \DateTimeImmutable('+14 days'));
+    
     $invoiceManager->setSequentialNumber($ent_InvoiceProforma);
-
-    // Use custom formatting for the reference number
     $ent_InvoiceProforma->setReferenceNumber(date('Y').$ent_InvoiceProforma->getSequentialNumber());
 
     $ent_Invoice = (new Invoice())
@@ -146,9 +145,9 @@ public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesy
 
 
 ### Reseting sequential numbers
-Either create a cron-ready controller: `symfony console make:oib:cron_controller` 
+Either create a cron controller: `symfony console make:oib:cron_controller` 
 
-Or reset them anytime you want by:
+Or reset them anytime you want:
 ``` php
 use App\Service\InvoiceManager;
 ...

@@ -38,6 +38,9 @@ class InvoiceManager
         $dbConn->executeStatement('UNLOCK TABLES;');
     }
 
+    /**
+     * Sets the sequential number for the given invoice type (proforma or final) based on the current counter value in the the settings which is increased at the same time.
+     */
     public function setSequentialNumber(InvoiceProforma|InvoiceFinal $invoiceSpecific): void
     {        
         $dbConn = $this->entityManager->getConnection();
