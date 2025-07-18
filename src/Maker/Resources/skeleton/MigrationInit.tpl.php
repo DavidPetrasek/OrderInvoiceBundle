@@ -1,16 +1,12 @@
-<?php
+<?= "<?php\n" ?>
 
 declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
-use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Migrations\AbstractMigration;
+<?= $use_statements ?>
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
-final class VersionOrderInvoiceInit extends AbstractMigration
+final class <?= $class_name ?> extends AbstractMigration
 {
     public function getDescription(): string
     {

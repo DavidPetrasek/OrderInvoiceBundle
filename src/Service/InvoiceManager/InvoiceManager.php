@@ -92,11 +92,10 @@ class InvoiceManager
     
 
     /**
-     * Resets the sequential numbers for invoices every year.
+     * Resets the sequential numbers for invoices every year. It's meant to be used inside a cron which needs to be run 1 to 10 minutes before a new year.
      *
      * This method checks if the current year is different from the next year (10 minutes in the future).
      * If the years are different, it waits until the next year and then calls the `resetSequentialNumbers()`
-     * method to reset the sequential numbers for both proforma and final invoices.
      *
      * @return string - Verbose debug information
      */
@@ -120,11 +119,15 @@ class InvoiceManager
             }
 
             $this->resetSequentialNumbers();
+            $debug .= '<br><br>Sequential numbers have been reset for the new year.';
         }
 
         return $debug;
     }
 
+    /**
+     * Resets the sequential numbers for both proforma and final invoices.
+     */
     public function resetSequentialNumbers(): void
     {            
         $dbConn = $this->entityManager->getConnection();

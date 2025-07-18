@@ -12,39 +12,11 @@
 
 `composer req psys/order-invoice-bundle`
 
-### 1. Set your target entities
-``` yaml
-# config/packages/doctrine.yaml
-    orm:
-        resolve_target_entities:                                                              
-            Psys\OrderInvoiceBundle\Model\CustomerInterface: App\Entity\MyCustomerEntity
-            Psys\OrderInvoiceBundle\Model\FileInterface: App\Entity\MyFileEntity
-```
-- And let them implement the interfaces mentioned
+Finish installation with: `symfony console oib:configure`
 
 
-### 2. Init database
-
-``` command
-symfony console make:migration
-```
-Then rename the `migrations/VersionOrderInvoiceInit.php` (also the class inside), so it runs just after the migration you've just created.
-``` command
-symfony console doctrine:migrations:migrate
-```
-
-### 3. (Optional) Define categories for orders and/or its items
-
-``` php
-namespace App\Model;
-use Psys\OrderInvoiceBundle\Model\Order\CategoryInterface;
-
-enum MyOrderCategory :int implements CategoryInterface 
-{
-    case FOO = 1;
-    case BAR = 2;
-}
-```
+### Optional
+`symfony console make:oib:category` - Creates enum to specify custom categories for orders or order items
 
 
 ## Usage
@@ -172,16 +144,11 @@ public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesy
 
 
 ### Reseting sequential numbers
+Either create a cron-ready controller: `symfony console make:oib:cron_controller` 
+
+Or reset them anytime you want by:
 ``` php
 use App\Service\InvoiceManager;
-
-public function resetSequentialNumbers (InvoiceManager $invoiceManager) : void
-{       
-    // This method is meant to be used inside a cron. 
-    // This cron needs to be run 1 to 10 minutes before a new year.
-    $invoiceManager->resetSequentialNumbersEveryYear();
-
-    // Use this method for resetting sequential numbers whenever you want.
-    $invoiceManager->resetSequentialNumbers();
-}
+...
+$invoiceManager->resetSequentialNumbers();
 ```
