@@ -38,7 +38,7 @@ class Category extends AbstractMaker
     public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
     {
         $this->chosenEntity = $io->choice('Select entity for which you want to create a new category', ['Order', 'OrderItem']);
-        $this->chosenNamespace = $io->ask('Choose namespace for this new category (without App\)', 'Model');
+        $this->chosenNamespace = $io->ask('Choose namespace for this new category (without App\)', 'Model\OrderInvoiceBundle');
     }
 
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void

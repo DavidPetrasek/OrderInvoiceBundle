@@ -2,7 +2,7 @@
 All notable changes to this project are documented in this file.
 
 
-## [1.2.1] - 2025-07-18
+## [1.2.2] - 2025-07-18
 ### Added
 Commands and makers for easy configuration and usage:
 - `symfony console oib:configure`

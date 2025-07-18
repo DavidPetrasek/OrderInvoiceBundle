@@ -32,9 +32,8 @@ class ConfigureCommand extends Command
         $process = new Process(['git', 'diff-index', '--quiet', 'HEAD', '--']);
         $process->run();
 
-        if ($process->isSuccessful()) {
-            $output->writeln('<info>Your working tree is clean.</info>');
-        } else {
+        if (!$process->isSuccessful())
+        {
             $output->writeln('<error>You have uncommitted changes. Please commit them first.</error>');
             return Command::FAILURE;
         }
@@ -116,7 +115,7 @@ class ConfigureCommand extends Command
         if ($changed) 
         {
             file_put_contents($doctrineYamlAbs, Yaml::dump($data, 6));
-            $output->writeln('<info>Updated config/packages/doctrine.yaml resolve_target_entities</info>');
+            $output->writeln('<info>Updated config/packages/doctrine.yaml</info>');
         }
 
         return true;
@@ -180,6 +179,8 @@ class ConfigureCommand extends Command
             $output->writeln($applyMigrationProcess->getErrorOutput());
             return Command::FAILURE;
         }
+
+        $output->writeln('<info>Migrations applied!</info>');
 
         return true;
     }
