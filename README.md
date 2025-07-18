@@ -14,6 +14,8 @@
 
 Finish installation with: `symfony console oib:configure`
 
+Revert configuration with: `symfony console oib:unconfigure` (UPCOMING FEATURE)
+
 
 ### Optional
 `symfony console make:oib:category` - Creates enum to specify custom categories for orders or order items

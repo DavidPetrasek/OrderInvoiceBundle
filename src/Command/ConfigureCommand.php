@@ -51,8 +51,8 @@ class ConfigureCommand extends Command
         $applyMigrationsResult = $this->applyMigrations($output);
         if ($applyMigrationsResult === Command::FAILURE) {return Command::FAILURE;}
 
-        $this->implementInterface($output, $getEntitiesFromInputResult['customerEntityAbsPath'], 'Psys\OrderInvoiceBundle\Model\CustomerInterface');
-        $this->implementInterface($output, $getEntitiesFromInputResult['fileEntityAbsPath'], 'Psys\OrderInvoiceBundle\Model\FileInterface');
+        $this->implementInterface($output, $getEntitiesFromInputResult['customerEntityAbsPath'], 'Psys\OrderInvoiceBundle\Model\CustomerInterface as OIBCustomerInterface', 'OIBCustomerInterface');
+        $this->implementInterface($output, $getEntitiesFromInputResult['fileEntityAbsPath'], 'Psys\OrderInvoiceBundle\Model\FileInterface as OIBFileInterface', 'OIBFileInterface');
 
         $output->writeln('<info>✅ Order Invoice installation complete!</info>');
         return Command::SUCCESS;
@@ -184,32 +184,31 @@ class ConfigureCommand extends Command
         return true;
     }
 
-    private function implementInterface(OutputInterface $output, string $fileAbsPath, string $interfaceFQCN): void
+    private function implementInterface(OutputInterface $output, string $fileAbsPath, string $interfaceUseName, string $interfaceClassName): void
     {
         $code = file_get_contents($fileAbsPath);
 
         // Add use statement if missing
-        if (strpos($code, "use $interfaceFQCN;") === false) 
+        if (strpos($code, "use $interfaceUseName;") === false) 
         {
             // insert after namespace declaration
             $code = preg_replace(
                 '/^namespace\s+[^;]+;/m',
-                "$0\n\nuse $interfaceFQCN;",
+                "$0\n\nuse $interfaceUseName;",
                 $code
             );
         }
         
         // Add interface in class declaration if missing
-        $shortInterface = substr($interfaceFQCN, strrpos($interfaceFQCN, '\\') + 1);
         $code = preg_replace_callback('/class\s+(\w+)\s*(?:extends\s+(\w+))?\s*(?:implements\s+([^{]+))?/',
-            function ($m) use ($shortInterface, $output) 
+            function ($m) use ($interfaceClassName, $output) 
             {
                 $className = $m[1];
                 $list = !empty($m[3]) ? array_map('trim', explode(',', $m[3])) : [];
                 
-                if (!in_array($shortInterface, $list)) // the interface is not present
+                if (!in_array($interfaceClassName, $list)) // the interface is not present
                 {
-                    $list[] = $shortInterface;
+                    $list[] = $interfaceClassName;
                     $newImplements = ' implements ' . implode(', ', $list);
                 } 
                 else // nothing to do

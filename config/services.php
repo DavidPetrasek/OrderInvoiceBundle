@@ -24,10 +24,13 @@ return function(ContainerConfigurator $container): void
                 service('filesystem'),
             ])
             ->tag('console.command')
+
         ->set(InitDatabase::class)
             ->tag('maker.command')
+
         ->set(Category::class)
             ->tag('maker.command')
+            
         ->set(CronController::class)
             ->tag('maker.command')
 
