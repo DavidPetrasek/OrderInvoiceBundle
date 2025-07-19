@@ -149,7 +149,7 @@ Either create a ready-to-use cron controller: `symfony console make:oib:cron_con
 
 or reset them by:
 ``` php
-use App\Service\InvoiceManager;
+use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
 ...
 $invoiceManager->resetSequentialNumbers();
 ```
