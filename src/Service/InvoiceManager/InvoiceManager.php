@@ -18,12 +18,16 @@ class InvoiceManager
     )
     {}  
     
-    public function setUniqueVariableSymbol(Invoice $invoice): void
+    /**
+     * Sets a unique variable symbol for the given invoice.
+     * The variable symbol is a numeric string of specified length that is not already used in the database.
+     */
+    public function setUniqueVariableSymbol(Invoice $invoice, int $length = 10): void
     {   
         $dbConn = $this->entityManager->getConnection();
         $this->entityManager->getConnection()->executeStatement('LOCK TABLES oi_invoice WRITE;');
         
-        $variableSymbol = $this->generateUniqueVariableSymbol();
+        $variableSymbol = $this->generateUniqueVariableSymbol($length);
         
         $dbConn->executeStatement
         (
@@ -68,10 +72,13 @@ class InvoiceManager
         
         $dbConn->executeStatement('UNLOCK TABLES;');
     }  
-        
-    private function generateUniqueVariableSymbol()
+    
+    /**
+     * Generates numeric string that is not already used in the database
+     */
+    private function generateUniqueVariableSymbol($length): string
     {
-        $variableSymbol = random_int(1000000000, 9999999999);
+        $variableSymbol = $this->random_digits($length);
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('variable_symbol', 'variable_symbol');
@@ -87,10 +94,20 @@ class InvoiceManager
 
         if (!empty($kodVarDB))
         {
-            $variableSymbol = $this->generateUniqueVariableSymbol();
+            $variableSymbol = $this->generateUniqueVariableSymbol($length);
         }
 
         return $variableSymbol;
+    }
+
+    private function random_digits(int $length): string 
+    {
+        $result = '';
+        for ($i = 0; $i < $length; $i++) 
+        {
+            $result .= random_int(0, 9);
+        }
+        return $result;
     }
     
 
