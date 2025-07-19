@@ -3,7 +3,7 @@
 
 # OrderInvoiceBundle : A Symfony Bundle
 ## Use case
-- You're not running a typical online store — full-featured e-commerce platforms would be overkill.
+- You're not running a typical online store — full-featured e-commerce platform would be overkill.
 ## Features
 - manages orders and associated invoices
 - generates invoices in PDF format
