@@ -139,7 +139,11 @@ class InvoiceManager
             }
 
             $this->resetSequentialNumbers();
-            $debug .= '<br><br>Sequential numbers have been reset for the new year.';
+            $debug .= '<br><br>The sequential numbers have been reset.';
+        }
+        else 
+        {
+            $debug .= '<br><br>No upcoming new year. The sequential numbers will stay unchanged.';
         }
 
         return $debug;
