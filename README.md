@@ -12,7 +12,7 @@
 
 `composer req psys/order-invoice-bundle`
 
-Finish installation: `symfony console oib:configure`
+Finish installation: `symfony console oib:configure` (ignore the recipe as its being removed currently)
 
 Revert initial configuration: `symfony console oib:unconfigure` (UPCOMING FEATURE)
 
