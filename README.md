@@ -10,9 +10,9 @@
 
 ## Installation
 
-`composer req psys/order-invoice-bundle`
+`composer req psys/order-invoice-bundle` (temporary notice: say yes to recipe and ignore the error)
 
-Finish installation: `symfony console oib:configure` (temporary notice: say yes to recipe and ignore the error)
+Finish installation: `symfony console oib:configure`
 
 Revert initial configuration: `symfony console oib:unconfigure` (UPCOMING FEATURE)
 
