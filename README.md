@@ -96,7 +96,7 @@ public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceMan
             ->setLegalEntityRegistrationDetails('Registered in England & Wales No. 01234567  ·  Registered office : 1 King’s Road, London SW1')
         );
 
-    $invoiceManager->setUniqueVariableSymbol($ent_Invoice);
+    $invoiceManager->setUniqueVariableSymbol($ent_Invoice, length: 9);
     $ent_Order->setInvoice($ent_Invoice);
     $orderManager->processAndSaveNewOrder($ent_Order);
 }
