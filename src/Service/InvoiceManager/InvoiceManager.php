@@ -112,22 +112,20 @@ class InvoiceManager
     
 
     /**
-     * Resets the sequential numbers for invoices every year. It's meant to be used inside a cron which needs to be run 1 to 10 minutes before a new year.
+     * Resets the sequential numbers for invoices every year. It's meant to be used inside a cron which needs to be run between 1 to the specified number of minutes before the new year. It checks if the current year is different from the next year (based on the specified number of minutes in the future). If the years are different, it waits until the next year and then performs the reset.
      *
-     * This method checks if the current year is different from the next year (10 minutes in the future).
-     * If the years are different, it waits until the next year and then calls the `resetSequentialNumbers()`
-     *
+     * @param int $checkMinutesInAdvance - How many minutes in advance to check for the new year
      * @return string - Verbose debug information
      */
-    public function resetSequentialNumbersEveryYear(): string
+    public function resetSequentialNumbersEveryYear(int $checkMinutesInAdvance = 10): string
     {
         $debug = '';
 
         $currYear = date("Y");
         $debug .= '<br> Current year: ' . $currYear;
 
-        $now = time() + (60 * 10);
-        $nextYear = date("Y", $now);
+        $xMinutesInFuture = time() + (60 * $checkMinutesInAdvance);
+        $nextYear = date("Y", $xMinutesInFuture);
         $debug .= '<br> Next year (10 minutes in the future): ' . $nextYear;
 
         if ($currYear !== $nextYear) {
