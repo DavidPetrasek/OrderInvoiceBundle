@@ -15,12 +15,12 @@ class <?= $class_name ?> extends AbstractController
     {}
 
     /**
-    *   This cron needs to be run 1 to 10 minutes before a new year.
+    *   Run this cron between 1 minute and the specified number of minutes before the new year.
     */
     #[Route('/reset-sequential-numbers-every-year')]
     public function reset_sequential_numbers_every_year(): Response
     {
-        $debug = $this->invoiceManager->resetSequentialNumbersEveryYear();
+        $debug = $this->invoiceManager->resetSequentialNumbersEveryYear(checkMinutesInAdvance: 10);
 
         return new Response(
             $debug,
