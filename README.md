@@ -103,8 +103,14 @@ public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceMan
 ```
 
 ### PDF generation
-Available generators: MpdfGenerator
+Available generators: 
+- MpdfGenerator
 
+Available commands to generate templates:
+
+`symfony console make:oib:invoice:mpdf_twig_template`
+
+---------
 Example using the MpdfGenerator:
 
 ``` php
@@ -118,7 +124,7 @@ use App\Entity\MyFileEntity;
 public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesystem $filesystem, Order $order, EntityManagerInterface $entityManager, Environment $twig) : void
 {
     // Generate PDF and save it to disk
-    $htmlPDF = $this->twig->render('invoice/oi_default.html.twig', 
+    $htmlPDF = $this->twig->render('invoice/oi_mpdf_default.html.twig', 
         [
             'ent_Order'  => $order,
             'invoiceType'  => InvoiceType::PROFORMA->name,

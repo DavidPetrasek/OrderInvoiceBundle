@@ -5,6 +5,7 @@ use Psys\OrderInvoiceBundle\Command\ConfigureCommand;
 use Psys\OrderInvoiceBundle\Maker\Category;
 use Psys\OrderInvoiceBundle\Maker\CronController;
 use Psys\OrderInvoiceBundle\Maker\InitDatabase;
+use Psys\OrderInvoiceBundle\Maker\InvoiceMpdfTwigTemplate;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
 use Psys\OrderInvoiceBundle\Repository\OrderRepository;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
@@ -32,6 +33,12 @@ return function(ContainerConfigurator $container): void
             ->tag('maker.command')
             
         ->set(CronController::class)
+            ->tag('maker.command')
+
+        ->set(InvoiceMpdfTwigTemplate::class)
+            ->args([
+                param('kernel.project_dir'),
+            ])
             ->tag('maker.command')
 
 

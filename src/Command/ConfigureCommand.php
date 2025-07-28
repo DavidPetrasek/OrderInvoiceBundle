@@ -3,6 +3,7 @@ namespace Psys\OrderInvoiceBundle\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -16,6 +17,8 @@ use function Symfony\Component\String\u;
 #[AsCommand(name: 'oib:configure', description: 'Sets target entities, generates and applies migrations, implements interfaces')]
 class ConfigureCommand extends Command
 {
+    private QuestionHelper $qHelper;
+
     public function __construct
     (
         private string $projectDir,
@@ -23,6 +26,8 @@ class ConfigureCommand extends Command
     )
     {
         parent::__construct();
+
+        $this->qHelper = new QuestionHelper();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -39,50 +44,57 @@ class ConfigureCommand extends Command
         }
 
         $getEntitiesFromInputResult = $this->getEntitiesFromInput($input, $output);
-        if ($getEntitiesFromInputResult === Command::FAILURE) {return Command::FAILURE;}
+        if (is_int($getEntitiesFromInputResult)) {return $getEntitiesFromInputResult;}
 
         $updateResolveTargetEntitiesResult = $this->updateResolveTargetEntities($output, $getEntitiesFromInputResult);
-        if ($updateResolveTargetEntitiesResult === Command::FAILURE) {return Command::FAILURE;}
+        if (is_int($updateResolveTargetEntitiesResult)) {return $updateResolveTargetEntitiesResult;}
 
         $generateMigrationsResult = $this->generateMigrations($output);
-        if ($generateMigrationsResult === Command::FAILURE) {return Command::FAILURE;}
+        if (is_int($generateMigrationsResult)) {return $generateMigrationsResult;}
 
         $applyMigrationsResult = $this->applyMigrations($output);
-        if ($applyMigrationsResult === Command::FAILURE) {return Command::FAILURE;}
+        if (is_int($applyMigrationsResult)) {return $applyMigrationsResult;}
 
-        $this->implementInterface($output, $getEntitiesFromInputResult['customerEntityAbsPath'], 'Psys\OrderInvoiceBundle\Model\CustomerInterface as OIBCustomerInterface', 'OIBCustomerInterface');
-        $this->implementInterface($output, $getEntitiesFromInputResult['fileEntityAbsPath'], 'Psys\OrderInvoiceBundle\Model\FileInterface as OIBFileInterface', 'OIBFileInterface');
+        $implementInterfaceRes = $this->implementInterface($output, $getEntitiesFromInputResult['customerEntAbsPath'], 'Psys\OrderInvoiceBundle\Model\CustomerInterface as OIBCustomerInterface', 'OIBCustomerInterface');
+        if (is_int($implementInterfaceRes)) {return $implementInterfaceRes;}
+
+        $implementInterfaceRes = $this->implementInterface($output, $getEntitiesFromInputResult['fileEntAbsPath'], 'Psys\OrderInvoiceBundle\Model\FileInterface as OIBFileInterface', 'OIBFileInterface');
+        if (is_int($implementInterfaceRes)) {return $implementInterfaceRes;}
 
         $output->writeln('<info>✅ Order Invoice installation complete!</info>');
         return Command::SUCCESS;
     }
 
     private function getEntitiesFromInput(InputInterface $input, OutputInterface $output): int|array
-    {        
-        $helper = $this->getHelper('question');
-        $customerEntityFQCN = $helper->ask($input, $output, new Question('Entity which owns the order (default: App\Entity\User): ', 'App\Entity\User'));
-        $fileEntityFQCN = $helper->ask($input, $output, new Question('Entity describing invoice PDF file saved to disk (default: App\Entity\File): ', 'App\Entity\File'));
+    {
+        $customerEntFQCN = $this->qHelper->ask($input, $output, new Question('Entity which owns the order (default: App\Entity\User): ', 'App\Entity\User'));
 
-        $customerEntityRelPath = 'src/Entity/'.(u($customerEntityFQCN)->afterLast('\\')).'.php';
-        $customerEntityAbsPath = $this->projectDir.'/'.$customerEntityRelPath;
-        if (!$this->filesystem->exists($customerEntityAbsPath)) 
+        try 
         {
-            $output->writeln("<error>The file '".$customerEntityRelPath."' does not exist</error>");
+            $refCustomer = new \ReflectionClass($customerEntFQCN);
+        } 
+        catch (\ReflectionException $e)
+        {
+            $output->writeln("<error>The file '".$customerEntFQCN."' does not exist</error>");
             return Command::FAILURE;
         }
-        $fileEntityRelPath = 'src/Entity/'.(u($fileEntityFQCN)->afterLast('\\')).'.php';
-        $fileEntityAbsPath = $this->projectDir.'/'.$fileEntityRelPath;
-        if (!$this->filesystem->exists($fileEntityAbsPath)) 
+
+        $fileEntFQCN = $this->qHelper->ask($input, $output, new Question('Entity describing invoice PDF file saved to disk (default: App\Entity\File): ', 'App\Entity\File'));
+        try 
         {
-            $output->writeln("<error>The file '".$fileEntityRelPath."' does not exist</error>");
+            $refFile = new \ReflectionClass($fileEntFQCN);
+        } 
+        catch (\ReflectionException $e)
+        {
+            $output->writeln("<error>The file '".$fileEntFQCN."' does not exist</error>");
             return Command::FAILURE;
         }
 
         return [
-            'customerEntityFQCN' => $customerEntityFQCN,
-            'fileEntityFQCN' => $fileEntityFQCN,
-            'customerEntityAbsPath' => $customerEntityAbsPath,
-            'fileEntityAbsPath' => $fileEntityAbsPath,
+            'customerEntFQCN' => $customerEntFQCN,
+            'fileEntFQCN' => $fileEntFQCN,
+            'customerEntAbsPath' => $refCustomer->getFileName(),
+            'fileEntAbsPath' => $refFile->getFileName(),
         ];
     }
 
@@ -90,7 +102,7 @@ class ConfigureCommand extends Command
     {
         $doctrineYaml = 'config/packages/doctrine.yaml';
         $doctrineYamlAbs = $this->projectDir.'/'.$doctrineYaml;
-        if (!$this->filesystem->exists($doctrineYamlAbs)) 
+        if (!$this->filesystem->exists($doctrineYamlAbs))
         {
             $output->writeln("<error>The file '".$doctrineYaml."' does not exist</error>");
             return Command::FAILURE;
@@ -100,8 +112,8 @@ class ConfigureCommand extends Command
         $data = Yaml::parseFile($doctrineYamlAbs);
         $rte = &$data['doctrine']['orm']['resolve_target_entities'];
         $add = [
-            'Psys\OrderInvoiceBundle\Model\CustomerInterface' => $getEntitiesFromInputResult['customerEntityFQCN'],
-            'Psys\OrderInvoiceBundle\Model\FileInterface' => $getEntitiesFromInputResult['fileEntityFQCN'],
+            'Psys\OrderInvoiceBundle\Model\CustomerInterface' => $getEntitiesFromInputResult['customerEntFQCN'],
+            'Psys\OrderInvoiceBundle\Model\FileInterface' => $getEntitiesFromInputResult['fileEntFQCN'],
         ];
         $changed = false;
         foreach ($add as $k => $v) 
@@ -185,7 +197,7 @@ class ConfigureCommand extends Command
         return true;
     }
 
-    private function implementInterface(OutputInterface $output, string $fileAbsPath, string $interfaceUseName, string $interfaceClassName): void
+    private function implementInterface(OutputInterface $output, string $fileAbsPath, string $interfaceUseName, string $interfaceClassName): int|bool
     {
         $code = file_get_contents($fileAbsPath);
 
@@ -224,5 +236,7 @@ class ConfigureCommand extends Command
 
         file_put_contents($fileAbsPath, $code);
         $output->writeln('<info>Interface added to '. str_replace($this->projectDir.'/', '', $fileAbsPath) .'</info>');
+
+        return true;
     }
 }
