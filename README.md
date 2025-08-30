@@ -129,7 +129,12 @@ public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesy
             'ent_Order'  => $order,
             'invoiceType'  => InvoiceType::PROFORMA->name,
         ]); 
-    $binaryPDF = $mpdfGenerator->generate($htmlPDF);
+    $binaryPDF = $mpdfGenerator->generate($htmlPDF, [
+                    // mPDF config
+                    'margin_left' => 0,
+                    'margin_right' => 0,
+                    ...
+                ]);
     $pdfAbsPath = $filesystem->tempnam('/some/dir', '', '.pdf'); 
     $filesystem->appendToFile($pdfAbsPath, $binaryPDF);
     
