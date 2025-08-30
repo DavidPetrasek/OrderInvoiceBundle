@@ -133,7 +133,7 @@ public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesy
     $pdfAbsPath = $filesystem->tempnam('/some/dir', '', '.pdf'); 
     $filesystem->appendToFile($pdfAbsPath, $binaryPDF);
     
-    // Save generated PDF in databse
+    // Save generated PDF in database
     $ent_File = (new MyFileEntity())
         ->setMimeType('application/pdf')
         ->setNameFileSystem(basename($pdfAbsPath))

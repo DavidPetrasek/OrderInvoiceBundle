@@ -12,5 +12,5 @@ interface PdfGeneratorInterface
      * 
      * @throws PdfGeneratorException If PDF generation fails.
      */
-    public function generate(string $html): string;
+    public function generate(string $html, array $options = []): string;
 }

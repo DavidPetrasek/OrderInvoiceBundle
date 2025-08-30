@@ -7,11 +7,11 @@ use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\PdfGeneratorInterface;
 
 class MpdfGenerator implements PdfGeneratorInterface
 {
-    public function generate(string $html): string
+    public function generate(string $html, array $options = []): string
     {
         try 
         {
-            $mpdf = new \Mpdf\Mpdf();
+            $mpdf = new \Mpdf\Mpdf($options);
             $mpdf->WriteHTML($html);
 
             return $mpdf->Output('', Destination::STRING_RETURN);

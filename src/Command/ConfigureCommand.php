@@ -21,8 +21,8 @@ class ConfigureCommand extends Command
 
     public function __construct
     (
-        private string $projectDir,
-        private Filesystem $filesystem,
+        private readonly string $projectDir,
+        private readonly Filesystem $filesystem,
     )
     {
         parent::__construct();
