@@ -14,7 +14,7 @@ class InvoiceManager
 {   
     public function __construct 
     (
-        private readonly EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $em,
     )
     {}  
     
@@ -24,8 +24,8 @@ class InvoiceManager
      */
     public function setUniqueVariableSymbol(Invoice $invoice, int $length = 10): void
     {   
-        $dbConn = $this->entityManager->getConnection();
-        $this->entityManager->getConnection()->executeStatement('LOCK TABLES oi_invoice WRITE;');
+        $dbConn = $this->em->getConnection();
+        $this->em->getConnection()->executeStatement('LOCK TABLES oi_invoice WRITE;');
         
         $variableSymbol = $this->generateUniqueVariableSymbol($length);
         
@@ -47,8 +47,8 @@ class InvoiceManager
      */
     public function setSequentialNumber(InvoiceProforma|InvoiceFinal $invoiceSpecific): void
     {        
-        $dbConn = $this->entityManager->getConnection();
-        $this->entityManager->getConnection()->executeStatement('LOCK TABLES oi_settings WRITE;');
+        $dbConn = $this->em->getConnection();
+        $this->em->getConnection()->executeStatement('LOCK TABLES oi_settings WRITE;');
         
         if      ($invoiceSpecific instanceof InvoiceProforma) {$type = 'proforma';}
         else if ($invoiceSpecific instanceof InvoiceFinal)    {$type = 'final';}
@@ -83,7 +83,7 @@ class InvoiceManager
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('variable_symbol', 'variable_symbol');
 
-        $query = $this->entityManager->createNativeQuery
+        $query = $this->em->createNativeQuery
         ('
             SELECT variable_symbol FROM oi_invoice 
             WHERE variable_symbol = ?'
@@ -152,8 +152,8 @@ class InvoiceManager
      */
     public function resetSequentialNumbers(): void
     {            
-        $dbConn = $this->entityManager->getConnection();
-        $this->entityManager->getConnection()->executeStatement('LOCK TABLES oi_settings WRITE;');
+        $dbConn = $this->em->getConnection();
+        $this->em->getConnection()->executeStatement('LOCK TABLES oi_settings WRITE;');
 
         $dbConn->executeStatement
         (
@@ -162,6 +162,6 @@ class InvoiceManager
 
         $dbConn->executeStatement('UNLOCK TABLES;');
 
-        $this->entityManager->flush();
+        $this->em->flush();
     }
 }

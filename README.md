@@ -14,8 +14,6 @@
 
 Finish installation: `symfony console oib:configure`
 
-Revert initial configuration: `symfony console oib:unconfigure` (UPCOMING FEATURE)
-
 
 ### Optional
 `symfony console make:oib:category` - Creates enum to specify custom categories for orders or order items
@@ -121,7 +119,7 @@ use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use App\Entity\MyFileEntity;
 
-public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesystem $filesystem, Order $order, EntityManagerInterface $entityManager, Environment $twig) : void
+public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesystem $filesystem, Order $order, EntityManagerInterface $em, Environment $twig) : void
 {
     // Generate PDF and save it to disk
     $htmlPDF = $this->twig->render('invoice/oi_mpdf_default.html.twig', 
@@ -148,9 +146,9 @@ public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesy
     $ent_InvoiceProforma = $ent_Order->getInvoice()->getInvoiceProforma();
     $ent_InvoiceProforma->setFile($ent_File);
     
-    $entityManager->persist($ent_File);
-    $entityManager->persist($ent_InvoiceProforma);
-    $entityManager->flush();
+    $em->persist($ent_File);
+    $em->persist($ent_InvoiceProforma);
+    $em->flush();
 }
 ```
 

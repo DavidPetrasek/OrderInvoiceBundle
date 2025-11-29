@@ -12,7 +12,7 @@ class OrderManager
 {    
     public function __construct
     (
-        private readonly EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $em,
         private readonly Math $math
     )
     {}    
@@ -26,8 +26,8 @@ class OrderManager
         $ent_Order->setPriceVatBase ($orderTotals['vatBase']);
         $ent_Order->setPriceVat ($orderTotals['vat']);
         
-        $this->entityManager->persist($ent_Order);        
-        $this->entityManager->flush();
+        $this->em->persist($ent_Order);        
+        $this->em->flush();
     }
     
     public function calculateOrderTotals(Order $ent_Order): array

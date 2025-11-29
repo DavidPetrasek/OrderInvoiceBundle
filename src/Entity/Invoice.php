@@ -22,8 +22,6 @@ class Invoice
     #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'invoice')]
     private ?InvoiceFinal $invoice_final = null;
 
-
-
     #[ORM\Column(type: Types::BIGINT, nullable: true, options:["unsigned" => true])]
     private ?string $variable_symbol = null;
 
