@@ -8,6 +8,7 @@ use Psys\OrderInvoiceBundle\Maker\InitDatabase;
 use Psys\OrderInvoiceBundle\Maker\InvoiceMpdfTwigTemplate;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
 use Psys\OrderInvoiceBundle\Repository\OrderRepository;
+use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\FilePersister;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
 use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
 use Psys\Utils\Math;
@@ -63,5 +64,15 @@ return function(ContainerConfigurator $container): void
 
         ->set('oi.mpdf_generator', MpdfGenerator::class)
             ->alias(MpdfGenerator::class, 'oi.mpdf_generator')
+
+        ->set('oi.file_persister', FilePersister::class)
+            ->args([
+                service('filesystem'),
+                service('doctrine.orm.default_entity_manager'),
+                param('kernel.project_dir'),
+                param('oi.file_entity'),
+                param('oi.storage_path')
+            ])
+            ->alias(FilePersister::class, 'oi.file_persister')
     ;
 };

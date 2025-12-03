@@ -44,7 +44,7 @@ public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceMan
         ->setCategory(MyOrderCategory::SECOND_CATEGORY)
         ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
         ->setPaymentModeBankAccount('5465878565/6556')
-        ->setCustomer($security->getUser()) // Customer can be also null
+        ->setCustomer($security->getUser()) // Optional
         ->setCreatedAt(new \DateTimeImmutable())
         ->setState(State::NEW)
         ->setCurrency('USD');
@@ -112,43 +112,56 @@ Available commands to generate templates:
 Example using the MpdfGenerator:
 
 ``` php
-use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\ORM\EntityManagerInterface;
 use Twig\Environment;
 use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use App\Entity\MyFileEntity;
 
-public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Filesystem $filesystem, Order $order, EntityManagerInterface $em, Environment $twig) : void
+public function generateProformaInvoicePdf (MpdfGenerator $mpdfGenerator, Order $order, EntityManagerInterface $em, Environment $twig): string
 {
-    // Generate PDF and save it to disk
     $htmlPDF = $this->twig->render('invoice/oi_mpdf_default.html.twig', 
         [
             'ent_Order'  => $order,
             'invoiceType'  => InvoiceType::PROFORMA->name,
         ]); 
-    $binaryPDF = $mpdfGenerator->generate($htmlPDF, [
-                    // mPDF config
+    return $mpdfGenerator->generate($htmlPDF, 
+                // Optional mPDF config
+                [
                     'margin_left' => 0,
                     'margin_right' => 0,
-                    ...
-                ]);
-    $pdfAbsPath = $filesystem->tempnam('/some/dir', '', '.pdf'); 
-    $filesystem->appendToFile($pdfAbsPath, $binaryPDF);
-    
-    // Save generated PDF in database
-    $ent_File = (new MyFileEntity())
-        ->setMimeType('application/pdf')
-        ->setNameFileSystem(basename($pdfAbsPath))
-        ->setNameDisplay('my_invoice.pdf')
-        ->setCreatedAt();
+                ],
+                // Optional callback to add background graphics 
+                fn => (\Mpdf\Mpdf $mpdf) : void 
+                {
+                    $mpdf->AddPage();
+                    $mpdf->SetFillColor(16, 76, 186);
+                    $mpdf->RoundedRect(20, 30, 70, 10, 0.4, 'F');
+                },
+                // Optional callback to add overlay graphics 
+                fn => (\Mpdf\Mpdf $mpdf) : void 
+                {
+                    $mpdf->AddPage();
+                    $mpdf->SetFillColor(16, 76, 186);
+                    $mpdf->RoundedRect(20, 30, 70, 10, 0.4, 'F');
+                }
+            );
+}
+```
 
-    $ent_InvoiceProforma = $ent_Order->getInvoice()->getInvoiceProforma();
-    $ent_InvoiceProforma->setFile($ent_File);
+
+### Saving files
+``` php
+use Psys\OrderInvoiceBundle\Service\FilePersister\FilePersister;
+use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
+use App\Entity\MyFileEntity;
+
+public function  (FilePersister $filePersister, Order $order) : void
+{
+    $binaryPDF = 
     
-    $em->persist($ent_File);
-    $em->persist($ent_InvoiceProforma);
-    $em->flush();
+    $filePersister->persistPDF($binaryPDF);
+    
 }
 ```
 

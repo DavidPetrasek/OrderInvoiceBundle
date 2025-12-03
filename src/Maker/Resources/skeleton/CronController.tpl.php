@@ -17,7 +17,7 @@ class <?= $class_name ?> extends AbstractController
     /**
     *   Run this cron between 1 minute and the specified number of minutes before the new year.
     */
-    #[Route('/reset-sequential-numbers-every-year', methods: ['GET'])]
+    #[Route('/reset_sequential_numbers_every_year', methods: ['GET'])]
     public function reset_sequential_numbers_every_year(): Response
     {
         $debug = $this->invoiceManager->resetSequentialNumbersEveryYear(checkMinutesInAdvance: 10);

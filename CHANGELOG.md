@@ -2,6 +2,19 @@
 All notable changes to this project are documented in this file.
 
 
+## [1.2.3] - 2025--
+Run `symfony console oib:configure` to apply changes below
+
+### Added
+- File persister: Persisting invoice PDF is super easy now
+- mPDF generator: Add backgroud/overlays
+
+### Changed
+
+### Fixed
+
+
+
 ## [1.2.2] - 2025-07-18
 ### Added
 Commands and makers for easy configuration and usage:
