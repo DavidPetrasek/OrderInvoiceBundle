@@ -14,8 +14,8 @@ use Symfony\Component\Process\Process;
 use function Symfony\Component\String\u;
 
 
-#[AsCommand(name: 'oib:configure', description: 'Sets target entities, generates and applies migrations, implements interfaces')]
-class ConfigureCommand extends Command
+#[AsCommand(name: 'oib:install', description: 'Sets target entities, generates and applies migrations, implements interfaces, generates config file.')]
+class InstallCommand extends Command
 {
     private QuestionHelper $qHelper;
     private const FILE_ENTITY_FQCN_DEFAULT = 'Psys\OrderInvoiceBundle\Entity\File';
@@ -68,13 +68,13 @@ class ConfigureCommand extends Command
         $generateConfigResult = $this->generateConfig($input, $output, $getEntitiesFromInputResult['fileEntFQCN']);
         if (is_int($generateConfigResult)) {return $generateConfigResult;}
 
-        $output->writeln('<info>✅ Installation complete!</info>');
+        $output->writeln(PHP_EOL.'<info>✅ Installation complete!</info>');
         return Command::SUCCESS;
     }
 
     private function getEntitiesFromInput(InputInterface $input, OutputInterface $output): int|array
     {
-        $customerEntFQCN = $this->qHelper->ask($input, $output, new Question('Entity which owns the order (default: App\Entity\User): ', 'App\Entity\User'));
+        $customerEntFQCN = $this->qHelper->ask($input, $output, new Question(PHP_EOL.'Entity which owns the order (default: App\Entity\User): ', 'App\Entity\User'));
 
         try 
         {
@@ -86,19 +86,16 @@ class ConfigureCommand extends Command
             return Command::FAILURE;
         }
 
-        $fileEntFQCN = $this->qHelper->ask($input, $output, new Question('Entity describing invoice file saved to disk (defaults to '.self::FILE_ENTITY_FQCN_DEFAULT.'): ', self::FILE_ENTITY_FQCN_DEFAULT));
+        $fileEntFQCN = $this->qHelper->ask($input, $output, new Question(PHP_EOL.'Entity describing invoice file saved to disk (defaults to '.self::FILE_ENTITY_FQCN_DEFAULT.'): ', self::FILE_ENTITY_FQCN_DEFAULT));
         
-        if ($fileEntFQCN !== self::FILE_ENTITY_FQCN_DEFAULT)
+        try 
         {
-            try 
-            {
-                $refFile = new \ReflectionClass($fileEntFQCN);
-            } 
-            catch (\ReflectionException $e)
-            {
-                $output->writeln("<error>The file '".$fileEntFQCN."' does not exist</error>");
-                return Command::FAILURE;
-            }
+            $refFile = new \ReflectionClass($fileEntFQCN);
+        } 
+        catch (\ReflectionException $e)
+        {
+            $output->writeln("<error>The file '".$fileEntFQCN."' does not exist</error>");
+            return Command::FAILURE;
         }
 
         return [
@@ -254,18 +251,18 @@ class ConfigureCommand extends Command
     private function generateConfig(InputInterface $input, OutputInterface $output, string $fileEntFQCN): bool|int
     {
         $storagePathProforma = $this->qHelper->ask($input, $output, new Question(
-            'Proforma invoice storage directory (defaults to /var/data/invoice/proforma). You have to create this directory yourself.',
+            PHP_EOL.'Proforma invoice storage directory (defaults to /var/data/invoice/proforma):',
            '/var/data/invoice/proforma'
         ));
         $storagePathFinal = $this->qHelper->ask($input, $output, new Question(
-            'Final invoice storage directory (defaults to /var/data/invoice/final). You have to create this directory yourself.',
+            PHP_EOL.'Final invoice storage directory (defaults to /var/data/invoice/final):',
             '/var/data/invoice/final'
         ));
 
-        $yamlAbs = $this->projectDir.'/config/packages/order_invoice.yaml';
+        $yamlAbs = $this->projectDir.'/config/packages/psys_order_invoice.yaml';
         $data = 
         [
-            'order_invoice' =>
+            'psys_order_invoice' =>
             [
                 'file_entity' => $fileEntFQCN,
                 'storage_path' => 
@@ -277,7 +274,7 @@ class ConfigureCommand extends Command
         ];
        
         file_put_contents($yamlAbs, Yaml::dump($data));
-        $output->writeln('<info>Created config/packages/order_invoice.yaml</info>');
+        $output->writeln('<info>Created config/packages/psys_order_invoice.yaml</info>');
 
         return true;
     }

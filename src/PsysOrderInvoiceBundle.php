@@ -1,7 +1,7 @@
 <?php
-
 namespace Psys\OrderInvoiceBundle;
 
+use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
@@ -14,13 +14,13 @@ class PsysOrderInvoiceBundle extends AbstractBundle
         $definition->rootNode()
             ->children()
                 // Required
-                ->stringNode('file_entity')->cannotBeOverwritten()->end()
+                ->stringNode('file_entity')->defaultValue(null)->end()
                 
                 // Optional
-                ->arrayNode('storage_path')
+                ->arrayNode('storage_path')->addDefaultsIfNotSet()
                     ->children()
-                        ->stringNode('proforma')->cannotBeOverwritten()->end()
-                        ->stringNode('final')->cannotBeOverwritten()->end()
+                        ->stringNode('proforma')->end()
+                        ->stringNode('final')->end()
                     ->end()
                 
 
@@ -33,7 +33,6 @@ class PsysOrderInvoiceBundle extends AbstractBundle
         $container->import('../config/services.php');
         $container->parameters()
             ->set('oi.file_entity', $config['file_entity'])
-            ->set('oi.storage_path', $config['storage_path'])
-            ;
+            ->set('oi.storage_path', $config['storage_path']);
     }
 }

@@ -27,8 +27,8 @@
         "symfony/filesystem": ">=7.0",
         "symfony/maker-bundle": ">=1.63.0",
         "psys/utils": ">=1.0.10",
-        "symfony/yaml": "^8.0",
-        "symfony/mime": "^8.0"
+        "symfony/yaml": ">=7.0",
+        "symfony/mime": ">=7.0"
     },
     "suggest": {
         "mpdf/mpdf": "Required by the MpdfGenerator"

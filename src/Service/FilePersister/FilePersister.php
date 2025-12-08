@@ -4,34 +4,53 @@ namespace Psys\OrderInvoiceBundle\Service\FilePersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
+use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Mime\MimeTypes;
 
 
 class FilePersister
 {
+    private const FILE_ENTITY_FQCN_DEFAULT = 'Psys\OrderInvoiceBundle\Entity\File';
+
     public function __construct
     (
         private readonly Filesystem $filesystem,
         private readonly EntityManagerInterface $em,
+        private readonly FileDeleter $fileDeleter,
         private readonly string $projectDir,
         private readonly string $fileEntityFQCN, // Yaml config
-        private readonly string $storagePath // Yaml config
+        private readonly array $storagePath // Yaml config
     )
     {}
 
-    public function persistProforma(string $binary, Order $ent_Order): void
+    /**
+      * Persists the proforma file binary to disk and saves a reference to it in the database using the default File entity.
+      * If a custom File entity is used, only saves the file to disk and returns the file info for further processing.
+     */
+    public function persistProforma(string $binary, Order $ent_Order): ?array
     {
-        $this->persist($binary, $ent_Order, InvoiceType::PROFORMA);
+        return $this->persist($binary, $ent_Order, InvoiceType::PROFORMA);
     }
 
-    public function persistFinal(string $binary, Order $ent_Order): void
+    /**
+      * Persists the final invoice file binary to disk and saves a reference to it in the database using the default File entity.
+      * If a custom File entity is used, only saves the file to disk and returns the file info for further processing.
+      *
+      * @return array|null file info array properties: mimeType, nameFileSystem, nameDisplay
+     */
+    public function persistFinal(string $binary, Order $ent_Order): ?array
     {
-        $this->persist($binary, $ent_Order, InvoiceType::FINAL);
+        return $this->persist($binary, $ent_Order, InvoiceType::FINAL);
     }
 
-    private function persist(string $binary, Order $ent_Order, InvoiceType $invoiceType): void
+    /**
+      * Persists the file binary to disk and saves a reference to it in the database using the default File entity.
+      * If a custom File entity is used, only saves the file to disk and returns the file info for further processing.
+      *
+      * @return array|null file info array properties: mimeType, nameFileSystem, nameDisplay
+     */
+    private function persist(string $binary, Order $ent_Order, InvoiceType $invoiceType): ?array
     {
         // Guess MIME Type and file extension from binary data       
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
@@ -51,33 +70,59 @@ class FilePersister
             $nameDisplay = 'final_invoice.'.$extension;
         }
 
+        // Default File entity is being used
+        if ($this->fileEntityFQCN === self::FILE_ENTITY_FQCN_DEFAULT)
+        {
+            // Remove existing file to avoid orphaned files
+            if ($invoiceType === InvoiceType::PROFORMA)
+            {
+                $this->fileDeleter->deleteProforma($ent_Order);
+            }
+            else if ($invoiceType === InvoiceType::FINAL)
+            {
+                $this->fileDeleter->deleteFinal($ent_Order);
+            }
+        }
+
         // Save to disk
-        $absPath = $this->filesystem->tempnam($this->projectDir.$storagePath, '', $extension); 
+        $absPath = $this->filesystem->tempnam($this->projectDir.$storagePath, '', '.'.$extension); 
         $this->filesystem->appendToFile($absPath, $binary);
+        $nameFileSystem = basename($absPath);
         
-        // Save reference to the file in the database
-        $file = new File($absPath);
-        $mimeType = $file->getMimeType();
-
-        $ent_File = (new $this->fileEntityFQCN())
-            ->setMimeType($mimeType)
-            ->setNameFileSystem(basename($absPath))
-            ->setNameDisplay($nameDisplay)
-            ->setCreatedAt();
-
-        if ($invoiceType === InvoiceType::PROFORMA)
+        // Save reference to the file in the database using the default File entity
+        if ($this->fileEntityFQCN === self::FILE_ENTITY_FQCN_DEFAULT)
         {
-            $ent_InvoiceProforma = $ent_Order->getInvoice()->getInvoiceProforma();
-            $ent_InvoiceProforma->setFile($ent_File);
-            $this->em->persist($ent_InvoiceProforma);
+            $ent_File = (new $this->fileEntityFQCN())
+                ->setMimeType($mimeType)
+                ->setNameFileSystem($nameFileSystem)
+                ->setNameDisplay($nameDisplay)
+                ->setCreatedAt();
+
+            if ($invoiceType === InvoiceType::PROFORMA)
+            {
+                $ent_InvoiceProforma = $ent_Order->getInvoice()->getInvoiceProforma();
+                $ent_InvoiceProforma->setFile($ent_File);
+                $this->em->persist($ent_InvoiceProforma);
+            }
+            else if ($invoiceType === InvoiceType::FINAL)
+            {
+                $ent_InvoiceFinal = $ent_Order->getInvoice()->getInvoiceFinal();
+                $ent_InvoiceFinal->setFile($ent_File);
+                $this->em->persist($ent_InvoiceFinal);
+            }
+            
+            $this->em->flush();
+            return null;
         }
-        else if ($invoiceType === InvoiceType::FINAL)
+        // If using a custom File entity, return the file info instead
+        else
         {
-            $ent_InvoiceFinal = $ent_Order->getInvoice()->getInvoiceFinal();
-            $ent_InvoiceFinal->setFile($ent_File);
-            $this->em->persist($ent_InvoiceFinal);
+            return 
+            [
+                'mimeType' => $mimeType,
+                'nameFileSystem' => $nameFileSystem,
+                'nameDisplay' => $nameDisplay,
+            ];
         }
-        
-        $this->em->flush();
     }
 }

@@ -21,10 +21,10 @@ class OrderManager
     {    
         $orderTotals = $this->calculateOrderTotals($ent_Order);
 
-        $ent_Order->setPriceVatIncluded ($orderTotals['vatIncluded']);
-        $ent_Order->setPriceVatExcluded ($orderTotals['vatExcluded']);
-        $ent_Order->setPriceVatBase ($orderTotals['vatBase']);
-        $ent_Order->setPriceVat ($orderTotals['vat']);
+        $ent_Order->setPriceVatIncluded($orderTotals['vatIncluded']);
+        $ent_Order->setPriceVatExcluded($orderTotals['vatExcluded']);
+        $ent_Order->setPriceVatBase($orderTotals['vatBase']);
+        $ent_Order->setPriceVat($orderTotals['vat']);
         
         $this->em->persist($ent_Order);        
         $this->em->flush();
