@@ -12,5 +12,5 @@ mPDF and Twig:
 
 ### Styler (coming soon)
 - Run: `symfony console make:oib:styler:mpdf_twig`
-- Then visit: /oib/style_invoice/`orderID`/`invoiceType`
+- Then visit: /oib/styler/`orderID`/`invoiceType`
 - `invoiceType` allowed values: proforma, final

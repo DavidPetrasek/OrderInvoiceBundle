@@ -13,6 +13,11 @@ use Symfony\Component\Console\Input\InputInterface;
 
 class InvoiceMpdfTwigTemplate extends AbstractMaker
 {
+    // private bool $chosenWantAnyStyle;
+    // private int $chosenStyleMode;
+    private string $chosenTemplateName = 'oi_mpdf_default';
+    // private string $chosenTwigProjectDirVarName;
+
     public function __construct
     (
         private string $projectDir,
@@ -37,13 +42,46 @@ class InvoiceMpdfTwigTemplate extends AbstractMaker
     {
     }
 
+    // public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
+    // {
+    //     // TODO: TOTO JE ASI NESMYSL
+    //     $this->chosenWantAnyStyle = $io->choice('Do you want any style?', ['none', 'default'], 1);
+        
+    //     if ($this->chosenWantAnyStyle)
+    //     {
+    //         $this->chosenStyleMode = $io->choice('How do you wish to style the template?', ['separate stylesheet'], 0);
+
+    //         dump($this->chosenStyleMode);
+    //         if ($this->chosenStyleMode === 0) 
+    //         {
+    //              $this->chosenTwigProjectDirVarName = $io->ask('Project directory variable name (you need to pass this variable to the template yourself)', 'projectDir');
+    //         }
+    //     }
+
+    //     $this->chosenTemplateName = $io->ask('Template filename', 'oi_mpdf_default');
+    // }
+
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $generator->generateFile(
-             $this->projectDir.'/templates/invoice/oi_mpdf_default.html.twig',
+             $this->projectDir.'/templates/invoice/'.$this->chosenTemplateName.'.html.twig',
             __DIR__.'/Resources/skeleton/InvoiceMpdfTwig.tpl.html.twig',
             []
         );
+
+        // if ($this->chosenWantAnyStyle)
+        // {
+        //     if ($this->chosenStyleMode === 0) 
+        //     {
+        //         $generator->generateFile(
+        //             $this->projectDir.'/assets/css/invoice/'.$this->chosenTemplateName.'.css',
+        //             __DIR__.'/Resources/skeleton/InvoiceMpdfStylesheet.css.twig',
+        //             [
+        //                 'projectDirVarName' => $this->chosenTwigProjectDirVarName
+        //             ]
+        //         );
+        //     }
+        // }
 
         $generator->writeChanges();
     }
