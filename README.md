@@ -23,10 +23,6 @@ Run: `composer req psys/order-invoice-bundle`
 Finish installation: `symfony console oib:install`
 
 
-### Optional
-`symfony console make:oib:category` - Creates enum to specify custom categories for orders or order items
-
-
 ## Usage
 
 [Creating a new order](./docs/new_order.md)
