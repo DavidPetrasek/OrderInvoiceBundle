@@ -10,7 +10,7 @@ Persist the invoice file binary to disk and save a reference to it in the databa
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Service\FilePersister\FilePersister;
 
-public function saveProformaInvoice (FilePersister $filePersister, Order $ent_Order, string $binary) : void
+public function saveProformaInvoice(FilePersister $filePersister, Order $ent_Order, string $binary) : void
 {
     $fileInfo = $filePersister->persistProforma($binary, $ent_Order);
 }
@@ -34,7 +34,7 @@ Delete the invoice file from the disk and remove its reference from the database
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
 
-public function deleteProformaInvoice (FileDeleter $fileDeleter, Order $ent_Order) : void
+public function deleteProformaInvoice(FileDeleter $fileDeleter, Order $ent_Order) : void
 {
     $fileDeleter->deleteProforma($ent_Order);
 }

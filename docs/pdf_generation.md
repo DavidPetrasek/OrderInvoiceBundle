@@ -21,7 +21,7 @@ use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use App\Entity\MyFileEntity;
 
-public function generateProformaInvoiceBinaryPdf (MpdfGenerator $mpdfGenerator, Order $ent_Order, Environment $twig): string
+public function generateProformaInvoiceBinaryPdf(MpdfGenerator $mpdfGenerator, Order $ent_Order, Environment $twig): string
 {
     $htmlPDF = $twig->render('invoice/oi_mpdf_default.html.twig', 
         [

@@ -19,7 +19,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use App\Model\MyOrderCategory;
 
 
-public function newOrder (OrderManager $orderManager, InvoiceManager $invoiceManager, Security $security) : void
+public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceManager, Security $security) : void
 {       
     $ent_Order = (new Order())
         ->setCategory(MyOrderCategory::SECOND_CATEGORY)
