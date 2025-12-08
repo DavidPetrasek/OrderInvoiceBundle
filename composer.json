@@ -1,6 +1,6 @@
 {
     "name": "psys/order-invoice-bundle",
-    "description": "Symfony bundle for managing orders & invoices in non-shop environments",
+    "description": "Symfony bundle for managing orders & invoices",
     "type": "symfony-bundle",
     "keywords": ["symfony", "symfony-bundle", "invoice-generator", "order-management", "invoice-management"],
     "license": "MIT",

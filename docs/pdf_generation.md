@@ -2,14 +2,9 @@
 
 PDF generation
 ==============
-- Generator returns binary data
+Generator returns the PDF as binary data. If you need to save the invoice to disk, please see [File management](./file_management.md)
 
-Available generators: 
-- MpdfGenerator
-
-Available commands to generate templates:
-
-`symfony console make:oib:invoice:mpdf_twig_template`
+Available generators: `MpdfGenerator`
 
 ---------
 Example using the MpdfGenerator:

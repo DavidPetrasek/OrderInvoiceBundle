@@ -27,6 +27,8 @@ Finish installation: `symfony console oib:install`
 
 [Creating a new order](./docs/new_order.md)
 
+[Templates & styling](./docs/templates_styling.md)
+
 [PDF generation](./docs/pdf_generation.md)
 
 [File management](./docs/file_management.md)
