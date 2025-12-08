@@ -22,6 +22,7 @@ Run: `composer req psys/order-invoice-bundle`
 
 Finish installation: `symfony console oib:install`
 
+[Upgrading guide](./UPGRADING.md)
 
 ## Usage
 
