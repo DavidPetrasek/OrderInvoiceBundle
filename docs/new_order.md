@@ -2,6 +2,7 @@
 
 Creating a new order and its proforma invoice
 =============================================
+New order can be created without invoice, which can be added later.
 
 ``` php
 use Psys\OrderInvoiceBundle\Entity\Invoice;
