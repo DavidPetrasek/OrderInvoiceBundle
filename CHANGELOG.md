@@ -2,7 +2,19 @@
 All notable changes to this project are documented in this file.
 
 
-## [1.2.3] - 2025-12-08
+## [1.3.1] - 2025-12-14
+
+### Added
+- Invoice styler
+
+### Changed
+
+### Fixed
+- Docs
+- Config formatting
+
+
+## [1.3.0] - 2025-12-08
 
 ### Added
 - Default File entity (new table: oi_file)
