@@ -1,6 +1,6 @@
 {
     "name": "psys/order-invoice-bundle",
-    "description": "Symfony bundle for managing orders & invoices",
+    "description": "Manage orders & invoices in your Symfony application",
     "type": "symfony-bundle",
     "keywords": ["symfony", "symfony-bundle", "invoice-generator", "order-management", "invoice-management"],
     "license": "MIT",
@@ -28,7 +28,8 @@
         "symfony/maker-bundle": ">=1.63.0",
         "psys/utils": ">=1.0.10",
         "symfony/yaml": ">=7.0",
-        "symfony/mime": ">=7.0"
+        "symfony/mime": ">=7.0",
+        "symfony/routing": ">=7.0"
     },
     "suggest": {
         "mpdf/mpdf": "Required by the MpdfGenerator"

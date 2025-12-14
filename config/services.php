@@ -2,6 +2,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Psys\OrderInvoiceBundle\Command\InstallCommand;
+use Psys\OrderInvoiceBundle\Command\StylerEnableCommand;
 use Psys\OrderInvoiceBundle\Command\Upgrade12To13Command;
 use Psys\OrderInvoiceBundle\Maker\Category;
 use Psys\OrderInvoiceBundle\Maker\CronController;
@@ -50,6 +51,13 @@ return function(ContainerConfigurator $container): void
                 param('kernel.project_dir'),
             ])
             ->tag('maker.command')
+
+        ->set(StylerEnableCommand::class)
+            ->args([
+                param('kernel.project_dir'),
+                service('filesystem')
+            ])
+            ->tag('console.command')
 
 
         ->set('oi.order_manager', OrderManager::class)

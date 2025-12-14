@@ -3,14 +3,20 @@
 Templates & styling 
 ===================
 
-### Templates:
+## Templates
 
-mPDF and Twig: 
+### mPDF and Twig
 - `symfony console make:oib:invoice:mpdf_twig_template`
 - Available styles: none (coming soon)
 
 
-### Styler (coming soon)
-- Run: `symfony console make:oib:styler:mpdf_twig`
-- Then visit: /oib/styler/`orderID`/`invoiceType`
-- `invoiceType` allowed values: proforma, final
+## Styler
+- Is meant to be used in the dev environment
+- Requires you to implement the [binary provider](./pdf_generation.md)
+
+### Usage
+Run: `symfony console oib:styler:enable`
+
+Then visit: /_oib/styler/`orderID`/`invoiceType`
+- `orderID` - If the chosen order or the specified invoice doesn't exist, dummy order and invoice is used
+- `invoiceType` - allowed values: proforma, final

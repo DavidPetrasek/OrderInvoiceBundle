@@ -15,6 +15,7 @@ class PsysOrderInvoiceBundle extends AbstractBundle
             ->children()
                 // Required
                 ->stringNode('file_entity')->defaultValue(null)->end()
+                ->stringNode('invoice_binary_provider')->defaultValue(null)->end()
                 
                 // Optional
                 ->arrayNode('storage_path')->addDefaultsIfNotSet()
@@ -34,5 +35,11 @@ class PsysOrderInvoiceBundle extends AbstractBundle
         $container->parameters()
             ->set('oi.file_entity', $config['file_entity'])
             ->set('oi.storage_path', $config['storage_path']);
+
+        if (!empty($config['invoice_binary_provider']))
+        {
+            $builder->setAlias('oi.invoice_binary_provider', $config['invoice_binary_provider']);
+            $container->import('../config/styler.php');
+        }
     }
 }
