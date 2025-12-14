@@ -99,7 +99,6 @@ class Upgrade12To13Command extends Command
             return Command::FAILURE;
         }
 
-        // Update doctrine.yaml resolve_target_entities
         $data = Yaml::parseFile($doctrineYamlAbs);
         $rte = &$data['doctrine']['orm']['resolve_target_entities'];
         $add = [
@@ -208,7 +207,7 @@ class Upgrade12To13Command extends Command
             ]
         ];
        
-        file_put_contents($yamlAbs, Yaml::dump($data));
+        file_put_contents($yamlAbs, Yaml::dump($data, 6));
         $output->writeln('<info>Created config/packages/psys_order_invoice.yaml</info>');
 
         return true;

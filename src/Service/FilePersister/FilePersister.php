@@ -86,7 +86,7 @@ class FilePersister
 
         // Save to disk
         $absPath = $this->filesystem->tempnam($this->projectDir.$storagePath, '', '.'.$extension); 
-        $this->filesystem->appendToFile($absPath, $binary);
+        $this->filesystem->dumpFile($absPath, $binary);
         $nameFileSystem = basename($absPath);
         
         // Save reference to the file in the database using the default File entity

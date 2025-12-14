@@ -23,20 +23,20 @@ use App\Model\MyOrderCategory;
 public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceManager, Security $security) : void
 {       
     $ent_Order = (new Order())
-        ->setCategory(MyOrderCategory::SECOND_CATEGORY)
+        ->setCategory(MyOrderCategory::SECOND_CATEGORY) // Optional
         ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
-        ->setPaymentModeBankAccount('5465878565/6556')
+        ->setPaymentModeBankAccount('5552228888/0600')
         ->setCustomer($security->getUser()) // Optional
         ->setCreatedAt(new \DateTimeImmutable())
         ->setState(State::NEW)
-        ->setCurrency('USD');
+        ->setCurrency('GBP');
 
     $ent_Order->addOrderItem(
         (new OrderItem())
             ->setName('Foo')
-            ->setPriceVatIncluded(1599) // If not set, it will be automatically calculated from price exclusive of VAT
-            ->setPriceVatExcluded(1300) // If not set, it will be automatically calculated from price inclusive of VAT
-            ->setVatRate(21)
+            ->setPriceVatIncluded(120) // If not set, it will be automatically calculated from price exclusive of VAT
+            ->setPriceVatExcluded(100) // If not set, it will be automatically calculated from price inclusive of VAT
+            ->setVatRate(20)
             ->setAmount(1)
             ->setAmountType(AmountType::ITEM)
     );
@@ -53,13 +53,13 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
         ->setInvoiceBuyer
         (
             (new InvoiceBuyer())
-            ->setFullName('John Doe')
+            ->setFullName('John Buyer')
             ->setStreetAddress1('Street')
             ->setStreetAddress2('123')
-            ->setCity('Some City')
-            ->setPostcode('25689')
+            ->setCity('Dublin')
+            ->setPostcode('12345')
             ->setRegion('Some Region')
-            ->setCountry('Italy')
+            ->setCountry('Ireland')
         )
         ->setInvoiceSeller
         (
@@ -67,8 +67,8 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setOrganization('Seller Organization')
             ->setStreetAddress1('Street 123')
             ->setStreetAddress2('123')
-            ->setCity('Some City')
-            ->setPostcode('25689')
+            ->setCity('London')
+            ->setPostcode('54321')
             ->setRegion('Some Region')
             ->setCountry('United Kingdom')
             ->setVatIdentificationNumber('5468484')
