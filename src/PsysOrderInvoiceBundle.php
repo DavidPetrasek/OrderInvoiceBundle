@@ -31,15 +31,12 @@ class PsysOrderInvoiceBundle extends AbstractBundle
 
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        $container->import('../config/services.php');
         $container->parameters()
             ->set('oi.file_entity', $config['file_entity'])
             ->set('oi.storage_path', $config['storage_path']);
 
-        if (!empty($config['invoice_binary_provider']))
-        {
-            $builder->setAlias('oi.invoice_binary_provider', $config['invoice_binary_provider']);
-            $container->import('../config/styler.php');
-        }
+        $builder->setAlias('oi.invoice_binary_provider', $config['invoice_binary_provider']);
+
+        $container->import('../config/services.php');
     }
 }

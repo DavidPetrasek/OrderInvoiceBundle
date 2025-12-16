@@ -11,7 +11,7 @@ Templates & styling
 
 
 ## Styler
-- Is meant to be used in the dev environment
+- Is available only in the `dev` environment
 - Requires you to implement the [binary provider](./pdf_generation.md)
 
 ### Usage

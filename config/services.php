@@ -4,6 +4,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Psys\OrderInvoiceBundle\Command\InstallCommand;
 use Psys\OrderInvoiceBundle\Command\StylerEnableCommand;
 use Psys\OrderInvoiceBundle\Command\Upgrade12To13Command;
+use Psys\OrderInvoiceBundle\Controller\Dev\OibStylerController;
 use Psys\OrderInvoiceBundle\Maker\Category;
 use Psys\OrderInvoiceBundle\Maker\CronController;
 use Psys\OrderInvoiceBundle\Maker\InitDatabase;
@@ -18,48 +19,11 @@ use Psys\Utils\Math;
 
 return function(ContainerConfigurator $container): void 
 {
-    $container->services()
+    $services = $container->services();
 
+    $services
         ->set('psys_utils.math', Math::class)
-
         
-        ->set(InstallCommand::class)
-            ->args([
-                param('kernel.project_dir'),
-                service('filesystem'),
-            ])
-            ->tag('console.command')
-        
-        ->set(Upgrade12To13Command::class)
-            ->args([
-                param('kernel.project_dir'),
-                service('filesystem'),
-            ])
-            ->tag('console.command')
-
-        ->set(InitDatabase::class)
-            ->tag('maker.command')
-
-        ->set(Category::class)
-            ->tag('maker.command')
-            
-        ->set(CronController::class)
-            ->tag('maker.command')
-
-        ->set(InvoiceMpdfTwigTemplate::class)
-            ->args([
-                param('kernel.project_dir'),
-            ])
-            ->tag('maker.command')
-
-        ->set(StylerEnableCommand::class)
-            ->args([
-                param('kernel.project_dir'),
-                service('filesystem')
-            ])
-            ->tag('console.command')
-
-
         ->set('oi.order_manager', OrderManager::class)
             ->args([
                 service('doctrine.orm.default_entity_manager'),
@@ -102,4 +66,52 @@ return function(ContainerConfigurator $container): void
             ])
             ->alias(FileDeleter::class, 'oi.file_deleter')
     ;
+
+    if ('dev' === $container->env()) 
+    {
+        $services
+            ->set(InstallCommand::class)
+            ->args([
+                param('kernel.project_dir'),
+                service('filesystem'),
+            ])
+            ->tag('console.command')
+        
+            ->set(Upgrade12To13Command::class)
+                ->args([
+                    param('kernel.project_dir'),
+                    service('filesystem'),
+                ])
+                ->tag('console.command')
+
+            ->set(InitDatabase::class)
+                ->tag('maker.command')
+
+            ->set(Category::class)
+                ->tag('maker.command')
+            
+            ->set(CronController::class)
+                ->tag('maker.command')
+
+            ->set(InvoiceMpdfTwigTemplate::class)
+                ->args([
+                    param('kernel.project_dir'),
+                ])
+                ->tag('maker.command')
+
+            ->set(StylerEnableCommand::class)
+                ->args([
+                    param('kernel.project_dir'),
+                    service('filesystem')
+                ])
+                ->tag('console.command')
+            
+            ->set(OibStylerController::class)
+                ->public()
+                ->autowire(true)
+                ->autoconfigure(true)
+                ->args([
+                    service('oi.invoice_binary_provider'),
+                ]);
+    }
 };
