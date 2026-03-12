@@ -2,6 +2,16 @@
 All notable changes to this project are documented in this file.
 
 
+## [1.2.9] - 2026-03-11
+### Added
+
+### Changed
+
+### Fixed
+Prevent deletion of parent entity.
+- Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
+
+
 ## [1.2.2] - 2025-07-18
 ### Added
 Commands and makers for easy configuration and usage:

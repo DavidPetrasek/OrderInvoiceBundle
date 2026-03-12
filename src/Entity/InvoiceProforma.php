@@ -12,7 +12,7 @@ class InvoiceProforma
 {
     use InvoiceTrait;
     
-    #[ORM\OneToOne(mappedBy: 'invoice_proforma', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'invoice_proforma', cascade: ['persist'])]
     private ?Invoice $invoice = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
