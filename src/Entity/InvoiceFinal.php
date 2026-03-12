@@ -12,6 +12,6 @@ class InvoiceFinal
 {
     use InvoiceTrait;
     
-    #[ORM\OneToOne(mappedBy: 'invoice_final', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'invoice_final', cascade: ['persist'])]
     private ?Invoice $invoice = null;
 }

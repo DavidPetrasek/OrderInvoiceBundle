@@ -17,7 +17,7 @@ class InvoiceBuyer
     #[ORM\Column(options:["unsigned" => true])]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'invoice_buyer', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'invoice_buyer', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
 }

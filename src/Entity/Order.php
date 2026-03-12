@@ -50,7 +50,7 @@ class Order
     private ?\DateTimeImmutable $paid_at = null;
 
     #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Invoice $invoice = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
@@ -211,7 +211,7 @@ class Order
         return $this->invoice;
     }
 
-    public function setInvoice(Invoice $invoice): self
+    public function setInvoice(?Invoice $invoice): self
     {
         $this->invoice = $invoice;
 

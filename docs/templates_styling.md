@@ -5,9 +5,9 @@ Templates & styling
 
 ## Templates
 
-### mPDF and Twig
+### mPDF and Twig (UPCOMING FEATURE)
 - `symfony console make:oib:invoice:mpdf_twig_template`
-- Available styles: none (coming soon)
+- Available styles: default
 
 
 ## Styler

@@ -1,3 +1,7 @@
+## 1.3.2 to 1.3.3
+- Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
+
+
 ## 1.2 to 1.3
 - Run: `symfony console oib:upgrade:12_to_13`
 

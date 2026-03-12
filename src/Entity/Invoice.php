@@ -16,16 +16,17 @@ class Invoice
     private ?int $id = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'invoice')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?InvoiceProforma $invoice_proforma = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'invoice')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?InvoiceFinal $invoice_final = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true, options:["unsigned" => true])]
     private ?string $variable_symbol = null;
 
-    #[ORM\OneToOne(mappedBy: 'invoice', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'invoice', cascade: ['persist'])]
     private ?Order $order = null;
 
     #[ORM\OneToOne(mappedBy: 'invoice', cascade: ['persist', 'remove'])]
@@ -44,7 +45,7 @@ class Invoice
         return $this->invoice_proforma;
     }
 
-    public function setInvoiceProforma(InvoiceProforma $invoice_proforma): self
+    public function setInvoiceProforma(?InvoiceProforma $invoice_proforma): self
     {
         $this->invoice_proforma = $invoice_proforma;
 
