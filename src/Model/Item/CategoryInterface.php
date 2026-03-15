@@ -1,5 +1,5 @@
 <?php
-namespace Psys\OrderInvoiceBundle\Model\OrderItem;
+namespace Psys\OrderInvoiceBundle\Model\Item;
 
 use BackedEnum;
 

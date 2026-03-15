@@ -7,18 +7,32 @@
 <body>
 
 	<div class="header">
-	 	<h1>{% if invoiceType == 'PROFORMA' %}PROFORMA{% endif %} INVOICE - reference number:
-	 	
-	 	{% if invoiceType == 'PROFORMA' %}
-	
-    		{{ ent_Order.invoice.invoiceProforma.referenceNumber }}
-    	
-    	{% elseif invoiceType == 'FINAL' %}
-    	
-    		{{ ent_Order.invoice.invoiceFinal.referenceNumber }}
-    		
-    	{% endif %}
-	 	
+	 	<h1>
+            {% if invoiceType == 'PROFORMA' %}
+                PROFORMA
+            {% elseif invoiceType == 'ADVANCE' %}
+                ADVANCE PAYMENT
+            {% endif %} 
+            
+            INVOICE - reference number:
+            
+            {% if invoiceType == 'REGULAR' %}
+            
+                {{ ent_Order.invoice.invoiceRegular.referenceNumber }}
+
+            {% elseif invoiceType == 'PROFORMA' %}
+        
+                {{ ent_Order.invoice.invoiceProforma.referenceNumber }}
+            
+            {% elseif invoiceType == 'ADVANCE' %}
+            
+                {{ ent_InvoiceAdvance.referenceNumber }}
+
+            {% elseif invoiceType == 'FINAL' %}
+            
+                {{ ent_Order.invoice.invoiceFinal.referenceNumber }}
+                
+            {% endif %}
 	 	</h1>
 	</div>
 
@@ -78,8 +92,8 @@
                         	<td>{{ ent_Order.paymentModeBankAccount }}</td>
                         </tr>
                         <tr>
-                    		<td>Variable symbol</td>
-                        	<td>{{ ent_Order.invoice.variableSymbol }}</td>
+                    		<td>Payment reference number</td>
+                        	<td>{{ ent_Order.invoice.paymentReference }}</td>
                         </tr>
                     
                     {% elseif invoiceType == 'FINAL' %}       
@@ -129,26 +143,26 @@
         	<th>Total (VAT included)</th>
         </tr>
 	
-		{% for orderItem in ent_Order.orderItems %}
+		{% for item in ent_Order.items %}
     
     		<tr class="item">
-        		<td class="amount">{{ orderItem.amount }}</td>
+        		<td class="amount">{{ item.amount }}</td>
             	<td class="short-description">
             		
-            		    {{ orderItem.name }}
+            		    {{ item.name }}
             		    
             		    {% if invoiceType == 'FINAL' %}
             		    	
             		    	<br>
-            		    	{{ orderItem.shortDescription }}
+            		    	{{ item.shortDescription }}
             		    
             		    {% endif %}
             		
             	</td>
-            	<td class="price-vat-excluded">{{ orderItem.priceVatExcluded|format_currency(ent_Order.currency) }}</td>
-            	<td>{{ orderItem.vatRate }} %</td>
-            	<td>{{ orderItem.vat|format_currency(ent_Order.currency) }}</td>
-            	<td>{{ orderItem.priceVatIncluded|format_currency(ent_Order.currency) }}</td>
+            	<td class="price-vat-excluded">{{ item.priceVatExcluded|format_currency(ent_Order.currency) }}</td>
+            	<td>{{ item.vatRate }} %</td>
+            	<td>{{ item.vat|format_currency(ent_Order.currency) }}</td>
+            	<td>{{ item.priceVatIncluded|format_currency(ent_Order.currency) }}</td>
             </tr>
     	
         {% endfor %}

@@ -2,6 +2,8 @@
 
 namespace Psys\OrderInvoiceBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Psys\OrderInvoiceBundle\Repository\InvoiceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,14 +19,24 @@ class Invoice
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'invoice')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?InvoiceRegular $invoice_regular = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'invoice')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?InvoiceProforma $invoice_proforma = null;
+    
+    /**
+     * @var Collection<int, InvoiceAdvance>
+     */
+    #[ORM\OneToMany(targetEntity: InvoiceAdvance::class, mappedBy: 'invoice', cascade: ['persist', 'remove'])]
+    private Collection $invoices_advance;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'invoice')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?InvoiceFinal $invoice_final = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true, options:["unsigned" => true])]
-    private ?string $variable_symbol = null;
+    private ?string $payment_reference = null;
 
     #[ORM\OneToOne(mappedBy: 'invoice', cascade: ['persist'])]
     private ?Order $order = null;
@@ -35,9 +47,28 @@ class Invoice
     #[ORM\OneToOne(mappedBy: 'invoice', cascade: ['persist', 'remove'])]
     private ?InvoiceSeller $invoice_seller = null;
 
+
+    public function __construct()
+    {
+        $this->invoices_advance = new ArrayCollection();
+    }
+
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getInvoiceRegular(): ?InvoiceRegular
+    {
+        return $this->invoice_regular;
+    }
+
+    public function setInvoiceRegular(?InvoiceRegular $invoice_regular): self
+    {
+        $this->invoice_regular = $invoice_regular;
+
+        return $this;
     }
 
     public function getInvoiceProforma(): ?InvoiceProforma
@@ -48,6 +79,31 @@ class Invoice
     public function setInvoiceProforma(?InvoiceProforma $invoice_proforma): self
     {
         $this->invoice_proforma = $invoice_proforma;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InvoiceAdvance>
+     */
+    public function getInvoicesAdvance(): Collection
+    {
+        return $this->invoices_advance;
+    }
+
+    public function addInvoiceAdvance(InvoiceAdvance $invoice_advance): static
+    {
+        if (!$this->invoices_advance->contains($invoice_advance)) {
+            $this->invoices_advance->add($invoice_advance);
+            $invoice_advance->setInvoice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoiceAdvance(InvoiceAdvance $invoice_advance): static
+    {
+        $this->invoices_advance->removeElement($invoice_advance);
 
         return $this;
     }
@@ -66,14 +122,14 @@ class Invoice
 
   
 
-    public function getVariableSymbol(): ?string
+    public function getPaymentReference(): ?string
     {
-        return $this->variable_symbol;
+        return $this->payment_reference;
     }
 
-    public function setVariableSymbol(?string $variable_symbol): self
+    public function setPaymentReference(?string $payment_reference): self
     {
-        $this->variable_symbol = $variable_symbol;
+        $this->payment_reference = $payment_reference;
 
         return $this;
     }

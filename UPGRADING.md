@@ -1,3 +1,13 @@
+## 1.3.3 to 1.4.0
+- Run: `symfony console oib:upgrade:13_to_14`
+- Rename `State::NEW` to `State::UNPAID`
+- Rename `orderItem` to `item`
+- Rename `OrderItem` to `Item`
+- Rename `variableSymbol` to `paymentReference`
+- Rename `VariableSymbol` to `PaymentReference`
+- Rename `processAndSaveNewOrder` to `save`
+
+
 ## 1.3.2 to 1.3.3
 - Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
 

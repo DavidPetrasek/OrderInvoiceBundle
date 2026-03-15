@@ -29,13 +29,16 @@
         "psys/utils": ">=1.0.10",
         "symfony/yaml": ">=7.0",
         "symfony/mime": ">=7.0",
-        "symfony/routing": ">=7.0"
+        "symfony/routing": ">=7.0",
+        "doctrine/doctrine-migrations-bundle": ">=4.0"
     },
     "suggest": {
         "mpdf/mpdf": "Required by the MpdfGenerator"
     },
     "require-dev": {
         "rector/rector": "^2.0",
-        "mpdf/mpdf": "^8.2"
+        "mpdf/mpdf": "^8.2",
+        "symfony/test-pack": "^1.2",
+        "phpunit/phpunit": "^13.0"
     }
 }

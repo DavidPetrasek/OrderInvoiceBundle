@@ -6,6 +6,7 @@ use Psys\OrderInvoiceBundle\Repository\SettingsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: SettingsRepository::class)]
 #[ORM\Table (name: 'oi_settings')]
 class Settings

@@ -16,7 +16,9 @@ final class <?= $class_name ?> extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql("INSERT INTO oi_settings (option, value) VALUES ('invoice_regular_sequential_number','1')");
         $this->addSql("INSERT INTO oi_settings (option, value) VALUES ('invoice_proforma_sequential_number', '1')");
+        $this->addSql("INSERT INTO oi_settings (option, value) VALUES ('invoice_advance_sequential_number','1')");
         $this->addSql("INSERT INTO oi_settings (option, value) VALUES ('invoice_final_sequential_number','1')");
     }
 

@@ -7,47 +7,27 @@ use Psys\OrderInvoiceBundle\Repository\OrderRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
-
-use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
 use Psys\OrderInvoiceBundle\Model\Order\State;
 use Psys\OrderInvoiceBundle\Model\CustomerInterface;
 use Psys\OrderInvoiceBundle\Model\Order\CategoryInterface;
+
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table (name: 'oi_order')]
 class Order
 {
+    use MoneyTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(options:["unsigned" => true])]
     private ?int $id = null;
 
-    #[ORM\OneToMany(mappedBy: 'order', targetEntity: OrderItem::class, orphanRemoval: true, cascade: ['persist'])]
-    private Collection $orderItems;
-    
-    #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true])]
-    private ?int $payment_mode = null;
-    
-    #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
-    private ?string $price_vat_included = '0.00';
-    
-    #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
-    private ?string $price_vat_excluded = '0.00';
-    
-    #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
-    private ?string $price_vat_base = '0.00';
-    
-    #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
-    private ?string $price_vat = '0.00';
-
-    #[ORM\Column(length: 3, options:["fixed" => true, "comment" => "Three-letter alphabetic code (ISO 4217)"])]
-    private ?string $currency = null;
+    #[ORM\OneToMany(mappedBy: 'order', targetEntity: Item::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    private Collection $items;
     
     #[ORM\Column]
     private \DateTimeImmutable $created_at;
-
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $paid_at = null;
 
     #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -63,13 +43,10 @@ class Order
     #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true])]
     private ?int $state = null;
 
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $payment_mode_bank_account = null;
-
 
     public function __construct()
     {
-        $this->orderItems = new ArrayCollection();
+        $this->items = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -78,106 +55,32 @@ class Order
     }
     
     /**
-     * @return Collection<int, OrderItem>
+     * @return Collection<int, Item>
      */
-    public function getOrderItems(): Collection
+    public function getItems(): Collection
     {
-        return $this->orderItems;
+        return $this->items;
     }
 
-    public function addOrderItem(OrderItem $orderItems): static
+    public function addItem(Item $item): static
     {
-        if (!$this->orderItems->contains($orderItems)) {
-            $this->orderItems->add($orderItems);
-            $orderItems->setOrder($this);
+        if (!$this->items->contains($item)) {
+            $this->items->add($item);
+            $item->setOrder($this);
         }
 
         return $this;
     }
 
-    public function removeOrderItem(OrderItem $orderItems): static
+    public function removeItem(Item $item): static
     {
-        if ($this->orderItems->removeElement($orderItems)) {
+        if ($this->items->removeElement($item)) {
             // set the owning side to null (unless already changed)
-            if ($orderItems->getOrder() === $this) {
-                $orderItems->setOrder(null);
+            if ($item->getOrder() === $this) {
+                $item->setOrder(null);
             }
         }
 
-        return $this;
-    }
-    
-    public function getPaymentMode(): ?PaymentMode
-    {
-        return PaymentMode::from($this->payment_mode);
-    }
-    
-    public function setPaymentMode(int|PaymentMode $payment_mode): self
-    {
-        if ($payment_mode instanceof PaymentMode) {$payment_mode = $payment_mode->value;}
-        
-        $this->payment_mode = $payment_mode;
-        
-        return $this;
-    }
-    
-    public function getPriceVatIncluded(): ?float
-    {
-        return $this->price_vat_included;
-    }
-    
-    public function setPriceVatIncluded(?float $price_vat_included): self
-    {
-        $this->price_vat_included = $price_vat_included;
-        
-        return $this;
-    }
-    
-    public function getPriceVatExcluded(): ?float
-    {
-        return $this->price_vat_excluded;
-    }
-    
-    public function setPriceVatExcluded(?float $price_vat_excluded): self
-    {
-        $this->price_vat_excluded = $price_vat_excluded;
-        
-        return $this;
-    }
-    
-    public function getPriceVatBase(): ?float
-    {
-        return $this->price_vat_base;
-    }
-    
-    public function setPriceVatBase(?float $price_vat_base): self
-    {
-        $this->price_vat_base = $price_vat_base;
-        
-        return $this;
-    }
-    
-    public function getPriceVat(): ?float
-    {
-        return $this->price_vat;
-    }
-    
-    public function setPriceVat(?float $price_vat): self
-    {
-        $this->price_vat = $price_vat;
-        
-        return $this;
-    }
-
-    public function getCurrency(): ?string
-    {
-        return $this->currency;
-    }
-    
-    public function setCurrency(?string $currency): self
-    {
-        $this->currency = $currency;
-        
         return $this;
     }
     
@@ -190,19 +93,6 @@ class Order
     {        
         $this->created_at = $created_at;
         
-        return $this;
-    }
-    
-
-    public function getPaidAt(): ?\DateTimeImmutable
-    {
-        return $this->paid_at;
-    }
-
-    public function setPaidAt(?\DateTimeImmutable $paid_at): self
-    {        
-        $this->paid_at = $paid_at;
-
         return $this;
     }
 
@@ -256,19 +146,5 @@ class Order
         $this->state = $state;
 
         return $this;
-    }
-
-    public function getPaymentModeBankAccount(): ?string
-    {
-        return $this->payment_mode_bank_account;
-    }
-
-    public function setPaymentModeBankAccount(?string $payment_mode_bank_account): self
-    {
-        $this->payment_mode_bank_account = $payment_mode_bank_account;
-
-        return $this;
-    }
-
-  
+    }  
 }

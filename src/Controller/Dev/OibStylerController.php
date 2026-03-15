@@ -3,16 +3,18 @@
 namespace Psys\OrderInvoiceBundle\Controller\Dev;
 
 use Psys\OrderInvoiceBundle\Entity\Invoice;
+use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceBuyer;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
+use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\InvoiceSeller;
 use Psys\OrderInvoiceBundle\Entity\Order;
-use Psys\OrderInvoiceBundle\Entity\OrderItem;
+use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
 use Psys\OrderInvoiceBundle\Model\Order\State;
-use Psys\OrderInvoiceBundle\Model\OrderItem\AmountType;
+use Psys\OrderInvoiceBundle\Model\Item\AmountType;
 use Psys\OrderInvoiceBundle\Service\InvoiceBinaryProvider\InvoiceBinaryProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +38,8 @@ class OibStylerController extends AbstractController
         if (null === $ent_Order 
             || null === $ent_Order->getInvoice()->getInvoiceProforma() && $invoiceType === InvoiceType::PROFORMA
             || null === $ent_Order->getInvoice()->getInvoiceFinal() && $invoiceType === InvoiceType::FINAL
+            || $ent_Order->getInvoice()->getInvoicesAdvance()->isEmpty() && $invoiceType === InvoiceType::ADVANCE
+            || null === $ent_Order->getInvoice()->getInvoiceRegular() && $invoiceType === InvoiceType::REGULAR
         ) 
         {
             $ent_Order = $this->getDummyOrder();
@@ -48,6 +52,14 @@ class OibStylerController extends AbstractController
         else if ($invoiceType === InvoiceType::FINAL)
         {
             $binary = $this->invoiceBinaryProvider->getFinal($ent_Order);
+        }
+        else if ($invoiceType === InvoiceType::ADVANCE)
+        {
+            $binary = $this->invoiceBinaryProvider->getAdvance($ent_Order->getInvoice()->getInvoicesAdvance()->first());
+        }
+        else if ($invoiceType === InvoiceType::REGULAR)
+        {
+            $binary = $this->invoiceBinaryProvider->getRegular($ent_Order);
         }
 
         return new Response(
@@ -68,8 +80,8 @@ class OibStylerController extends AbstractController
             ->setState(State::PAID)
             ->setCurrency('GBP');
 
-        $ent_Order->addOrderItem(
-            (new OrderItem())
+        $ent_Order->addItem(
+            (new Item())
                 ->setName('Foo')
                 ->setPriceVatIncluded(240)
                 ->setPriceVatExcluded(200)
@@ -86,13 +98,29 @@ class OibStylerController extends AbstractController
         $ent_InvoiceProforma->setReferenceNumber(date('Y').$ent_InvoiceProforma->getSequentialNumber());
 
         $ent_InvoiceFinal = (new InvoiceFinal())
-                ->setCreatedAt(new \DateTimeImmutable())
-                ->setSequentialNumber(8);
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setDueDate(new \DateTimeImmutable('+14 days'))
+            ->setSequentialNumber(8);
         $ent_InvoiceFinal->setReferenceNumber(date('Y').$ent_InvoiceFinal->getSequentialNumber());
 
+        $ent_InvoiceAdvance = (new InvoiceAdvance())
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setDueDate(new \DateTimeImmutable('+14 days'))
+            ->setSequentialNumber(8);
+        $ent_InvoiceAdvance->setReferenceNumber(date('Y').$ent_InvoiceAdvance->getSequentialNumber());
+
+        $ent_InvoiceRegular = (new InvoiceRegular())
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setDueDate(new \DateTimeImmutable('+14 days'))
+            ->setSequentialNumber(8);
+        $ent_InvoiceRegular->setReferenceNumber(date('Y').$ent_InvoiceRegular->getSequentialNumber());
+
         $ent_Invoice = (new Invoice())
+            ->setOrder($ent_Order)
             ->setInvoiceProforma($ent_InvoiceProforma)
             ->setInvoiceFinal($ent_InvoiceFinal)
+            ->addInvoiceAdvance($ent_InvoiceAdvance)
+            ->setInvoiceRegular($ent_InvoiceRegular)
             ->setInvoiceBuyer
             (
                 (new InvoiceBuyer())
@@ -118,7 +146,7 @@ class OibStylerController extends AbstractController
                 ->setCompanyIdentificationNumber('5655')
                 ->setLegalEntityRegistrationDetails('Registered in England & Wales No. 01234567  ·  Registered office : 1 King’s Road, London SW1')
             )
-            ->setVariableSymbol('123456789');
+            ->setPaymentReference('123456789');
 
         $ent_Order->setInvoice($ent_Invoice);
 

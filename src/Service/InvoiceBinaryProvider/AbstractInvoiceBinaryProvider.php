@@ -1,12 +1,23 @@
 <?php
 namespace Psys\OrderInvoiceBundle\Service\InvoiceBinaryProvider;
 
+use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 
 abstract class AbstractInvoiceBinaryProvider implements InvoiceBinaryProviderInterface
 {
-    public function getBinary(Order $order, InvoiceType $invoiceType): string
+    public function getBinary(Order $order, InvoiceType $invoiceType, ?InvoiceAdvance $ent_InvoiceAdvance = null): string
+    {
+        throw new \BadMethodCallException('Not implemented');
+    }
+
+    public function getRegular(Order $order): string
+    {
+        throw new \BadMethodCallException('Not implemented');
+    }
+
+    public function getAdvance(InvoiceAdvance $ent_InvoiceAdvance): string
     {
         throw new \BadMethodCallException('Not implemented');
     }

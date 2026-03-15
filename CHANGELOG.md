@@ -2,6 +2,25 @@
 All notable changes to this project are documented in this file.
 
 
+## [1.4.0] - 2026-03-15
+### Added
+- Invoice types: Regular, Advance
+- Order: `State::PARTIALLY_PAID`
+- Final invoice: due date
+- docs: Invoice types, Creating a new invoice
+- Invoice restrictions upon creation/edition
+- tests
+
+### Changed
+- Order: `State::NEW` to `State::UNPAID`
+- OrderManager: `processAndSaveNewOrder` to `save`
+- Entity: `OrderItem` to `Item`
+- Invoice: `variable_symbol` to `payment_reference`
+
+### Fixed
+- Install command
+
+
 ## [1.3.3] - 2026-03-11
 ### Added
 

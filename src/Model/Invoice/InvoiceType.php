@@ -6,6 +6,8 @@ enum InvoiceType :int
 {
     case PROFORMA = 1;
     case FINAL = 2;
+    case REGULAR = 3;
+    case ADVANCE = 4;
 
     public static function fromName(string $name): self
     {

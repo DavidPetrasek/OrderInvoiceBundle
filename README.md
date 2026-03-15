@@ -26,7 +26,9 @@ Finish installation: `symfony console oib:install`
 
 ## Usage
 
-[Creating a new order](./docs/new_order.md)
+[Invoice types](./docs/invoice_types.md)
+
+[Basic usage](./docs/order.md)
 
 [Templates & styling](./docs/templates_styling.md)
 

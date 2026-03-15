@@ -5,6 +5,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Psys\OrderInvoiceBundle\Model\FileInterface;
 
+
 trait InvoiceTrait
 {
     #[ORM\Id]
@@ -21,6 +22,9 @@ trait InvoiceTrait
     #[ORM\Column]
     private \DateTimeImmutable $created_at;
 
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private \DateTimeImmutable $due_date;
+
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?FileInterface $file = null;
@@ -31,7 +35,7 @@ trait InvoiceTrait
         return $this->id;
     }
 
-    public function getInvoice(): ?Invoice
+    public function getInvoice(): Invoice
     {
         return $this->invoice;
     }
@@ -69,6 +73,18 @@ trait InvoiceTrait
     {        
         $this->created_at = $created_at;
         
+        return $this;
+    }
+
+    public function getDueDate(): \DateTimeImmutable
+    {
+        return $this->due_date;
+    }
+
+    public function setDueDate(\DateTimeImmutable $due_date): self
+    {
+        $this->due_date = $due_date;
+
         return $this;
     }
 

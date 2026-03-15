@@ -5,31 +5,36 @@ namespace Psys\OrderInvoiceBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Psys\OrderInvoiceBundle\Entity\Order;
-use Psys\OrderInvoiceBundle\Model\OrderItem\AmountType;
-use Psys\OrderInvoiceBundle\Model\OrderItem\CategoryInterface;
-use Psys\OrderInvoiceBundle\Repository\OrderItemRepository;
+use Psys\OrderInvoiceBundle\Model\Item\AmountType;
+use Psys\OrderInvoiceBundle\Model\Item\CategoryInterface;
+use Psys\OrderInvoiceBundle\Repository\ItemRepository;
 
-#[ORM\Entity(repositoryClass: OrderItemRepository::class)]
-#[ORM\Table (name: 'oi_order_item')]
-class OrderItem
+
+#[ORM\Entity(repositoryClass: ItemRepository::class)]
+#[ORM\Table (name: 'oi_item')]
+class Item
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(options:["unsigned" => true])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'orderItems')]
-    #[ORM\JoinColumn(nullable: false)]
-    private Order $order;
+    #[ORM\ManyToOne(inversedBy: 'items')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Order $order = null;
+
+    #[ORM\ManyToOne(inversedBy: 'items')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?InvoiceAdvance $invoice_advance = null;
+    
+    #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
+    private ?int $category = null;
 
     #[ORM\Column(length: 80, nullable: true)]
     private string $name;
 
     #[ORM\Column(length: 150, nullable: true)]
     private ?string $short_description = null;
-    
-    #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
-    private ?int $category = null;
 
     #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true])]
     private int $amount;
@@ -55,14 +60,40 @@ class OrderItem
         return $this->id;
     }
 
-    public function getOrder(): Order
+    public function getOrder(): ?Order
     {
         return $this->order;
     }
 
-    public function setOrder(Order $order): static
+    public function setOrder(?Order $order): static
     {
         $this->order = $order;
+
+        return $this;
+    }
+
+    public function getInvoiceAdvance(): ?InvoiceAdvance
+    {
+        return $this->invoice_advance;
+    }
+
+    public function setInvoiceAdvance(?InvoiceAdvance $invoice_advance): static
+    {
+        $this->invoice_advance = $invoice_advance;
+
+        return $this;
+    }
+
+    public function getCategory(): ?CategoryInterface
+    {
+        return CategoryInterface::from($this->category);
+    }
+
+    public function setCategory(int|CategoryInterface|null $category): self
+    {
+        if ($category instanceof CategoryInterface) {$category = $category->value;}
+        
+        $this->category = $category;
 
         return $this;
     }
@@ -87,20 +118,6 @@ class OrderItem
     public function setShortDescription(string $short_description): static
     {
         $this->short_description = $short_description;
-
-        return $this;
-    }
-
-    public function getCategory(): ?CategoryInterface
-    {
-        return CategoryInterface::from($this->category);
-    }
-
-    public function setCategory(int|CategoryInterface|null $category): self
-    {
-        if ($category instanceof CategoryInterface) {$category = $category->value;}
-        
-        $this->category = $category;
 
         return $this;
     }

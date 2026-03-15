@@ -160,10 +160,17 @@ class InstallCommand extends Command
         $finder = new Finder();
         $finder->files()->in($migrationsDir)->sortByChangedTime()->reverseSorting();  
         $finderArr = iterator_to_array($finder);
-        $latestMigration = $finderArr[array_key_first($finderArr)];
-        $latestMigrationDateStr = u($latestMigration)->match('/Version(\d+)/')[1];
-        $DTI_latestMigration = new \DateTimeImmutable($latestMigrationDateStr);
-        $DTI_newMigration = $DTI_latestMigration->modify('+1 second');
+        if (!empty($finderArr)) // At least one migration exists 
+        {
+            $latestMigration = $finderArr[array_key_first($finderArr)];
+            $latestMigrationDateStr = u($latestMigration)->match('/Version(\d+)/')[1];
+            $DTI_latestMigration = new \DateTimeImmutable($latestMigrationDateStr);
+            $DTI_newMigration = $DTI_latestMigration->modify('+1 second');
+        }
+        else // No existing migrations
+        {
+            $DTI_newMigration = new \DateTimeImmutable();
+        }
         $newMigrationName = 'Version'.$DTI_newMigration->format('YmdHis');
         
         $output->writeln('Generating migration to initialize the database...');

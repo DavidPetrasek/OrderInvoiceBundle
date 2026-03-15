@@ -1,8 +1,8 @@
 [Back to index](../README.md)
 
-Creating a new order and its proforma invoice
+Creating a new order
 =============================================
-A new order can be saved without an invoice; the invoice can be added later.
+A new order can be saved without an invoice. The invoice can be added later.
 
 ``` php
 use Psys\OrderInvoiceBundle\Entity\Invoice;
@@ -10,8 +10,8 @@ use Psys\OrderInvoiceBundle\Entity\InvoiceBuyer;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceSeller;
 use Psys\OrderInvoiceBundle\Entity\Order;
-use Psys\OrderInvoiceBundle\Entity\OrderItem;
-use Psys\OrderInvoiceBundle\Model\OrderItem\AmountType;
+use Psys\OrderInvoiceBundle\Entity\Item;
+use Psys\OrderInvoiceBundle\Model\Item\AmountType;
 use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
 use Psys\OrderInvoiceBundle\Model\Order\State;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
@@ -28,11 +28,11 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
         ->setPaymentModeBankAccount('5552228888/0600')
         ->setCustomer($security->getUser()) // Optional
         ->setCreatedAt(new \DateTimeImmutable())
-        ->setState(State::NEW)
+        ->setState(State::UNPAID)
         ->setCurrency('GBP');
 
-    $ent_Order->addOrderItem(
-        (new OrderItem())
+    $ent_Order->addItem(
+        (new Item())
             ->setName('Foo')
             ->setPriceVatIncluded(120) // If not set, it will be automatically calculated from price exclusive of VAT
             ->setPriceVatExcluded(100) // If not set, it will be automatically calculated from price inclusive of VAT
@@ -76,8 +76,16 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setLegalEntityRegistrationDetails('Registered in England & Wales No. 01234567  ·  Registered office : 1 King’s Road, London SW1')
         );
 
-    $invoiceManager->setUniqueVariableSymbol($ent_Invoice, length: 9);
+    $invoiceManager->setUniquePaymentReference($ent_Invoice, length: 9);
     $ent_Order->setInvoice($ent_Invoice);
-    $orderManager->processAndSaveNewOrder($ent_Order);
+    
+    $orderManager->save($ent_Order);
 }
+```
+
+Editing existing order 
+======================
+- After edits are made to the `Order` (or its invoices, seller, ...), at the end just call:
+``` php
+    $orderManager->save($ent_Order);
 ```

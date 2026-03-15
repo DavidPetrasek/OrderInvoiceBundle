@@ -51,7 +51,7 @@ class InvoiceMpdfTwigTemplate extends AbstractMaker
     //     {
     //         $this->chosenStyleMode = $io->choice('How do you wish to style the template?', ['separate stylesheet'], 0);
 
-    //         dump($this->chosenStyleMode);
+    //
     //         if ($this->chosenStyleMode === 0) 
     //         {
     //              $this->chosenTwigProjectDirVarName = $io->ask('Project directory variable name (you need to pass this variable to the template yourself)', 'projectDir');

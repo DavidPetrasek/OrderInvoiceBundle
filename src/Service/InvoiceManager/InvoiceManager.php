@@ -4,10 +4,10 @@ namespace Psys\OrderInvoiceBundle\Service\InvoiceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Psys\OrderInvoiceBundle\Entity\Invoice;
-use Symfony\Component\HttpFoundation\Response;
-
+use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
+use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 
 
 class InvoiceManager
@@ -19,25 +19,25 @@ class InvoiceManager
     {}  
     
     /**
-     * Sets a unique variable symbol for the given invoice.
-     * The variable symbol is a numeric string of specified length that is not already used in the database.
+     * Sets a unique payment reference number for the given invoice.
+     * The payment reference number is a numeric string of specified length that is not already used in the database.
      */
-    public function setUniqueVariableSymbol(Invoice $invoice, int $length = 10): void
+    public function setUniquePaymentReference(Invoice $invoice, int $length = 10): void
     {   
         $dbConn = $this->em->getConnection();
         $this->em->getConnection()->executeStatement('LOCK TABLES oi_invoice WRITE;');
         
-        $variableSymbol = $this->generateUniqueVariableSymbol($length);
+        $paymentReference = $this->generateUniquePaymentReference($length);
         
         $dbConn->executeStatement
         (
-            "UPDATE oi_invoice SET variable_symbol = :variable_symbol WHERE id = :invoice_id;",
+            "UPDATE oi_invoice SET payment_reference = :payment_reference WHERE id = :invoice_id;",
             [
-                'variable_symbol' => $variableSymbol,
+                'payment_reference' => $paymentReference,
                 'invoice_id' => $invoice->getId()
             ]
         );
-        $invoice->setVariableSymbol($variableSymbol);
+        $invoice->setPaymentReference($paymentReference);
         
         $dbConn->executeStatement('UNLOCK TABLES;');
     }
@@ -45,13 +45,15 @@ class InvoiceManager
     /**
      * Sets the sequential number for the given invoice type (proforma or final) based on the current counter value in the the settings which is increased at the same time.
      */
-    public function setSequentialNumber(InvoiceProforma|InvoiceFinal $invoiceSpecific): void
+    public function setSequentialNumber(InvoiceProforma|InvoiceFinal|InvoiceRegular|InvoiceAdvance $invoiceSpecific): void
     {        
         $dbConn = $this->em->getConnection();
         $this->em->getConnection()->executeStatement('LOCK TABLES oi_settings WRITE;');
         
         if      ($invoiceSpecific instanceof InvoiceProforma) {$type = 'proforma';}
         else if ($invoiceSpecific instanceof InvoiceFinal)    {$type = 'final';}
+        else if ($invoiceSpecific instanceof InvoiceRegular)  {$type = 'regular';}
+        else if ($invoiceSpecific instanceof InvoiceAdvance)  {$type = 'advance';}
 
         $resultSet = $dbConn->executeQuery
         (
@@ -76,28 +78,28 @@ class InvoiceManager
     /**
      * Generates numeric string that is not already used in the database
      */
-    private function generateUniqueVariableSymbol($length): string
+    private function generateUniquePaymentReference($length): string
     {
-        $variableSymbol = $this->random_digits($length);
+        $paymentReference = $this->random_digits($length);
 
         $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('variable_symbol', 'variable_symbol');
+        $rsm->addScalarResult('payment_reference', 'payment_reference');
 
         $query = $this->em->createNativeQuery
         ('
-            SELECT variable_symbol FROM oi_invoice 
-            WHERE variable_symbol = ?'
+            SELECT payment_reference FROM oi_invoice 
+            WHERE payment_reference = ?'
         , $rsm);
-        $query->setParameter(1, $variableSymbol);
+        $query->setParameter(1, $paymentReference);
 
         $kodVarDB = $query->getResult();
 
         if (!empty($kodVarDB))
         {
-            $variableSymbol = $this->generateUniqueVariableSymbol($length);
+            $paymentReference = $this->generateUniquePaymentReference($length);
         }
 
-        return $variableSymbol;
+        return $paymentReference;
     }
 
     private function random_digits(int $length): string 

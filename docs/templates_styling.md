@@ -19,4 +19,4 @@ Run: `symfony console oib:styler:enable`
 
 Then visit: /_oib/styler/`orderID`/`invoiceType`
 - `orderID` - If the chosen order or the specified invoice doesn't exist, dummy order and invoice is used
-- `invoiceType` - allowed values: proforma, final
+- `invoiceType` - allowed values: regular, advance, proforma, final

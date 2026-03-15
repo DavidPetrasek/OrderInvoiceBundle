@@ -3,12 +3,14 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Psys\OrderInvoiceBundle\Command\InstallCommand;
 use Psys\OrderInvoiceBundle\Command\StylerEnableCommand;
-use Psys\OrderInvoiceBundle\Command\Upgrade12To13Command;
+use Psys\OrderInvoiceBundle\Command\Upgrade13To14Command;
 use Psys\OrderInvoiceBundle\Controller\Dev\OibStylerController;
+use Psys\OrderInvoiceBundle\EventSubscriber\DoctrineSubscriber;
 use Psys\OrderInvoiceBundle\Maker\Category;
 use Psys\OrderInvoiceBundle\Maker\CronController;
 use Psys\OrderInvoiceBundle\Maker\InitDatabase;
 use Psys\OrderInvoiceBundle\Maker\InvoiceMpdfTwigTemplate;
+use Psys\OrderInvoiceBundle\Maker\Upgrade13To14PreparedMigration;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
 use Psys\OrderInvoiceBundle\Repository\OrderRepository;
 use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
@@ -65,6 +67,12 @@ return function(ContainerConfigurator $container): void
                 param('oi.storage_path')
             ])
             ->alias(FileDeleter::class, 'oi.file_deleter')
+
+        ->set(DoctrineSubscriber::class)
+        ->tag('doctrine.event_listener', 
+            [
+                'event' => 'onFlush',
+            ])
     ;
 
     if ('dev' === $container->env()) 
@@ -77,12 +85,15 @@ return function(ContainerConfigurator $container): void
             ])
             ->tag('console.command')
         
-            ->set(Upgrade12To13Command::class)
+            ->set(Upgrade13To14Command::class)
                 ->args([
                     param('kernel.project_dir'),
                     service('filesystem'),
                 ])
                 ->tag('console.command')
+
+            ->set(Upgrade13To14PreparedMigration::class)
+                ->tag('maker.command')
 
             ->set(InitDatabase::class)
                 ->tag('maker.command')
