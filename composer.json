@@ -31,7 +31,7 @@
         "symfony/mime": ">=7.0",
         "symfony/routing": ">=7.0",
         "doctrine/doctrine-migrations-bundle": ">=3.7",
-        "symfony/twig-bundle": "^8.0"
+        "symfony/twig-bundle": ">=7.0"
     },
     "suggest": {
         "mpdf/mpdf": "Required by the MpdfGenerator"
