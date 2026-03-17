@@ -24,16 +24,4 @@ Finish installation: `symfony console oib:install`
 
 [Upgrading guide](./UPGRADING.md)
 
-## Usage
-
-[Invoice types](./docs/invoice_types.md)
-
-[Basic usage](./docs/order.md)
-
-[Templates & styling](./docs/templates_styling.md)
-
-[PDF generation](./docs/pdf_generation.md)
-
-[File management](./docs/file_management.md)
-
-[Other](./docs/other.md)
+[Documentation](./docs/index.md)
