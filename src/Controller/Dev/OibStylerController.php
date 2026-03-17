@@ -16,6 +16,7 @@ use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
 use Psys\OrderInvoiceBundle\Model\Order\State;
 use Psys\OrderInvoiceBundle\Model\Item\AmountType;
 use Psys\OrderInvoiceBundle\Service\InvoiceBinaryProvider\InvoiceBinaryProviderInterface;
+use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -27,6 +28,7 @@ class OibStylerController extends AbstractController
     public function __construct
     (
         private readonly InvoiceBinaryProviderInterface $invoiceBinaryProvider,
+        private readonly OrderManager $orderManager,
     ) 
     {}
 
@@ -84,9 +86,7 @@ class OibStylerController extends AbstractController
             (new Item())
                 ->setName('Foo')
                 ->setPriceVatIncluded(240)
-                ->setPriceVatExcluded(200)
                 ->setVatRate(20)
-                ->setVat(40)
                 ->setAmount(2)
                 ->setAmountType(AmountType::ITEM)
         );
@@ -106,8 +106,17 @@ class OibStylerController extends AbstractController
         $ent_InvoiceAdvance = (new InvoiceAdvance())
             ->setCreatedAt(new \DateTimeImmutable())
             ->setDueDate(new \DateTimeImmutable('+14 days'))
-            ->setSequentialNumber(8);
+            ->setSequentialNumber(8)
+            ->setCurrency('GBP');
         $ent_InvoiceAdvance->setReferenceNumber(date('Y').$ent_InvoiceAdvance->getSequentialNumber());
+        $ent_InvoiceAdvance->addItem(
+            (new Item())
+                ->setName('Shoes')
+                ->setPriceVatIncluded(240)
+                ->setVatRate(20)
+                ->setAmount(1)
+                ->setAmountType(AmountType::ITEM)
+        );
 
         $ent_InvoiceRegular = (new InvoiceRegular())
             ->setCreatedAt(new \DateTimeImmutable())
@@ -150,11 +159,24 @@ class OibStylerController extends AbstractController
 
         $ent_Order->setInvoice($ent_Invoice);
 
-        $ent_Order->setPriceVatIncluded(240)
-                  ->setPriceVatExcluded(200)
-                  ->setPriceVatBase(200)
-                  ->setPriceVat(40);
-        
+
+        // Calculate
+        $orderTotals = $this->orderManager->calculateTotals($ent_Order);
+        $ent_Order->setPriceVatIncluded($orderTotals['vatIncluded'])
+                  ->setPriceVatExcluded($orderTotals['vatExcluded'])
+                  ->setPriceVatBase($orderTotals['vatBase'])
+                  ->setPriceVat($orderTotals['vat']);
+
+        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        {
+            $invoiceAdvanceTotals = $this->orderManager->calculateTotals($ent_InvoiceAdvance);
+
+            $ent_InvoiceAdvance->setPriceVatIncluded($invoiceAdvanceTotals['vatIncluded'])
+                    ->setPriceVatExcluded($invoiceAdvanceTotals['vatExcluded'])
+                    ->setPriceVatBase($invoiceAdvanceTotals['vatBase'])
+                    ->setPriceVat($invoiceAdvanceTotals['vat']);
+        }
+
         return $ent_Order;
     }
 }

@@ -1,3 +1,23 @@
+{% if invoiceType == 'REGULAR' %}
+
+    {% set currInvoice = ent_Order.invoice.invoiceRegular %}
+
+{% elseif invoiceType == 'PROFORMA' %}
+
+    {% set currInvoice = ent_Order.invoice.invoiceProforma %}
+
+{% elseif invoiceType == 'ADVANCE' %}
+
+    {% set currInvoice = ent_InvoiceAdvance %}
+
+{% elseif invoiceType == 'FINAL' %}
+
+    {% set currInvoice = ent_Order.invoice.invoiceFinal %}
+    
+{% endif %}
+
+{% set showPaymentDetails = invoiceType == 'REGULAR' or (invoiceType == 'PROFORMA' and currInvoice.payable) or invoiceType == 'ADVANCE' or invoiceType == 'FINAL' %}
+
 <html>
 <head>
 	<meta charset="UTF-8">	
@@ -14,32 +34,14 @@
                 ADVANCE PAYMENT
             {% endif %} 
             
-            INVOICE - reference number:
-            
-            {% if invoiceType == 'REGULAR' %}
-            
-                {{ ent_Order.invoice.invoiceRegular.referenceNumber }}
-
-            {% elseif invoiceType == 'PROFORMA' %}
-        
-                {{ ent_Order.invoice.invoiceProforma.referenceNumber }}
-            
-            {% elseif invoiceType == 'ADVANCE' %}
-            
-                {{ ent_InvoiceAdvance.referenceNumber }}
-
-            {% elseif invoiceType == 'FINAL' %}
-            
-                {{ ent_Order.invoice.invoiceFinal.referenceNumber }}
-                
-            {% endif %}
+            INVOICE - reference number: {{ currInvoice.referenceNumber }}
 	 	</h1>
 	</div>
 
 	<table class="seller-buyer-detail">
     	
     	<tr class="seller-buyer">
-    		<td class="seller">            	
+    		<td class="seller">
             	
             	<h3>Seller</h3>
             	<div class="address">
@@ -70,61 +72,61 @@
         	<td colspan="2">
         	
         		<table class="detail">
-        			<tr>
-        				
-        				{% if invoiceType == 'PROFORMA' %}
         			
-                    		<td>Payment mode</td>
-                        	<td>{% if ent_Order.paymentMode.value == 1 %}bank transfer{% endif %}</td>
-                    	
-                    	{% elseif invoiceType == 'FINAL' %}
-                    	
-                    		<td>{% if ent_Order.paymentMode.value == 1 %}Paid via{% endif %}</td>
-                    		<td>{% if ent_Order.paymentMode.value == 1 %}bank transfer{% endif %}</td>
-                    		
-                    	{% endif %}
-                    </tr>
-                    
-                    {% if ent_Order.paymentMode.value == 1  and  invoiceType == 'PROFORMA' %}
-                    
-                    	<tr>
-                    		<td>Bank account</td>
-                        	<td>{{ ent_Order.paymentModeBankAccount }}</td>
+                    {% if showPaymentDetails %}
+
+                        <tr>
+                            <td>Payment mode</td>
+                            <td>
+                                {% if ent_Order.paymentMode.value == 1 %}
+                                    regular bank transfer
+                                {% elseif ent_Order.paymentMode.value == 2 %}
+                                    on-line bank transfer
+                                {% elseif ent_Order.paymentMode.value == 3 %}
+                                    credit card
+                                {% endif %}
+                            </td>
                         </tr>
+
+                        {% if ent_Order.paymentMode.value == 1 %}
+                            <tr>
+                                <td>Bank account</td>
+                                <td>{{ ent_Order.paymentModeBankAccount }}</td>
+                            </tr>
+                        {% endif %}
+                        
                         <tr>
                     		<td>Payment reference number</td>
                         	<td>{{ ent_Order.invoice.paymentReference }}</td>
                         </tr>
-                    
-                    {% elseif invoiceType == 'FINAL' %}       
-                    	<tr>
-                    		<td>Already paid</td>
-                        </tr>
+
                     {% endif %}
                     
             		<tr>
                 		<td>Issued at</td>
-                    	<td>
-                            {% if ent_Order.invoice.invoiceProforma %}
-                            
-                                {{ ent_Order.invoice.invoiceProforma.createdAt|format_datetime(pattern="d. MMMM y") }}
-                            
-                            {% elseif ent_Order.invoice.invoiceFinal %}
-
-                                {{ ent_Order.invoice.invoiceFinal.createdAt|format_datetime(pattern="d. MMMM y") }}
-                            
-                            {% endif %}
-                        </td>
+                    	<td>{{ currInvoice.createdAt|format_datetime(pattern="d. MMMM y") }}</td>
                     </tr>
                     
-                    {% if invoiceType == 'PROFORMA' %}
+                    {% if showPaymentDetails %}
                         <tr>
                     		<td>Due date</td>
-                        	<td>{{ ent_Order.invoice.invoiceProforma.dueDate|format_datetime(pattern="d. MMMM y") }}</td>
+                        	<td>{{ currInvoice.dueDate|format_datetime(pattern="d. MMMM y") }}</td>
                         </tr>
-            		    
         		    {% endif %}
                     
+                    {# Notice to avoid misuse #}
+                    {% if invoiceType == 'PROFORMA' %}
+                        <tr>
+                            <td colspan="2">
+                            {% if currInvoice.payable %}
+                                Payment accepted against this proforma. A deposit (tax) invoice or receipt will be issued on payment.
+                            {% else %}
+                                <strong>Note:</strong> This document is a proforma (estimate) and <em>not</em> a tax invoice. Payment should only be made when a deposit/tax invoice is issued.
+                            {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+
             	</table>
             	
         	</td>
@@ -133,63 +135,137 @@
 	</table>
 	
 	
-	<table class="items">
-		<tr>
-    		<th class="amount">Amount</th>
-        	<th class="short-description">Short description</th>
-        	<th class="price-vat-excluded">Price VAT excluded</th>
-        	<th>VAT rate</th>
-        	<th>VAT total</th>
-        	<th>Total (VAT included)</th>
-        </tr>
-	
-		{% for item in ent_Order.items %}
-    
-    		<tr class="item">
-        		<td class="amount">{{ item.amount }}</td>
-            	<td class="short-description">
-            		
-            		    {{ item.name }}
-            		    
-            		    {% if invoiceType == 'FINAL' %}
-            		    	
-            		    	<br>
-            		    	{{ item.shortDescription }}
-            		    
-            		    {% endif %}
-            		
-            	</td>
-            	<td class="price-vat-excluded">{{ item.priceVatExcluded|format_currency(ent_Order.currency) }}</td>
-            	<td>{{ item.vatRate }} %</td>
-            	<td>{{ item.vat|format_currency(ent_Order.currency) }}</td>
-            	<td>{{ item.priceVatIncluded|format_currency(ent_Order.currency) }}</td>
+    <table class="items">
+        <thead>
+            <tr>
+                <th class="amount">Amount</th>
+                <th class="short-description">Short description</th>
+                <th class="price-vat-excluded">Price (VAT excl.)</th>
+                <th>VAT rate</th>
+                <th>VAT total</th>
+                <th>Total (VAT incl.)</th>
             </tr>
-    	
-        {% endfor %}
-	</table>
-    
-	
-	<table class="totals">
-		<tr>
-    		<th>Total (VAT excluded)</th>
-        	<th>Total (VAT included)</th>
-        	
-            {% if invoiceType == 'FINAL' %}
-        		<th>VAT base</th>
-            	<th>VAT total</th>
-            {% endif %}
-        </tr>
-		<tr>
-    		<td>{{ ent_Order.priceVatExcluded|format_currency(ent_Order.currency) }}</td>
-        	<td>{{ ent_Order.priceVatIncluded|format_currency(ent_Order.currency) }}</td>
-        	
-        	{% if invoiceType == 'FINAL' %}
-        		<td>{{ ent_Order.priceVatBase|format_currency(ent_Order.currency) }}</td>
-        		<td>{{ ent_Order.priceVat|format_currency(ent_Order.currency) }}</td>  
-        	{% endif %}                  	
-        </tr>
-        
-	</table>	
+        </thead>
+
+        {% if invoiceType == 'ADVANCE' %}
+            {% set items = ent_InvoiceAdvance.items %}
+            {% set currency = ent_InvoiceAdvance.currency %}
+            {% set totalsEntity = ent_InvoiceAdvance %}
+        {% else %}
+            {% set items = ent_Order.items %}
+            {% set currency = ent_Order.currency %}
+            {% set totalsEntity = ent_Order %}
+        {% endif %}
+
+        <tbody>
+            {% for item in items %}
+                <tr class="item">
+                    <td class="amount">{{ item.amount }}</td>
+                    <td class="short-description">
+                        {{ item.name }}<br>
+                        {{ item.shortDescription }}
+                    </td>
+                    <td class="price-vat-excluded">{{ item.priceVatExcluded|format_currency(currency) }}</td>
+                    <td>{{ item.vatRate }}%</td>
+                    <td>{{ item.vat|format_currency(currency) }}</td>
+                    <td>{{ item.priceVatIncluded|format_currency(currency) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="totals">
+        <thead>
+            <tr>
+                <th>Total (VAT excl.)</th>
+                <th>Total (VAT incl.)</th>
+                {% if invoiceType != 'PROFORMA' %}
+                    <th>VAT base</th>
+                    <th>VAT total</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ totalsEntity.priceVatExcluded|format_currency(currency) }}</td>
+                <td>{{ totalsEntity.priceVatIncluded|format_currency(currency) }}</td>
+
+                {% if invoiceType != 'PROFORMA' %}
+                    <td>{{ totalsEntity.priceVatBase|format_currency(currency) }}</td>
+                    <td>{{ totalsEntity.priceVat|format_currency(currency) }}</td>
+                {% endif %}
+            </tr>
+        </tbody>
+    </table>
+
+    {% if invoiceType == 'FINAL' %}
+        <h4>Advance / deposit invoices</h4>
+
+        {% if ent_Order.invoice.invoicesAdvance is not empty %}
+
+            {% set advancesTotals = ent_Order|invoices_advance_totals %}
+
+            <table class="advances">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Date</th>
+                        <th>Amount (VAT excl.)</th>
+                        <th>VAT</th>
+                        <th>Amount (incl. VAT)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for adv in ent_Order.invoice.invoicesAdvance %}
+                        <tr>
+                            <td>{{ adv.referenceNumber }}</td>
+                            <td>{{ adv.createdAt|format_datetime(pattern="d. MMMM y") }}</td>
+                            <td>{{ adv.priceVatExcluded|format_currency(currency) }}</td>
+                            <td>{{ adv.priceVat|format_currency(currency) }}</td>
+                            <td>{{ adv.priceVatIncluded|format_currency(currency) }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="2">Total deposits</th>
+                        <th>{{ advancesTotals.vatExcluded|format_currency(currency) }}</th>
+                        <th>{{ advancesTotals.vat|format_currency(currency) }}</th>
+                        <th>{{ advancesTotals.vatIncluded|format_currency(currency) }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+
+            {# Remaining / amount due calculation #}
+            {% set remaining_net = (ent_Order.priceVatExcluded - advancesTotals.vatExcluded) %}
+            {% set remaining_vat = (ent_Order.priceVat - advancesTotals.vat) %}
+            {% set remaining_incl = (ent_Order.priceVatIncluded - advancesTotals.vatIncluded) %}
+
+            <table class="remaining">
+                <tr>
+                    <th>Net remaining (VAT excl.)</th>
+                    <td>{{ remaining_net|format_currency(currency) }}</td>
+                </tr>
+                <tr>
+                    <th>Remaining VAT</th>
+                    <td>{{ remaining_vat|format_currency(currency) }}</td>
+                </tr>
+                <tr>
+                    <th>Amount due (incl. VAT)</th>
+                    <td>
+                        {% if remaining_incl < 0 %}
+                            {# final < advances -> show credit/refund required #}
+                            <span class="credit">Credit due to customer: {{ (remaining_incl * -1)|format_currency(currency) }}</span>
+                        {% else %}
+                            {{ remaining_incl|format_currency(currency) }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        {% else %}
+            <p>No advance / deposit invoices recorded for this order.</p>
+        {% endif %}
+    {% endif %}	
 
 </body>
 </html>

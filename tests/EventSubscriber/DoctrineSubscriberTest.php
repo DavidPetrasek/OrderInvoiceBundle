@@ -36,7 +36,7 @@ class DoctrineSubscriberTest extends TestCase
 
         $subscriber = new DoctrineSubscriber();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
         $this->expectExceptionMessage('Final invoice requires proforma or advance invoice to be issued first.');
 
         $subscriber->onFlush($this->createOnFlushEventArgs([$invoice]));
@@ -52,7 +52,7 @@ class DoctrineSubscriberTest extends TestCase
 
         $subscriber = new DoctrineSubscriber();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
         $this->expectExceptionMessage('Proforma and advance invoice cannot be issued simultaneously.');
 
         $subscriber->onFlush($this->createOnFlushEventArgs([$invoice]));
@@ -76,7 +76,7 @@ class DoctrineSubscriberTest extends TestCase
 
         $subscriber = new DoctrineSubscriber();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
         $this->expectExceptionMessage('Final invoice requires proforma or advance invoice to be issued first.');
 
         $subscriber->onFlush($this->createOnFlushEventArgs([], [$invoice]));

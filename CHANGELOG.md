@@ -2,6 +2,18 @@
 All notable changes to this project are documented in this file.
 
 
+## [1.4.2] - 2026-03-17
+### Added
+- Twig filter `invoices_advance_totals`
+- Proforma invoice: payable
+
+### Changed
+- docs
+
+### Fixed
+- Twig template
+
+
 ## [1.4.0] - 2026-03-15
 ### Added
 - Invoice types: Regular, Advance

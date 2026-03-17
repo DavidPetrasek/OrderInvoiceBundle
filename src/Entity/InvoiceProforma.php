@@ -14,4 +14,20 @@ class InvoiceProforma
     
     #[ORM\OneToOne(mappedBy: 'invoice_proforma', cascade: ['persist'])]
     private Invoice $invoice;
+
+    #[ORM\Column(options: ['default' => 0])]
+    private ?bool $payable = false;
+
+
+    public function isPayable(): ?bool
+    {
+        return $this->payable;
+    }
+
+    public function setPayable(bool $payable): static
+    {
+        $this->payable = $payable;
+
+        return $this;
+    }
 }

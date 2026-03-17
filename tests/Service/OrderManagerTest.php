@@ -56,6 +56,9 @@ class OrderManagerTest extends TestCase
         $order->setPaymentMode(1);
 
         $invoiceAdvance = new InvoiceAdvance();
+        $invoiceAdvance->setPaymentMode(1);
+        $invoiceAdvance->setCurrency('CZK');
+
         $invoice = new Invoice();
         $invoice->addInvoiceAdvance($invoiceAdvance);
         $order->setInvoice($invoice);
@@ -74,5 +77,73 @@ class OrderManagerTest extends TestCase
         $this->assertSame(200.0, $order->getPriceVatExcluded());
         $this->assertSame(200.0, $order->getPriceVatBase());
         $this->assertSame(40.0, $order->getPriceVat());
+    }
+
+    public function testSaveThrowsForAdvanceWithoutPaymentMode(): void
+    {
+        $math = $this->createMock(Math::class);
+        $math->method('subtractPercentage')->willReturn(100.00);
+        $math->method('addPercentage')->willReturn(120.00);
+
+        $em = $this->createMock(EntityManagerInterface::class);
+
+        $manager = new OrderManager($em, $math);
+
+        $order = new Order();
+        $order->setCreatedAt(new \DateTimeImmutable());
+        $order->setState(1);
+
+        $invoiceAdvance = new InvoiceAdvance();
+        $invoice = new Invoice();
+        $invoice->addInvoiceAdvance($invoiceAdvance);
+        $order->setInvoice($invoice);
+
+        $item = new Item();
+        $item->setAmount(1);
+        $item->setPriceVatIncluded(120.00);
+        $item->setVatRate(20.00);
+
+        $invoiceAdvance->addItem($item);
+        $order->addItem($item);
+
+        $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
+        $this->expectExceptionMessage('Advance invoice has no payment mode set.');
+
+        $manager->save($order);
+    }
+
+    public function testSaveThrowsForAdvanceWithoutCurrency(): void
+    {
+        $math = $this->createMock(Math::class);
+        $math->method('subtractPercentage')->willReturn(100.00);
+        $math->method('addPercentage')->willReturn(120.00);
+
+        $em = $this->createMock(EntityManagerInterface::class);
+
+        $manager = new OrderManager($em, $math);
+
+        $order = new Order();
+        $order->setCreatedAt(new \DateTimeImmutable());
+        $order->setState(1);
+
+        $invoiceAdvance = new InvoiceAdvance();
+        $invoiceAdvance->setPaymentMode(1);
+
+        $invoice = new Invoice();
+        $invoice->addInvoiceAdvance($invoiceAdvance);
+        $order->setInvoice($invoice);
+
+        $item = new Item();
+        $item->setAmount(1);
+        $item->setPriceVatIncluded(120.00);
+        $item->setVatRate(20.00);
+
+        $invoiceAdvance->addItem($item);
+        $order->addItem($item);
+
+        $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
+        $this->expectExceptionMessage('Advance invoice has no currency set.');
+
+        $manager->save($order);
     }
 }

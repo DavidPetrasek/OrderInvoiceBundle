@@ -1,3 +1,9 @@
+
+## 1.4.0 to 1.4.2
+- Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
+- Optional: Update your mPDF twig template by: `symfony console make:oib:invoice:mpdf_twig_template`
+
+
 ## 1.3.3 to 1.4.0
 - Run: `symfony console oib:upgrade:13_to_14`
 - Rename `State::NEW` to `State::UNPAID`

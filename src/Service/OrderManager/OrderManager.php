@@ -4,6 +4,7 @@ namespace Psys\OrderInvoiceBundle\Service\OrderManager;
 use Psys\OrderInvoiceBundle\Entity\Order;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\Utils\Math;
@@ -20,6 +21,8 @@ class OrderManager
     
     public function save(Order $ent_Order): void
     {
+        $this->saveChecks($ent_Order);
+
         // Process order
         $orderTotals = $this->calculateTotals($ent_Order);
 
@@ -29,18 +32,8 @@ class OrderManager
                   ->setPriceVat($orderTotals['vat']);
 
         // Process advance invoices
-        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $key => $ent_InvoiceAdvance) 
+        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $ent_InvoiceAdvance) 
         {
-            // Use order's values if nothing was set
-            if (empty($ent_InvoiceAdvance->getPaymentMode()))
-            {
-                $ent_InvoiceAdvance->setPaymentMode($ent_Order->getPaymentMode());
-            }
-            if (empty($ent_InvoiceAdvance->getCurrency()))
-            {
-                $ent_InvoiceAdvance->setCurrency($ent_Order->getCurrency());
-            }
-
             $invoiceAdvanceTotals = $this->calculateTotals($ent_InvoiceAdvance);
 
             $ent_InvoiceAdvance->setPriceVatIncluded($invoiceAdvanceTotals['vatIncluded'])
@@ -51,6 +44,48 @@ class OrderManager
 
         $this->em->persist($ent_Order);        
         $this->em->flush();
+    }
+
+    private function saveChecks(Order $ent_Order): void
+    {
+        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        {
+            if ($ent_InvoiceAdvance->getItems()->isEmpty())
+            {
+                throw new InvalidInvoiceStateException('Advance invoice has no items.');
+            }
+            if (empty($ent_InvoiceAdvance->getPaymentMode()))
+            {
+                throw new InvalidInvoiceStateException('Advance invoice has no payment mode set.');
+            }
+            if (empty($ent_InvoiceAdvance->getCurrency()))
+            {
+                throw new InvalidInvoiceStateException('Advance invoice has no currency set.');
+            }
+        }
+    }
+
+    /**
+     * Adds up totals of all advance invoices
+     */
+    public function getInvoicesAdvanceTotals(Order $ent_Order): array
+    {
+        $advanceTotals = [
+            'vatIncluded' => 0.0,
+            'vatExcluded' => 0.0,
+            'vatBase'     => 0.0,
+            'vat'         => 0.0,
+        ];
+
+        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        {
+            $advanceTotals['vatIncluded'] += $ent_InvoiceAdvance->getPriceVatIncluded();
+            $advanceTotals['vatExcluded'] += $ent_InvoiceAdvance->getPriceVatExcluded();
+            $advanceTotals['vatBase']     += $ent_InvoiceAdvance->getPriceVatBase();
+            $advanceTotals['vat']         += $ent_InvoiceAdvance->getPriceVat();
+        }
+
+        return $advanceTotals;
     }
     
     public function calculateTotals(Order|InvoiceAdvance $ent_Order_Invoice): array

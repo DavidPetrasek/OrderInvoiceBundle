@@ -11,25 +11,25 @@ trait MoneyTrait
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $paid_at = null;
 
-    #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true])]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
     private ?int $payment_mode = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $payment_mode_bank_account = null;
     
-    #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, nullable: true, precision: 14, scale: 2)]
     private ?string $price_vat_included = '0.00';
     
-    #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, nullable: true, precision: 14, scale: 2)]
     private ?string $price_vat_excluded = '0.00';
     
-    #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, nullable: true, precision: 14, scale: 2)]
     private ?string $price_vat_base = '0.00';
     
-    #[ORM\Column(nullable: true, type: Types::DECIMAL, precision: 14, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, nullable: true, precision: 14, scale: 2)]
     private ?string $price_vat = '0.00';
 
-    #[ORM\Column(length: 3, options:["fixed" => true, "comment" => "Three-letter alphabetic code (ISO 4217)"])]
+    #[ORM\Column(length: 3, nullable: true, options:["fixed" => true, "comment" => "Three-letter alphabetic code (ISO 4217)"])]
     private ?string $currency = null;
 
 
@@ -52,7 +52,7 @@ trait MoneyTrait
         return PaymentMode::from($this->payment_mode);
     }
     
-    public function setPaymentMode(int|PaymentMode $payment_mode): self
+    public function setPaymentMode(null|int|PaymentMode $payment_mode): self
     {
         if ($payment_mode instanceof PaymentMode) {$payment_mode = $payment_mode->value;}
         

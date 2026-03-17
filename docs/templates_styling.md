@@ -5,10 +5,12 @@ Templates & styling
 
 ## Templates
 
-### mPDF and Twig (UPCOMING FEATURE)
+### mPDF and Twig
 - `symfony console make:oib:invoice:mpdf_twig_template`
-- Available styles: default
+- Available styles: none (UPCOMING FEATURE)
 
+#### Twig filters:
+- `invoices_advance_totals` - Adds up totals of all advance invoices
 
 ## Styler
 - Is available only in the `dev` environment
