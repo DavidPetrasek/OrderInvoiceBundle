@@ -35,7 +35,10 @@ class PsysOrderInvoiceBundle extends AbstractBundle
             ->set('oi.file_entity', $config['file_entity'])
             ->set('oi.storage_path', $config['storage_path']);
 
-        $builder->setAlias('oi.invoice_binary_provider', $config['invoice_binary_provider']);
+        if (is_string($config['invoice_binary_provider']))
+        {
+            $builder->setAlias('oi.invoice_binary_provider', $config['invoice_binary_provider']);
+        }
 
         $container->import('../config/services.php');
     }

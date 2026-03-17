@@ -132,7 +132,7 @@ return function(ContainerConfigurator $container): void
                 ->autowire(true)
                 ->autoconfigure(true)
                 ->args([
-                    service('oi.invoice_binary_provider'),
+                    service('oi.invoice_binary_provider')->nullOnInvalid(),
                 ]);
     }
 };
