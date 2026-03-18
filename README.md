@@ -3,8 +3,6 @@
 
 # OrderInvoiceBundle
 
-### Use case
-- You're not running a typical online store — full-featured e-commerce platform would be overkill.
 
 ### Features
 - manage orders and associated invoices

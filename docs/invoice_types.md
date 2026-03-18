@@ -9,7 +9,7 @@ Invoice types
 
 ### Proforma
 - Must be issued before the final invoice
-- Can be marked as payable / unpayable (default). Can be used to show payment details.
+- Can be marked as payable / unpayable (default).
 - Max. amount: one
 
 ### Advance (also called: deposit, prepayment)
