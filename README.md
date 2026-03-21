@@ -16,9 +16,15 @@ Minimal requirements:
 - Symfony 7
 - PHP 8.1
 
-Run: `composer req psys/order-invoice-bundle`
+Run: 
+``` bash
+composer req psys/order-invoice-bundle
+```
 
-Finish installation: `symfony console oib:install`
+Finish installation: 
+``` bash
+symfony console oib:install
+```
 
 [Upgrading guide](./UPGRADING.md)
 
