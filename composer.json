@@ -2,7 +2,29 @@
     "name": "psys/order-invoice-bundle",
     "description": "Manage orders & invoices in your Symfony application",
     "type": "symfony-bundle",
-    "keywords": ["symfony", "symfony-bundle", "invoice-generator", "order-management", "invoice-management"],
+    "keywords": 
+    [
+        "symfony",
+        "symfony-bundle",
+        "invoice",
+        "invoicing",
+        "order",
+        "billing",
+        "accounting",
+        "invoice-pdf",
+        "pdf-export",
+        "pdf-generation",
+        "invoice-generation",
+        "order-management",
+        "invoice-management",
+        "proforma-invoice",
+        "advance-invoice",
+        "deposit-invoice",
+        "regular-invoice",
+        "final-invoice",
+        "e-commerce",
+        "file-management"
+    ],
     "license": "MIT",
     "autoload": {
         "psr-4": {
