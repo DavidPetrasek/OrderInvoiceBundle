@@ -43,7 +43,7 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
 
     $ent_InvoiceProforma = (new InvoiceProforma())
         ->setCreatedAt(new \DateTimeImmutable())
-        ->setDueDate(new \DateTimeImmutable('+14 days'));
+        ->setDueDate(new \DateTimeImmutable('+14 days')); // Optional
     
     $invoiceManager->setSequentialNumber($ent_InvoiceProforma);
     $ent_InvoiceProforma->setReferenceNumber(date('Y').$ent_InvoiceProforma->getSequentialNumber());
