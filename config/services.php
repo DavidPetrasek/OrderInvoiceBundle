@@ -12,6 +12,11 @@ use Psys\OrderInvoiceBundle\Maker\CronController;
 use Psys\OrderInvoiceBundle\Maker\InitDatabase;
 use Psys\OrderInvoiceBundle\Maker\InvoiceMpdfTwigTemplate;
 use Psys\OrderInvoiceBundle\Maker\Upgrade13To14PreparedMigration;
+use Psys\OrderInvoiceBundle\Repository\InvoiceAdvanceRepository;
+use Psys\OrderInvoiceBundle\Repository\InvoiceFinalRepository;
+use Psys\OrderInvoiceBundle\Repository\InvoiceProformaRepository;
+use Psys\OrderInvoiceBundle\Repository\InvoiceRegularRepository;
+use Psys\OrderInvoiceBundle\Repository\InvoiceRepository;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
 use Psys\OrderInvoiceBundle\Repository\OrderRepository;
 use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
@@ -42,6 +47,31 @@ return function(ContainerConfigurator $container): void
             ->alias(InvoiceManager::class, 'oi.invoice_manager')
         
         ->set(OrderRepository::class)
+            ->args([
+                service('doctrine')
+            ])
+            ->tag('doctrine.repository_service')
+        ->set(InvoiceRepository::class)
+            ->args([
+                service('doctrine')
+            ])
+            ->tag('doctrine.repository_service')
+        ->set(InvoiceProformaRepository::class)
+            ->args([
+                service('doctrine')
+            ])
+            ->tag('doctrine.repository_service')
+        ->set(InvoiceAdvanceRepository::class)
+            ->args([
+                service('doctrine')
+            ])
+            ->tag('doctrine.repository_service')
+        ->set(InvoiceFinalRepository::class)
+            ->args([
+                service('doctrine')
+            ])
+            ->tag('doctrine.repository_service')
+        ->set(InvoiceRegularRepository::class)
             ->args([
                 service('doctrine')
             ])

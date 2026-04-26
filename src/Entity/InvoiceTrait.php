@@ -22,8 +22,8 @@ trait InvoiceTrait
     #[ORM\Column]
     private \DateTimeImmutable $created_at;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private \DateTimeImmutable $due_date;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $due_date = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
@@ -76,12 +76,12 @@ trait InvoiceTrait
         return $this;
     }
 
-    public function getDueDate(): \DateTimeImmutable
+    public function getDueDate(): ?\DateTimeImmutable
     {
         return $this->due_date;
     }
 
-    public function setDueDate(\DateTimeImmutable $due_date): self
+    public function setDueDate(?\DateTimeImmutable $due_date): self
     {
         $this->due_date = $due_date;
 

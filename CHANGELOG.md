@@ -2,6 +2,18 @@
 All notable changes to this project are documented in this file.
 
 
+## [1.4.6] - 2026-04-26
+### Added
+- Missing types for storage path: advance, regular
+- Autowiring support: `InvoiceAdvanceRepository`, `InvoiceFinalRepository`, `InvoiceProformaRepository`, `InvoiceRegularRepository`, `InvoiceRepository`
+
+### Changed
+- Due date is not mandatory anymore
+
+### Fixed
+
+
+
 ## [1.4.2] - 2026-03-17
 ### Added
 - Twig filter `invoices_advance_totals`

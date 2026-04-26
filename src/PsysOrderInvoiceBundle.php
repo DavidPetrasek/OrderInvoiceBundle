@@ -21,7 +21,9 @@ class PsysOrderInvoiceBundle extends AbstractBundle
                 ->arrayNode('storage_path')->addDefaultsIfNotSet()
                     ->children()
                         ->stringNode('proforma')->end()
+                        ->stringNode('advance')->end()
                         ->stringNode('final')->end()
+                        ->stringNode('regular')->end()
                     ->end()
                 
 

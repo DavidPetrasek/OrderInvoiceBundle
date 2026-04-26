@@ -1,4 +1,8 @@
 
+## 1.4.5 to 1.4.6
+- Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
+
+
 ## 1.4.0 to 1.4.2
 - Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
 - Optional: Update your mPDF twig template by: `symfony console make:oib:invoice:mpdf_twig_template`

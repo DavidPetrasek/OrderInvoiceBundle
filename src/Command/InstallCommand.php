@@ -260,9 +260,17 @@ class InstallCommand extends Command
             PHP_EOL.'Proforma invoice storage directory (defaults to /var/data/invoice/proforma):',
            '/var/data/invoice/proforma'
         ));
+        $storagePathAdvance = $this->qHelper->ask($input, $output, new Question(
+            PHP_EOL.'Advance invoice storage directory (defaults to /var/data/invoice/advance):',
+            '/var/data/invoice/advance'
+        ));
         $storagePathFinal = $this->qHelper->ask($input, $output, new Question(
             PHP_EOL.'Final invoice storage directory (defaults to /var/data/invoice/final):',
             '/var/data/invoice/final'
+        ));
+        $storagePathRegular = $this->qHelper->ask($input, $output, new Question(
+            PHP_EOL.'Regular invoice storage directory (defaults to /var/data/invoice/regular):',
+            '/var/data/invoice/regular'
         ));
 
         $yamlAbs = $this->projectDir.'/config/packages/psys_order_invoice.yaml';
@@ -274,7 +282,9 @@ class InstallCommand extends Command
                 'storage_path' => 
                 [
                     'proforma' => $storagePathProforma,
+                    'advance' => $storagePathAdvance,
                     'final' => $storagePathFinal,
+                    'regular' => $storagePathRegular,
                 ]
             ]
         ];
