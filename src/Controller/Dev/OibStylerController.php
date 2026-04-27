@@ -2,13 +2,12 @@
 
 namespace Psys\OrderInvoiceBundle\Controller\Dev;
 
-use Psys\OrderInvoiceBundle\Entity\Invoice;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
-use Psys\OrderInvoiceBundle\Entity\InvoiceBuyer;
+use Psys\OrderInvoiceBundle\Entity\Buyer;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
-use Psys\OrderInvoiceBundle\Entity\InvoiceSeller;
+use Psys\OrderInvoiceBundle\Entity\Seller;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
@@ -38,10 +37,10 @@ class OibStylerController extends AbstractController
         $invoiceType = InvoiceType::fromName($invoiceType);
 
         if (null === $ent_Order 
-            || null === $ent_Order->getInvoice()->getInvoiceProforma() && $invoiceType === InvoiceType::PROFORMA
-            || null === $ent_Order->getInvoice()->getInvoiceFinal() && $invoiceType === InvoiceType::FINAL
-            || $ent_Order->getInvoice()->getInvoicesAdvance()->isEmpty() && $invoiceType === InvoiceType::ADVANCE
-            || null === $ent_Order->getInvoice()->getInvoiceRegular() && $invoiceType === InvoiceType::REGULAR
+            || null === $ent_Order->getInvoiceProforma() && $invoiceType === InvoiceType::PROFORMA
+            || null === $ent_Order->getInvoiceFinal() && $invoiceType === InvoiceType::FINAL
+            || $ent_Order->getInvoicesAdvance()->isEmpty() && $invoiceType === InvoiceType::ADVANCE
+            || null === $ent_Order->getInvoiceRegular() && $invoiceType === InvoiceType::REGULAR
         ) 
         {
             $ent_Order = $this->getDummyOrder();
@@ -57,7 +56,7 @@ class OibStylerController extends AbstractController
         }
         else if ($invoiceType === InvoiceType::ADVANCE)
         {
-            $binary = $this->invoiceBinaryProvider->getAdvance($ent_Order->getInvoice()->getInvoicesAdvance()->first());
+            $binary = $this->invoiceBinaryProvider->getAdvance($ent_Order->getInvoicesAdvance()->first());
         }
         else if ($invoiceType === InvoiceType::REGULAR)
         {
@@ -80,59 +79,115 @@ class OibStylerController extends AbstractController
             ->setPaymentModeBankAccount('5552228888/0600')
             ->setCreatedAt(new \DateTimeImmutable())
             ->setState(State::PAID)
-            ->setCurrency('GBP');
-
-        $ent_Order->addItem(
-            (new Item())
-                ->setName('Foo')
-                ->setPriceVatIncluded(240)
-                ->setVatRate(20)
-                ->setAmount(2)
-                ->setAmountType(AmountType::ITEM)
-        );
+            ->setCurrency('GBP')
+            ->addItem((new Item())
+                ->setName('Foundation works – concrete + labour')
+                ->setPriceVatIncluded(84700)
+                ->setVatRate(21)
+                ->setAmount(1)
+                ->setAmountType(AmountType::ITEM))
+            ->addItem((new Item())
+                ->setName('Structural works – walls, roof')
+                ->setPriceVatIncluded(96800)
+                ->setVatRate(21)
+                ->setAmount(1)
+                ->setAmountType(AmountType::ITEM))
+            ->addItem((new Item())
+                ->setName('Finishing – plumbing, electrics, plastering')
+                ->setPriceVatIncluded(60500)
+                ->setVatRate(21)
+                ->setAmount(1)
+                ->setAmountType(AmountType::ITEM));
 
         $ent_InvoiceProforma = (new InvoiceProforma())
             ->setCreatedAt(new \DateTimeImmutable())
             ->setDueDate(new \DateTimeImmutable('+14 days'))
-            ->setSequentialNumber(8);
+            ->setSequentialNumber(1)
+            ->setPayable(true)
+            ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
+            ->setPaymentModeBankAccount('5552228888/0600')
+            ->setPaymentReference('123456789')
+            ->setCurrency('GBP')
+            ->addItem((new Item())
+                ->setName('Deposit for construction works')
+                ->setPriceVatIncluded(72600)
+                ->setVatRate(21)
+                ->setAmount(1)
+                ->setAmountType(AmountType::ITEM));
         $ent_InvoiceProforma->setReferenceNumber(date('Y').$ent_InvoiceProforma->getSequentialNumber());
 
-        $ent_InvoiceFinal = (new InvoiceFinal())
-            ->setCreatedAt(new \DateTimeImmutable())
-            ->setDueDate(new \DateTimeImmutable('+14 days'))
-            ->setSequentialNumber(8);
-        $ent_InvoiceFinal->setReferenceNumber(date('Y').$ent_InvoiceFinal->getSequentialNumber());
-
         $ent_InvoiceAdvance = (new InvoiceAdvance())
-            ->setCreatedAt(new \DateTimeImmutable())
-            ->setDueDate(new \DateTimeImmutable('+14 days'))
-            ->setSequentialNumber(8)
-            ->setCurrency('GBP');
+            ->setCreatedAt(new \DateTimeImmutable('+10 days'))
+            ->setSequentialNumber(1)
+            ->setCurrency('GBP')
+            ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
+            ->setPaymentModeBankAccount('5552228888/0600')
+            ->setPaymentReference('123456789');
         $ent_InvoiceAdvance->setReferenceNumber(date('Y').$ent_InvoiceAdvance->getSequentialNumber());
         $ent_InvoiceAdvance->addItem(
             (new Item())
-                ->setName('Shoes')
-                ->setPriceVatIncluded(240)
-                ->setVatRate(20)
+                ->setName('Deposit 30% – construction of house')
+                ->setPriceVatIncluded(72600)
+                ->setVatRate(21)
                 ->setAmount(1)
                 ->setAmountType(AmountType::ITEM)
         );
 
+        $ent_InvoiceAdvanceTwo = (new InvoiceAdvance())
+            ->setCreatedAt(new \DateTimeImmutable('+60 days'))
+            ->setDueDate(new \DateTimeImmutable('+74 days'))
+            ->setSequentialNumber(2)
+            ->setCurrency('GBP')
+            ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
+            ->setPaymentModeBankAccount('5552228888/0600')
+            ->setPaymentReference('123456789');
+        $ent_InvoiceAdvanceTwo->setReferenceNumber(date('Y').$ent_InvoiceAdvanceTwo->getSequentialNumber());
+        $ent_InvoiceAdvanceTwo->addItem(
+            (new Item())
+                ->setName('Payment for foundations – milestone 2')
+                ->setPriceVatIncluded(48400)
+                ->setVatRate(21)
+                ->setAmount(1)
+                ->setAmountType(AmountType::ITEM)
+        );
+
+        $ent_InvoiceFinal = (new InvoiceFinal())
+            ->setCreatedAt(new \DateTimeImmutable('+130 days'))
+            ->setDueDate(new \DateTimeImmutable('+144 days'))
+            ->setSequentialNumber(1)
+            ->setPaymentReference('123456789');
+        $ent_InvoiceFinal->setReferenceNumber(date('Y').$ent_InvoiceFinal->getSequentialNumber());
+
+        
         $ent_InvoiceRegular = (new InvoiceRegular())
             ->setCreatedAt(new \DateTimeImmutable())
             ->setDueDate(new \DateTimeImmutable('+14 days'))
-            ->setSequentialNumber(8);
+            ->setSequentialNumber(1)
+            ->setPaymentMode(PaymentMode::CREDIT_CARD)
+            ->addItem((new Item())
+                ->setName('Shoes')
+                ->setPriceVatIncluded(15)
+                ->setVatRate(21)
+                ->setAmount(1)
+                ->setAmountType(AmountType::ITEM))
+            ->addItem((new Item())
+                ->setName('Socks')
+                ->setPriceVatIncluded(4)
+                ->setVatRate(21)
+                ->setAmount(4)
+                ->setAmountType(AmountType::ITEM));
         $ent_InvoiceRegular->setReferenceNumber(date('Y').$ent_InvoiceRegular->getSequentialNumber());
 
-        $ent_Invoice = (new Invoice())
-            ->setOrder($ent_Order)
+        
+         $ent_Order
             ->setInvoiceProforma($ent_InvoiceProforma)
             ->setInvoiceFinal($ent_InvoiceFinal)
             ->addInvoiceAdvance($ent_InvoiceAdvance)
+            ->addInvoiceAdvance($ent_InvoiceAdvanceTwo)
             ->setInvoiceRegular($ent_InvoiceRegular)
-            ->setInvoiceBuyer
+            ->setBuyer
             (
-                (new InvoiceBuyer())
+                (new Buyer())
                 ->setFullName('John Buyer')
                 ->setStreetAddress1('Street')
                 ->setStreetAddress2('123')
@@ -141,9 +196,9 @@ class OibStylerController extends AbstractController
                 ->setRegion('Some Region')
                 ->setCountry('Ireland')
             )
-            ->setInvoiceSeller
+            ->setSeller
             (
-                (new InvoiceSeller())
+                (new Seller())
                 ->setOrganization('Seller Organization')
                 ->setStreetAddress1('Street 123')
                 ->setStreetAddress2('123')
@@ -154,10 +209,7 @@ class OibStylerController extends AbstractController
                 ->setVatIdentificationNumber('5468484')
                 ->setCompanyIdentificationNumber('5655')
                 ->setLegalEntityRegistrationDetails('Registered in England & Wales No. 01234567  ·  Registered office : 1 King’s Road, London SW1')
-            )
-            ->setPaymentReference('123456789');
-
-        $ent_Order->setInvoice($ent_Invoice);
+            );
 
 
         // Calculate
@@ -166,8 +218,20 @@ class OibStylerController extends AbstractController
                   ->setPriceVatExcluded($orderTotals['vatExcluded'])
                   ->setPriceVatBase($orderTotals['vatBase'])
                   ->setPriceVat($orderTotals['vat']);
+                
+        $proformaTotals = $this->orderManager->calculateTotals($ent_InvoiceProforma);
+        $ent_InvoiceProforma->setPriceVatIncluded($proformaTotals['vatIncluded'])
+                            ->setPriceVatExcluded($proformaTotals['vatExcluded'])
+                            ->setPriceVatBase($proformaTotals['vatBase'])
+                            ->setPriceVat($proformaTotals['vat']);
 
-        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        $regularTotals = $this->orderManager->calculateTotals($ent_InvoiceRegular);
+        $ent_InvoiceRegular->setPriceVatIncluded($regularTotals['vatIncluded'])
+                        ->setPriceVatExcluded($regularTotals['vatExcluded'])
+                        ->setPriceVatBase($regularTotals['vatBase'])
+                        ->setPriceVat($regularTotals['vat']);
+
+        foreach ($ent_Order->getInvoicesAdvance() as $ent_InvoiceAdvance) 
         {
             $invoiceAdvanceTotals = $this->orderManager->calculateTotals($ent_InvoiceAdvance);
 

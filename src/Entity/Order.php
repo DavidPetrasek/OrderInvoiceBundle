@@ -29,10 +29,6 @@ class Order
     #[ORM\Column]
     private \DateTimeImmutable $created_at;
 
-    #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?Invoice $invoice = null;
-
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
     private ?int $category = null;
 
@@ -44,9 +40,37 @@ class Order
     private ?int $state = null;
 
 
+    #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?InvoiceRegular $invoice_regular = null;
+
+    #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?InvoiceProforma $invoice_proforma = null;
+    
+    /**
+     * @var Collection<int, InvoiceAdvance>
+     */
+    #[ORM\OneToMany(targetEntity: InvoiceAdvance::class, mappedBy: 'order', cascade: ['persist', 'remove'])]
+    private Collection $invoices_advance;
+
+    #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?InvoiceFinal $invoice_final = null;
+
+    #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Buyer $buyer = null;
+
+    #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Seller $seller = null;
+
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
+        $this->invoices_advance = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -96,18 +120,6 @@ class Order
         return $this;
     }
 
-    public function getInvoice(): ?Invoice
-    {
-        return $this->invoice;
-    }
-
-    public function setInvoice(?Invoice $invoice): self
-    {
-        $this->invoice = $invoice;
-
-        return $this;
-    }
-
     public function getCategory(): ?CategoryInterface
     {
         return CategoryInterface::from($this->category);
@@ -146,5 +158,91 @@ class Order
         $this->state = $state;
 
         return $this;
-    }  
+    }
+
+
+    public function getInvoiceRegular(): ?InvoiceRegular
+    {
+        return $this->invoice_regular;
+    }
+
+    public function setInvoiceRegular(?InvoiceRegular $invoice_regular): self
+    {
+        $this->invoice_regular = $invoice_regular;
+
+        return $this;
+    }
+
+    public function getInvoiceProforma(): ?InvoiceProforma
+    {
+        return $this->invoice_proforma;
+    }
+
+    public function setInvoiceProforma(?InvoiceProforma $invoice_proforma): self
+    {
+        $this->invoice_proforma = $invoice_proforma;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InvoiceAdvance>
+     */
+    public function getInvoicesAdvance(): Collection
+    {
+        return $this->invoices_advance;
+    }
+
+    public function addInvoiceAdvance(InvoiceAdvance $invoice_advance): static
+    {
+        if (!$this->invoices_advance->contains($invoice_advance)) {
+            $this->invoices_advance->add($invoice_advance);
+            $invoice_advance->setOrder($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoiceAdvance(InvoiceAdvance $invoice_advance): static
+    {
+        $this->invoices_advance->removeElement($invoice_advance);
+
+        return $this;
+    }
+
+    public function getInvoiceFinal(): ?InvoiceFinal
+    {
+        return $this->invoice_final;
+    }
+
+    public function setInvoiceFinal(?InvoiceFinal $invoice_final): self
+    {
+        $this->invoice_final = $invoice_final;
+
+        return $this;
+    }
+
+    public function getBuyer(): ?Buyer
+    {
+        return $this->buyer;
+    }
+
+    public function setBuyer(Buyer $buyer): self
+    {
+        $this->buyer = $buyer;
+
+        return $this;
+    }
+
+    public function getSeller(): ?Seller
+    {
+        return $this->seller;
+    }
+
+    public function setSeller(Seller $seller): self
+    {
+        $this->seller = $seller;
+
+        return $this;
+    }
 }

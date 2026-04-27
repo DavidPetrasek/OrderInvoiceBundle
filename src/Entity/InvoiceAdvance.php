@@ -15,7 +15,7 @@ class InvoiceAdvance
     use InvoiceTrait, MoneyTrait;
     
     #[ORM\ManyToOne(inversedBy: 'invoices_advance', cascade: ['persist'])]
-    private Invoice $invoice;
+    private Order $order;
 
     #[ORM\OneToMany(mappedBy: 'invoice_advance', targetEntity: Item::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $items;
@@ -26,9 +26,13 @@ class InvoiceAdvance
         $this->items = new ArrayCollection();
     }
 
-    public function setInvoice(Invoice $invoice): self
+    public function getOrder(): ?Order
     {
-        $this->invoice = $invoice;
+        return $this->order;
+    }
+    public function setOrder(Order $order): self
+    {
+        $this->order = $order;
 
         return $this;
     }

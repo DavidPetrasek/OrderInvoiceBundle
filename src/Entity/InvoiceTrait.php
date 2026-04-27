@@ -19,6 +19,9 @@ trait InvoiceTrait
     #[ORM\Column(type: Types::BIGINT)]
     private ?string $reference_number = null;
 
+    #[ORM\Column(type: Types::BIGINT, nullable: true, options:["unsigned" => true])]
+    private ?string $payment_reference = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $created_at;
 
@@ -33,11 +36,6 @@ trait InvoiceTrait
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getInvoice(): Invoice
-    {
-        return $this->invoice;
     }
 
     public function getSequentialNumber(): ?string
@@ -60,6 +58,18 @@ trait InvoiceTrait
     public function setReferenceNumber(string $reference_number): self
     {
         $this->reference_number = $reference_number;
+
+        return $this;
+    }
+
+    public function getPaymentReference(): ?string
+    {
+        return $this->payment_reference;
+    }
+
+    public function setPaymentReference(?string $payment_reference): self
+    {
+        $this->payment_reference = $payment_reference;
 
         return $this;
     }

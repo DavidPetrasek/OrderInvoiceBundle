@@ -3,7 +3,6 @@ namespace Psys\OrderInvoiceBundle\Service\InvoiceManager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Psys\OrderInvoiceBundle\Entity\Invoice;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
@@ -22,22 +21,30 @@ class InvoiceManager
      * Sets a unique payment reference number for the given invoice.
      * The payment reference number is a numeric string of specified length that is not already used in the database.
      */
-    public function setUniquePaymentReference(Invoice $invoice, int $length = 10): void
+    public function setUniquePaymentReference(InvoiceProforma|InvoiceFinal|InvoiceRegular|InvoiceAdvance $invoiceSpecific, int $length = 10): void
     {   
         $dbConn = $this->em->getConnection();
-        $this->em->getConnection()->executeStatement('LOCK TABLES oi_invoice WRITE;');
+
+        if      ($invoiceSpecific instanceof InvoiceProforma) {$type = 'proforma';}
+        else if ($invoiceSpecific instanceof InvoiceFinal)    {$type = 'final';}
+        else if ($invoiceSpecific instanceof InvoiceRegular)  {$type = 'regular';}
+        else if ($invoiceSpecific instanceof InvoiceAdvance)  {$type = 'advance';}
+
+        $table = "oi_invoice_{$type}";
+
+        $this->em->getConnection()->executeStatement("LOCK TABLES {$table} WRITE;");
         
-        $paymentReference = $this->generateUniquePaymentReference($length);
+        $paymentReference = $this->generateUniquePaymentReference($length, $table);
         
         $dbConn->executeStatement
         (
-            "UPDATE oi_invoice SET payment_reference = :payment_reference WHERE id = :invoice_id;",
+            "UPDATE {$table} SET payment_reference = :payment_reference WHERE id = :invoice_id;",
             [
                 'payment_reference' => $paymentReference,
-                'invoice_id' => $invoice->getId()
+                'invoice_id' => $invoiceSpecific->getId()
             ]
         );
-        $invoice->setPaymentReference($paymentReference);
+        $invoiceSpecific->setPaymentReference($paymentReference);
         
         $dbConn->executeStatement('UNLOCK TABLES;');
     }
@@ -78,7 +85,7 @@ class InvoiceManager
     /**
      * Generates numeric string that is not already used in the database
      */
-    private function generateUniquePaymentReference($length): string
+    private function generateUniquePaymentReference(int $length, string $table): string
     {
         $paymentReference = $this->random_digits($length);
 
@@ -86,9 +93,9 @@ class InvoiceManager
         $rsm->addScalarResult('payment_reference', 'payment_reference');
 
         $query = $this->em->createNativeQuery
-        ('
-            SELECT payment_reference FROM oi_invoice 
-            WHERE payment_reference = ?'
+        (
+            "SELECT payment_reference FROM {$table} 
+            WHERE payment_reference = ?"
         , $rsm);
         $query->setParameter(1, $paymentReference);
 
@@ -96,7 +103,7 @@ class InvoiceManager
 
         if (!empty($kodVarDB))
         {
-            $paymentReference = $this->generateUniquePaymentReference($length);
+            $paymentReference = $this->generateUniquePaymentReference($length, $table);
         }
 
         return $paymentReference;

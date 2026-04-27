@@ -6,6 +6,8 @@ use Psys\OrderInvoiceBundle\Entity\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
+use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
+use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\Utils\Math;
 
@@ -24,15 +26,39 @@ class OrderManager
         $this->saveChecks($ent_Order);
 
         // Process order
-        $orderTotals = $this->calculateTotals($ent_Order);
+        if (!$ent_Order->getItems()->isEmpty())
+        {
+            $orderTotals = $this->calculateTotals($ent_Order);
+            $ent_Order->setPriceVatIncluded($orderTotals['vatIncluded'])
+                    ->setPriceVatExcluded($orderTotals['vatExcluded'])
+                    ->setPriceVatBase($orderTotals['vatBase'])
+                    ->setPriceVat($orderTotals['vat']);
+        }
 
-        $ent_Order->setPriceVatIncluded($orderTotals['vatIncluded'])
-                  ->setPriceVatExcluded($orderTotals['vatExcluded'])
-                  ->setPriceVatBase($orderTotals['vatBase'])
-                  ->setPriceVat($orderTotals['vat']);
+        // Process proforma invoice
+        $ent_InvoiceProforma = $ent_Order->getInvoiceProforma();
+        if ($ent_InvoiceProforma)
+        {
+            $proformaTotals = $this->calculateTotals($ent_InvoiceProforma);
+            $ent_InvoiceProforma->setPriceVatIncluded($proformaTotals['vatIncluded'])
+                                ->setPriceVatExcluded($proformaTotals['vatExcluded'])
+                                ->setPriceVatBase($proformaTotals['vatBase'])
+                                ->setPriceVat($proformaTotals['vat']);
+        }
+
+        // Process regural invoice
+        $ent_InvoiceRegular = $ent_Order->getInvoiceRegular();
+        if ($ent_InvoiceRegular)
+        {
+            $regularTotals = $this->calculateTotals($ent_InvoiceRegular);
+            $ent_InvoiceRegular->setPriceVatIncluded($regularTotals['vatIncluded'])
+                            ->setPriceVatExcluded($regularTotals['vatExcluded'])
+                            ->setPriceVatBase($regularTotals['vatBase'])
+                            ->setPriceVat($regularTotals['vat']);
+        }
 
         // Process advance invoices
-        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        foreach ($ent_Order->getInvoicesAdvance() as $ent_InvoiceAdvance) 
         {
             $invoiceAdvanceTotals = $this->calculateTotals($ent_InvoiceAdvance);
 
@@ -48,7 +74,47 @@ class OrderManager
 
     private function saveChecks(Order $ent_Order): void
     {
-        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        $ent_InvoiceProforma = $ent_Order->getInvoiceProforma();
+        if ($ent_InvoiceProforma)
+        {
+            if ($ent_InvoiceProforma->getItems()->isEmpty())
+            {
+                throw new InvalidInvoiceStateException('Proforma invoice has no items.');
+            }
+
+            if ($ent_InvoiceProforma->isPayable())
+            {
+                if (empty($ent_InvoiceProforma->getPaymentMode()))
+                {
+                    throw new InvalidInvoiceStateException('This proforma invoice is payable and has no payment mode set.');
+                }
+            }
+
+            if (empty($ent_InvoiceProforma->getCurrency()))
+            {
+                throw new InvalidInvoiceStateException('Proforma invoice has no currency set.');
+            }
+        }
+
+        $ent_InvoiceRegular = $ent_Order->getInvoiceRegular();
+        if ($ent_InvoiceRegular)
+        {
+            if ($ent_InvoiceRegular->getItems()->isEmpty())
+            {
+                throw new InvalidInvoiceStateException('Regular invoice has no items.');
+            }
+
+            if (empty($ent_InvoiceRegular->getPaymentMode()))
+            {
+                throw new InvalidInvoiceStateException('Regular invoice has no payment mode set.');
+            }
+            if (empty($ent_InvoiceRegular->getCurrency()))
+            {
+                throw new InvalidInvoiceStateException('Regular invoice has no currency set.');
+            }
+        }
+
+        foreach ($ent_Order->getInvoicesAdvance() as $ent_InvoiceAdvance) 
         {
             if ($ent_InvoiceAdvance->getItems()->isEmpty())
             {
@@ -77,7 +143,7 @@ class OrderManager
             'vat'         => 0.0,
         ];
 
-        foreach ($ent_Order->getInvoice()->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        foreach ($ent_Order->getInvoicesAdvance() as $ent_InvoiceAdvance) 
         {
             $advanceTotals['vatIncluded'] += $ent_InvoiceAdvance->getPriceVatIncluded();
             $advanceTotals['vatExcluded'] += $ent_InvoiceAdvance->getPriceVatExcluded();
@@ -88,13 +154,13 @@ class OrderManager
         return $advanceTotals;
     }
     
-    public function calculateTotals(Order|InvoiceAdvance $ent_Order_Invoice): array
+    public function calculateTotals(Order|InvoiceProforma|InvoiceAdvance|InvoiceRegular $ent): array
     {
         $priceVatExcludedTotal = 0;
         $priceVatIncludedTotal = 0;
         $vatBase = 0;
         
-        foreach ($ent_Order_Invoice->getItems() as $item)
+        foreach ($ent->getItems() as $item)
         {
             $itemTotals = $this->calculateItemTotals($item);
             $amount = $item->getAmount();

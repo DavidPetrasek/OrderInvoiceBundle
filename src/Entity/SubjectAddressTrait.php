@@ -48,16 +48,9 @@ trait SubjectAddressTrait
         return $this->id;
     }
 
-    public function getInvoice(): ?Invoice
+    public function getOrder(): ?Order
     {
-        return $this->invoice;
-    }
-
-    public function setInvoice(Invoice $invoice): self
-    {
-        $this->invoice = $invoice;
-
-        return $this;
+        return $this->order;
     }
     
     public function getFullName(): ?string

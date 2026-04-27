@@ -1,10 +1,10 @@
 {% if invoiceType == 'REGULAR' %}
 
-    {% set currInvoice = ent_Order.invoice.invoiceRegular %}
+    {% set currInvoice = ent_Order.invoiceRegular %}
 
 {% elseif invoiceType == 'PROFORMA' %}
 
-    {% set currInvoice = ent_Order.invoice.invoiceProforma %}
+    {% set currInvoice = ent_Order.invoiceProforma %}
 
 {% elseif invoiceType == 'ADVANCE' %}
 
@@ -12,11 +12,24 @@
 
 {% elseif invoiceType == 'FINAL' %}
 
-    {% set currInvoice = ent_Order.invoice.invoiceFinal %}
+    {% set currInvoice = ent_Order.invoiceFinal %}
     
 {% endif %}
 
 {% set showPaymentDetails = invoiceType == 'REGULAR' or (invoiceType == 'PROFORMA' and currInvoice.payable) or invoiceType == 'ADVANCE' or invoiceType == 'FINAL' %}
+
+{% if invoiceType == 'FINAL' %}
+    {% set items = ent_Order.items %}
+    {% set currency = ent_Order.currency %}
+    {% set totalsEntity = ent_Order %}
+    {% set paymentMode = ent_Order.paymentMode %}
+{% else %}
+    {% set items = currInvoice.items %}
+    {% set currency = currInvoice.currency %}
+    {% set totalsEntity = currInvoice %}
+    {% set paymentMode = currInvoice.paymentMode %}
+{% endif %}
+
 
 <html>
 <head>
@@ -45,12 +58,12 @@
             	
             	<h3>Seller</h3>
             	<div class="address">
-                    {{ ent_Order.invoice.invoiceSeller.organization }}
-                	<br>{{ ent_Order.invoice.invoiceSeller.streetAddress1 }}
-                	<br>{{ ent_Order.invoice.invoiceSeller.postcode }} {{ ent_Order.invoice.invoiceSeller.city }}
-                	{% if ent_Order.invoice.invoiceSeller.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.invoice.invoiceSeller.companyIdentificationNumber }}{% endif %}
-                	{% if ent_Order.invoice.invoiceSeller.vatIdentificationNumber is not empty %}<br>VIN: {{ ent_Order.invoice.invoiceSeller.vatIdentificationNumber }}{% endif %}
-                    {% if ent_Order.invoice.invoiceSeller.legalEntityRegistrationDetails is not empty %}<br>{{ ent_Order.invoice.invoiceSeller.legalEntityRegistrationDetails }}{% endif %}
+                    {{ ent_Order.seller.organization }}
+                	<br>{{ ent_Order.seller.streetAddress1 }}
+                	<br>{{ ent_Order.seller.postcode }} {{ ent_Order.seller.city }}
+                	{% if ent_Order.seller.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.seller.companyIdentificationNumber }}{% endif %}
+                	{% if ent_Order.seller.vatIdentificationNumber is not empty %}<br>VIN: {{ ent_Order.seller.vatIdentificationNumber }}{% endif %}
+                    {% if ent_Order.seller.legalEntityRegistrationDetails is not empty %}<br>{{ ent_Order.seller.legalEntityRegistrationDetails }}{% endif %}
             	</div>
 
         	</td> 
@@ -58,11 +71,11 @@
             	
             	<h3>Buyer</h3>
             	<div class="address">
-					{{ ent_Order.invoice.invoiceBuyer.fullName }}
-                	<br>{{ ent_Order.invoice.invoiceBuyer.streetAddress1 }}
-                	<br>{{ ent_Order.invoice.invoiceBuyer.postcode }} {{ ent_Order.invoice.invoiceBuyer.city }}
-                	{% if ent_Order.invoice.invoiceBuyer.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.invoice.invoiceBuyer.companyIdentificationNumber }}{% endif %}
-                	{% if ent_Order.invoice.invoiceBuyer.vatIdentificationNumber is not empty %}<br>VIN: {{ ent_Order.invoice.invoiceBuyer.vatIdentificationNumber }}{% endif %}
+					{{ ent_Order.buyer.fullName }}
+                	<br>{{ ent_Order.buyer.streetAddress1 }}
+                	<br>{{ ent_Order.buyer.postcode }} {{ ent_Order.buyer.city }}
+                	{% if ent_Order.buyer.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.buyer.companyIdentificationNumber }}{% endif %}
+                	{% if ent_Order.buyer.vatIdentificationNumber is not empty %}<br>VIN: {{ ent_Order.buyer.vatIdentificationNumber }}{% endif %}
             	</div>
 				
         	</td>
@@ -78,17 +91,17 @@
                         <tr>
                             <td>Payment mode</td>
                             <td>
-                                {% if ent_Order.paymentMode.value == 1 %}
+                                {% if paymentMode.value == 1 %}
                                     regular bank transfer
-                                {% elseif ent_Order.paymentMode.value == 2 %}
+                                {% elseif paymentMode.value == 2 %}
                                     on-line bank transfer
-                                {% elseif ent_Order.paymentMode.value == 3 %}
+                                {% elseif paymentMode.value == 3 %}
                                     credit card
                                 {% endif %}
                             </td>
                         </tr>
 
-                        {% if ent_Order.paymentMode.value == 1 %}
+                        {% if paymentMode.value == 1 %}
                             <tr>
                                 <td>Bank account</td>
                                 <td>{{ ent_Order.paymentModeBankAccount }}</td>
@@ -97,7 +110,7 @@
                         
                         <tr>
                     		<td>Payment reference number</td>
-                        	<td>{{ ent_Order.invoice.paymentReference }}</td>
+                        	<td>{{ currInvoice.paymentReference }}</td>
                         </tr>
 
                     {% endif %}
@@ -147,16 +160,6 @@
             </tr>
         </thead>
 
-        {% if invoiceType == 'ADVANCE' %}
-            {% set items = ent_InvoiceAdvance.items %}
-            {% set currency = ent_InvoiceAdvance.currency %}
-            {% set totalsEntity = ent_InvoiceAdvance %}
-        {% else %}
-            {% set items = ent_Order.items %}
-            {% set currency = ent_Order.currency %}
-            {% set totalsEntity = ent_Order %}
-        {% endif %}
-
         <tbody>
             {% for item in items %}
                 <tr class="item">
@@ -171,37 +174,50 @@
                     <td>{{ item.priceVatIncluded|format_currency(currency) }}</td>
                 </tr>
             {% endfor %}
-        </tbody>
-    </table>
 
-    <table class="totals">
-        <thead>
-            <tr>
-                <th>Total (VAT excl.)</th>
-                <th>Total (VAT incl.)</th>
-                {% if invoiceType != 'PROFORMA' %}
-                    <th>VAT base</th>
-                    <th>VAT total</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ totalsEntity.priceVatExcluded|format_currency(currency) }}</td>
-                <td>{{ totalsEntity.priceVatIncluded|format_currency(currency) }}</td>
-
-                {% if invoiceType != 'PROFORMA' %}
-                    <td>{{ totalsEntity.priceVatBase|format_currency(currency) }}</td>
+            {% if invoiceType == 'FINAL' %}
+                <tr class="final_subtotal">
+                    <td></td>
+                    <td>Subtotal (full contract value)</td>
+                    <td>{{ totalsEntity.priceVatExcluded|format_currency(currency) }}</td>
+                    <td></td>
                     <td>{{ totalsEntity.priceVat|format_currency(currency) }}</td>
-                {% endif %}
-            </tr>
+                    <td>{{ totalsEntity.priceVatIncluded|format_currency(currency) }}</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 
-    {% if invoiceType == 'FINAL' %}
-        <h4>Advance / deposit invoices</h4>
+    {% if invoiceType != 'FINAL' %}
+        
+        <table class="totals">
+            <thead>
+                <tr>
+                    <th>Total (VAT excl.)</th>
+                    <th>Total (VAT incl.)</th>
+                    {% if invoiceType != 'PROFORMA' %}
+                        <th>VAT base</th>
+                        <th>VAT total</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ totalsEntity.priceVatExcluded|format_currency(currency) }}</td>
+                    <td>{{ totalsEntity.priceVatIncluded|format_currency(currency) }}</td>
 
-        {% if ent_Order.invoice.invoicesAdvance is not empty %}
+                    {% if invoiceType != 'PROFORMA' %}
+                        <td>{{ totalsEntity.priceVatBase|format_currency(currency) }}</td>
+                        <td>{{ totalsEntity.priceVat|format_currency(currency) }}</td>
+                    {% endif %}
+                </tr>
+            </tbody>
+        </table>
+
+    {% elseif invoiceType == 'FINAL' %}
+
+        {% if ent_Order.invoicesAdvance is not empty %}
+            <h4>Advance invoices</h4>
 
             {% set advancesTotals = ent_Order|invoices_advance_totals %}
 
@@ -216,7 +232,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for adv in ent_Order.invoice.invoicesAdvance %}
+                    {% for adv in ent_Order.invoicesAdvance %}
                         <tr>
                             <td>{{ adv.referenceNumber }}</td>
                             <td>{{ adv.createdAt|format_datetime(pattern="d. MMMM y") }}</td>
@@ -251,10 +267,9 @@
                     <td>{{ remaining_vat|format_currency(currency) }}</td>
                 </tr>
                 <tr>
-                    <th>Amount due (incl. VAT)</th>
+                    <th>Total amount due (incl. VAT)</th>
                     <td>
                         {% if remaining_incl < 0 %}
-                            {# final < advances -> show credit/refund required #}
                             <span class="credit">Credit due to customer: {{ (remaining_incl * -1)|format_currency(currency) }}</span>
                         {% else %}
                             {{ remaining_incl|format_currency(currency) }}
@@ -262,9 +277,42 @@
                     </td>
                 </tr>
             </table>
-        {% else %}
-            <p>No advance / deposit invoices recorded for this order.</p>
+
+        {% elseif ent_Order.invoiceProforma is not empty and ent_Order.invoiceProforma.payable %}
+
+            {% set invProforma = ent_Order.invoiceProforma %}
+
+            {# Remaining / amount due calculation #}
+            {% set remaining_net = (ent_Order.priceVatExcluded - invProforma.priceVatExcluded) %}
+            {% set remaining_vat = (ent_Order.priceVat - invProforma.priceVat) %}
+            {% set remaining_incl = (ent_Order.priceVatIncluded - invProforma.priceVatIncluded) %}
+
+            <table class="remaining">
+                <tr>
+                    <th>Payment received via Proforma [{{ invProforma.createdAt|format_datetime(pattern="d. MMMM y") }}]</th>
+                    <td>- {{ invProforma.priceVatIncluded|format_currency(currency) }}</td>
+                </tr>
+                <tr>
+                    <th>Net remaining (VAT excl.)</th>
+                    <td>{{ remaining_net|format_currency(currency) }}</td>
+                </tr>
+                <tr>
+                    <th>Remaining VAT</th>
+                    <td>{{ remaining_vat|format_currency(currency) }}</td>
+                </tr>
+                <tr>
+                    <th>Total amount due (incl. VAT)</th>
+                    <td>
+                        {% if remaining_incl < 0 %}
+                            <span class="credit">Credit due to customer: {{ (remaining_incl * -1)|format_currency(currency) }}</span>
+                        {% else %}
+                            {{ remaining_incl|format_currency(currency) }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
         {% endif %}
+
     {% endif %}	
 
 </body>

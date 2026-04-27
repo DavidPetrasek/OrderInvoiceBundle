@@ -25,7 +25,15 @@ class Item
 
     #[ORM\ManyToOne(inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: true)]
+    private ?InvoiceProforma $invoice_proforma = null;
+
+    #[ORM\ManyToOne(inversedBy: 'items')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?InvoiceAdvance $invoice_advance = null;
+
+    #[ORM\ManyToOne(inversedBy: 'items')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?InvoiceRegular $invoice_regular = null;
     
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
     private ?int $category = null;
@@ -72,6 +80,18 @@ class Item
         return $this;
     }
 
+    public function getInvoiceProforma(): ?InvoiceProforma
+    {
+        return $this->invoice_proforma;
+    }
+
+    public function setInvoiceProforma(?InvoiceProforma $invoice_proforma): static
+    {
+        $this->invoice_proforma = $invoice_proforma;
+
+        return $this;
+    }
+
     public function getInvoiceAdvance(): ?InvoiceAdvance
     {
         return $this->invoice_advance;
@@ -80,6 +100,18 @@ class Item
     public function setInvoiceAdvance(?InvoiceAdvance $invoice_advance): static
     {
         $this->invoice_advance = $invoice_advance;
+
+        return $this;
+    }
+
+    public function getInvoiceRegular(): ?InvoiceRegular
+    {
+        return $this->invoice_regular;
+    }
+
+    public function setInvoiceRegular(?InvoiceRegular $invoice_regular): static
+    {
+        $this->invoice_regular = $invoice_regular;
 
         return $this;
     }

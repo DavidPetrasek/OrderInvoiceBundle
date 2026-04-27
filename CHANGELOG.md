@@ -2,6 +2,26 @@
 All notable changes to this project are documented in this file.
 
 
+## [1.5.0] - 2026--
+### Added
+
+### Removed
+- Invoice wrapper entity
+
+### Changed
+- invoice_buyer to buyer
+- invoice_seller to seller
+- docs
+
+### Fixed
+- Proforma and regular invoice has its own items.
+- Each invoice type has its own payment reference.
+- Proforma and regular invoice has its own payment settings and currency.
+- Proforma payable logic.
+- Twig template
+- docs
+
+
 ## [1.4.6] - 2026-04-26
 ### Added
 - Missing types for storage path: advance, regular

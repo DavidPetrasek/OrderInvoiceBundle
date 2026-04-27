@@ -42,7 +42,7 @@ class FilePersister
      */
     public function persistAdvance(string $binary, InvoiceAdvance $ent_InvoiceAdvance): ?array
     {
-        return $this->persist($binary, $ent_InvoiceAdvance->getInvoice()->getOrder(), InvoiceType::ADVANCE, $ent_InvoiceAdvance);
+        return $this->persist($binary, $ent_InvoiceAdvance->getOrder(), InvoiceType::ADVANCE, $ent_InvoiceAdvance);
     }
 
     /**
@@ -141,7 +141,7 @@ class FilePersister
 
             if ($invoiceType === InvoiceType::PROFORMA)
             {
-                $ent_InvoiceProforma = $ent_Order->getInvoice()->getInvoiceProforma();
+                $ent_InvoiceProforma = $ent_Order->getInvoiceProforma();
                 $ent_InvoiceProforma->setFile($ent_File);
                 $this->em->persist($ent_InvoiceProforma);
             }
@@ -152,13 +152,13 @@ class FilePersister
             }
             else if ($invoiceType === InvoiceType::FINAL)
             {
-                $ent_InvoiceFinal = $ent_Order->getInvoice()->getInvoiceFinal();
+                $ent_InvoiceFinal = $ent_Order->getInvoiceFinal();
                 $ent_InvoiceFinal->setFile($ent_File);
                 $this->em->persist($ent_InvoiceFinal);
             }
             else if ($invoiceType === InvoiceType::REGULAR)
             {
-                $ent_InvoiceRegular = $ent_Order->getInvoice()->getInvoiceRegular();
+                $ent_InvoiceRegular = $ent_Order->getInvoiceRegular();
                 $ent_InvoiceRegular->setFile($ent_File);
                 $this->em->persist($ent_InvoiceRegular);
             }

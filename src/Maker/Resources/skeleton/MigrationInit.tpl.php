@@ -25,7 +25,9 @@ final class <?= $class_name ?> extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql("DELETE FROM oi_settings WHERE option = 'invoice_regular_sequential_number'");
         $this->addSql("DELETE FROM oi_settings WHERE option = 'invoice_proforma_sequential_number'");
+        $this->addSql("DELETE FROM oi_settings WHERE option = 'invoice_advance_sequential_number'");
         $this->addSql("DELETE FROM oi_settings WHERE option = 'invoice_final_sequential_number'");
     }
 }

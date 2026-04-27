@@ -1,14 +1,12 @@
 [Back to index](index.md)
 
 Creating a new order
-=============================================
-A new order can be saved without an invoice. The invoice can be added later.
+====================
 
 ``` php
-use Psys\OrderInvoiceBundle\Entity\Invoice;
-use Psys\OrderInvoiceBundle\Entity\InvoiceBuyer;
-use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
-use Psys\OrderInvoiceBundle\Entity\InvoiceSeller;
+use Psys\OrderInvoiceBundle\Entity\Buyer;
+use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
+use Psys\OrderInvoiceBundle\Entity\Seller;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\OrderInvoiceBundle\Model\Item\AmountType;
@@ -24,15 +22,16 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
 {       
     $ent_Order = (new Order())
         ->setCategory(MyOrderCategory::SECOND_CATEGORY) // Optional
-        ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
-        ->setPaymentModeBankAccount('5552228888/0600')
         ->setCustomer($security->getUser()) // Optional
         ->setCreatedAt(new \DateTimeImmutable())
-        ->setState(State::UNPAID)
-        ->setCurrency('GBP');
+        ->setState(State::UNPAID);
 
-    $ent_Order->addItem(
-        (new Item())
+    $ent_InvoiceRegular = (new InvoiceRegular())
+        ->setCreatedAt(new \DateTimeImmutable())
+        ->setDueDate(new \DateTimeImmutable('+14 days')) // Optional
+        ->setPaymentMode(PaymentMode::CREDIT_CARD)
+        ->setCurrency('GBP')
+        ->addItem((new Item())
             ->setName('Foo')
             ->setPriceVatIncluded(120) // If not set, it will be automatically calculated from price exclusive of VAT
             ->setPriceVatExcluded(100) // If not set, it will be automatically calculated from price inclusive of VAT
@@ -40,19 +39,15 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setAmount(1)
             ->setAmountType(AmountType::ITEM)
     );
-
-    $ent_InvoiceProforma = (new InvoiceProforma())
-        ->setCreatedAt(new \DateTimeImmutable())
-        ->setDueDate(new \DateTimeImmutable('+14 days')); // Optional
     
-    $invoiceManager->setSequentialNumber($ent_InvoiceProforma);
-    $ent_InvoiceProforma->setReferenceNumber(date('Y').$ent_InvoiceProforma->getSequentialNumber());
+    $invoiceManager->setSequentialNumber($ent_InvoiceRegular);
+    $ent_InvoiceRegular->setReferenceNumber(date('Y').$ent_InvoiceRegular->getSequentialNumber());
 
-    $ent_Invoice = (new Invoice())
-        ->setInvoiceProforma($ent_InvoiceProforma)
-        ->setInvoiceBuyer
+    $ent_Order
+        ->setInvoiceRegular($ent_InvoiceRegular)
+        ->setBuyer
         (
-            (new InvoiceBuyer())
+            (new Buyer())
             ->setFullName('John Buyer')
             ->setStreetAddress1('Street')
             ->setStreetAddress2('123')
@@ -61,9 +56,9 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setRegion('Some Region')
             ->setCountry('Ireland')
         )
-        ->setInvoiceSeller
+        ->setSeller
         (
-            (new InvoiceSeller())
+            (new Seller())
             ->setOrganization('Seller Organization')
             ->setStreetAddress1('Street 123')
             ->setStreetAddress2('123')
@@ -76,8 +71,7 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setLegalEntityRegistrationDetails('Registered in England & Wales No. 01234567  ·  Registered office : 1 King’s Road, London SW1')
         );
 
-    $invoiceManager->setUniquePaymentReference($ent_Invoice, length: 9);
-    $ent_Order->setInvoice($ent_Invoice);
+    $invoiceManager->setUniquePaymentReference($ent_InvoiceRegular, length: 9);
     
     $orderManager->save($ent_Order);
 }

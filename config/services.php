@@ -4,19 +4,18 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Psys\OrderInvoiceBundle\Twig\AppExtension;
 use Psys\OrderInvoiceBundle\Command\InstallCommand;
 use Psys\OrderInvoiceBundle\Command\StylerEnableCommand;
-use Psys\OrderInvoiceBundle\Command\Upgrade13To14Command;
+use Psys\OrderInvoiceBundle\Command\Upgrade14To15Command;
 use Psys\OrderInvoiceBundle\Controller\Dev\OibStylerController;
 use Psys\OrderInvoiceBundle\EventSubscriber\DoctrineSubscriber;
 use Psys\OrderInvoiceBundle\Maker\Category;
 use Psys\OrderInvoiceBundle\Maker\CronController;
 use Psys\OrderInvoiceBundle\Maker\InitDatabase;
 use Psys\OrderInvoiceBundle\Maker\InvoiceMpdfTwigTemplate;
-use Psys\OrderInvoiceBundle\Maker\Upgrade13To14PreparedMigration;
+use Psys\OrderInvoiceBundle\Maker\Upgrade14To15PreparedMigration;
 use Psys\OrderInvoiceBundle\Repository\InvoiceAdvanceRepository;
 use Psys\OrderInvoiceBundle\Repository\InvoiceFinalRepository;
 use Psys\OrderInvoiceBundle\Repository\InvoiceProformaRepository;
 use Psys\OrderInvoiceBundle\Repository\InvoiceRegularRepository;
-use Psys\OrderInvoiceBundle\Repository\InvoiceRepository;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
 use Psys\OrderInvoiceBundle\Repository\OrderRepository;
 use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
@@ -47,11 +46,6 @@ return function(ContainerConfigurator $container): void
             ->alias(InvoiceManager::class, 'oi.invoice_manager')
         
         ->set(OrderRepository::class)
-            ->args([
-                service('doctrine')
-            ])
-            ->tag('doctrine.repository_service')
-        ->set(InvoiceRepository::class)
             ->args([
                 service('doctrine')
             ])
@@ -125,14 +119,15 @@ return function(ContainerConfigurator $container): void
             ])
             ->tag('console.command')
         
-            ->set(Upgrade13To14Command::class)
+            ->set(Upgrade14To15Command::class)
                 ->args([
                     param('kernel.project_dir'),
                     service('filesystem'),
+                    service('doctrine.orm.default_entity_manager'),
                 ])
                 ->tag('console.command')
 
-            ->set(Upgrade13To14PreparedMigration::class)
+            ->set(Upgrade14To15PreparedMigration::class)
                 ->tag('maker.command')
 
             ->set(InitDatabase::class)

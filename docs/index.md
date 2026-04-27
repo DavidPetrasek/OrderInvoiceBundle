@@ -4,6 +4,8 @@ Documentation
 
 [Invoice types](invoice_types.md)
 
+[Logic](logic.md)
+
 [Basic usage](order.md)
 
 [Templates & styling](templates_styling.md)

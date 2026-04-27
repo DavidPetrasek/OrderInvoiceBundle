@@ -82,7 +82,7 @@ class InvoiceBinaryProvider extends AbstractInvoiceBinaryProvider
 
     public function getAdvance(InvoiceAdvance $ent_InvoiceAdvance): string
     {
-        return $this->getBinary($ent_InvoiceAdvance->getInvoice()->getOrder(), InvoiceType::ADVANCE, $ent_InvoiceAdvance);
+        return $this->getBinary($ent_InvoiceAdvance->getOrder(), InvoiceType::ADVANCE, $ent_InvoiceAdvance);
     }
 
     public function getFinal(Order $ent_Order): string

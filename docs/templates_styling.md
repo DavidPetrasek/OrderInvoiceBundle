@@ -6,7 +6,7 @@ Templates & styling
 ## Invoice templates
 
 ### mPDF and Twig
-- Generate all purpose template:
+- Generate template supporting all invoice types:
 ``` bash
 symfony console make:oib:invoice:mpdf_twig_template
 ```

@@ -2,26 +2,26 @@
 
 namespace Psys\OrderInvoiceBundle\Repository;
 
-use Psys\OrderInvoiceBundle\Entity\InvoiceSeller;
+use Psys\OrderInvoiceBundle\Entity\Seller;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<InvoiceSeller>
+ * @extends ServiceEntityRepository<Seller>
  *
- * @method InvoiceSeller|null find($id, $lockMode = null, $lockVersion = null)
- * @method InvoiceSeller|null findOneBy(array $criteria, array $orderBy = null)
- * @method InvoiceSeller[]    findAll()
- * @method InvoiceSeller[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Seller|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Seller|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Seller[]    findAll()
+ * @method Seller[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class InvoiceSellerRepository extends ServiceEntityRepository
+class SellerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, InvoiceSeller::class);
+        parent::__construct($registry, Seller::class);
     }
 
-    public function save(InvoiceSeller $entity, bool $flush = false): void
+    public function save(Seller $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class InvoiceSellerRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(InvoiceSeller $entity, bool $flush = false): void
+    public function remove(Seller $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class InvoiceSellerRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return InvoiceSeller[] Returns an array of InvoiceSeller objects
+//     * @return Seller[] Returns an array of Seller objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class InvoiceSellerRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?InvoiceSeller
+//    public function findOneBySomeField($value): ?Seller
 //    {
 //        return $this->createQueryBuilder('f')
 //            ->andWhere('f.exampleField = :val')

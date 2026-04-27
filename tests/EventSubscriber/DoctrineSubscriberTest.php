@@ -6,10 +6,10 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 use PHPUnit\Framework\TestCase;
-use Psys\OrderInvoiceBundle\Entity\Invoice;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
+use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\EventSubscriber\DoctrineSubscriber;
 
 class DoctrineSubscriberTest extends TestCase
@@ -31,54 +31,54 @@ class DoctrineSubscriberTest extends TestCase
 
     public function testFinalWithoutProformaOrAdvanceThrowsException(): void
     {
-        $invoice = new Invoice();
-        $invoice->setInvoiceFinal(new InvoiceFinal());
+        $order = new Order();
+        $order->setInvoiceFinal(new InvoiceFinal());
 
         $subscriber = new DoctrineSubscriber();
 
         $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
         $this->expectExceptionMessage('Final invoice requires proforma or advance invoice to be issued first.');
 
-        $subscriber->onFlush($this->createOnFlushEventArgs([$invoice]));
+        $subscriber->onFlush($this->createOnFlushEventArgs([$order]));
     }
 
     public function testProformaAndAdvanceThrowsException(): void
     {
-        $invoice = new Invoice();
-        $invoice->setInvoiceProforma(new InvoiceProforma());
+        $order = new Order();
+        $order->setInvoiceProforma(new InvoiceProforma());
 
         $advance = new InvoiceAdvance();
-        $invoice->addInvoiceAdvance($advance);
+        $order->addInvoiceAdvance($advance);
 
         $subscriber = new DoctrineSubscriber();
 
         $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
         $this->expectExceptionMessage('Proforma and advance invoice cannot be issued simultaneously.');
 
-        $subscriber->onFlush($this->createOnFlushEventArgs([$invoice]));
+        $subscriber->onFlush($this->createOnFlushEventArgs([$order]));
     }
 
     public function testProformaOnlyDoesNotThrow(): void
     {
-        $invoice = new Invoice();
-        $invoice->setInvoiceProforma(new InvoiceProforma());
+        $order = new Order();
+        $order->setInvoiceProforma(new InvoiceProforma());
 
         $subscriber = new DoctrineSubscriber();
-        $subscriber->onFlush($this->createOnFlushEventArgs([$invoice]));
+        $subscriber->onFlush($this->createOnFlushEventArgs([$order]));
 
         $this->assertTrue(true);
     }
 
     public function testUpdateFinalWithoutProformaOrAdvanceThrowsException(): void
     {
-        $invoice = new Invoice();
-        $invoice->setInvoiceFinal(new InvoiceFinal());
+        $order = new Order();
+        $order->setInvoiceFinal(new InvoiceFinal());
 
         $subscriber = new DoctrineSubscriber();
 
         $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
         $this->expectExceptionMessage('Final invoice requires proforma or advance invoice to be issued first.');
 
-        $subscriber->onFlush($this->createOnFlushEventArgs([], [$invoice]));
+        $subscriber->onFlush($this->createOnFlushEventArgs([], [$order]));
     }
 }

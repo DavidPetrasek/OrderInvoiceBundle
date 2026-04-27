@@ -1,11 +1,22 @@
 
+## 1.4.6 to 1.5.0
+- Backup your database and run: `symfony console oib:upgrade:14_to_15`
+- Remove: `->getInvoice()`, `new Invoice()`
+- If proforma or regular invoice is being issued in your app, items need to be added directly to them.
+- Rename `invoiceSeller` to `seller`
+- Rename `InvoiceSeller` to `Seller`
+- Rename `invoiceBuyer` to `buyer`
+- Rename `InvoiceBuyer` to `Buyer`
+- Optional: update your mPDF twig template: `symfony console make:oib:invoice:mpdf_twig_template`
+
+
 ## 1.4.5 to 1.4.6
 - Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
 
 
 ## 1.4.0 to 1.4.2
 - Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
-- Optional: Update your mPDF twig template by: `symfony console make:oib:invoice:mpdf_twig_template`
+- Optional: Update your mPDF twig template: `symfony console make:oib:invoice:mpdf_twig_template`
 
 
 ## 1.3.3 to 1.4.0
