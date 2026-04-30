@@ -3,7 +3,7 @@
 Invoice types
 =============
 
-### Regular (also called: standard)
+### Regular
 - Standalone invoice
 - Max. amount: one
 
@@ -12,11 +12,11 @@ Invoice types
 - Can be marked as payable / unpayable (default).
 - Max. amount: one
 
-### Advance (also called: deposit, prepayment)
+### Advance
 - Must be issued before the final invoice.
 - Max. amount: unlimited
 
-### Final (also called: settlement)
+### Final
 - Requires proforma and/or advance invoice to be issued first.
 - Requires the order to have at least one item (representing the total price).
 - Max. amount: one
