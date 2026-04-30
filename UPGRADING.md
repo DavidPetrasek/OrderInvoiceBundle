@@ -1,5 +1,6 @@
 
 ## 1.4.6 to 1.5.0
+- Change version in composer.json to `"psys/order-invoice-bundle": "^1.5",` and run: `composer update`
 - Backup your database and run: `symfony console oib:upgrade:14_to_15`
 - Remove: `->getInvoice()`, `new Invoice()`
 - If proforma or regular invoice is being issued in your app, items need to be added directly to them.
@@ -11,10 +12,12 @@
 
 
 ## 1.4.5 to 1.4.6
+- Run: `composer update`
 - Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
 
 
 ## 1.4.0 to 1.4.2
+- Change version in composer.json to `"psys/order-invoice-bundle": "^1.4",` and run: `composer update`
 - Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
 - Optional: Update your mPDF twig template: `symfony console make:oib:invoice:mpdf_twig_template`
 
