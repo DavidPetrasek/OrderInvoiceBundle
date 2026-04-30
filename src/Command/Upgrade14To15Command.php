@@ -16,11 +16,8 @@ use function Symfony\Component\String\u;
 #[AsCommand(name: 'oib:upgrade:14_to_15', description: 'Upgrades OrderInvoiceBundle from version 1.3.3 to 1.4')]
 class Upgrade14To15Command extends Command
 {
-    private QuestionHelper $qHelper;
-
     const int DOCTRINE_BATCH_SIZE = 20;
     const int SELECT_BATCH_SIZE = 50;
-    private int $selectOffset = 0;
 
     public function __construct
     (
@@ -30,8 +27,6 @@ class Upgrade14To15Command extends Command
     )
     {
         parent::__construct();
-
-        $this->qHelper = new QuestionHelper();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -121,13 +116,14 @@ class Upgrade14To15Command extends Command
     {
         $output->writeln('Transforming database...');
         $dbConn = $this->em->getConnection();
+        $selectOffset = 0;
         
         while (true) 
         {
             $qb = $dbConn->createQueryBuilder()
                     ->select('*')
                     ->from('oi_invoice')
-                    ->setFirstResult($this->selectOffset)
+                    ->setFirstResult($selectOffset)
                     ->setMaxResults(self::SELECT_BATCH_SIZE);
                 
             $rowsInvoice = $qb->fetchAllAssociative();   if (empty($rowsInvoice)) {break;}
@@ -228,7 +224,7 @@ class Upgrade14To15Command extends Command
                 }
             }
 
-            $this->selectOffset += self::SELECT_BATCH_SIZE;
+            $selectOffset += self::SELECT_BATCH_SIZE;
         }
         
         $output->writeln('Database was transformed...');
@@ -239,13 +235,14 @@ class Upgrade14To15Command extends Command
     {
         $output->writeln('Changing items ownership in the database...');
         $dbConn = $this->em->getConnection();
+        $selectOffset = 0;
         
         while (true) 
         {
             $qb = $dbConn->createQueryBuilder()
                     ->select('*')
                     ->from('oi_order')
-                    ->setFirstResult($this->selectOffset)
+                    ->setFirstResult($selectOffset)
                     ->setMaxResults(self::SELECT_BATCH_SIZE);
                 
             $orders = $qb->fetchAllAssociative();   if (empty($orders)) {break;}
@@ -296,16 +293,21 @@ class Upgrade14To15Command extends Command
                         $dbConn->createQueryBuilder()
                             ->update('oi_item it')
                             ->where('id = '.$orderItem['id'])
-                            ->set('it.order_id', ':order_id')
-                                ->setParameter('order_id', null)
                             ->set('it.invoice_regular_id', ':invoice_regular_id')
                                 ->setParameter('invoice_regular_id', $order['invoice_regular_id'])
+                            ->executeStatement();
+                        
+                        $dbConn->createQueryBuilder()
+                            ->update('oi_item it')
+                            ->where('id = '.$orderItem['id'])
+                            ->set('it.order_id', ':order_id')
+                                ->setParameter('order_id', null)
                             ->executeStatement();
                     }
                 }
             }
 
-            $this->selectOffset += self::SELECT_BATCH_SIZE;
+            $selectOffset += self::SELECT_BATCH_SIZE;
         }
         
         $output->writeln('Items ownership was changed...');
@@ -316,22 +318,22 @@ class Upgrade14To15Command extends Command
     {
         $output->writeln('Moving/copiyng money related data...');
         $dbConn = $this->em->getConnection();
+        $selectOffset = 0;
         
         while (true) 
         {
             $qb = $dbConn->createQueryBuilder()
                     ->select('*')
                     ->from('oi_order')
-                    ->setFirstResult($this->selectOffset)
+                    ->setFirstResult($selectOffset)
                     ->setMaxResults(self::SELECT_BATCH_SIZE);
                 
             $orders = $qb->fetchAllAssociative();   if (empty($orders)) {break;}
             
             foreach ($orders as $order)
-            { 
+            {
                 if (!empty($order['invoice_proforma_id'])) 
                 {
-                    dump('Processing order '.$order['id'].' with proforma invoice '.$order['invoice_proforma_id']);
                     // Copy to proforma and leave order unchanged
                     $dbConn->createQueryBuilder()
                         ->update('oi_invoice_proforma prof')
@@ -355,7 +357,6 @@ class Upgrade14To15Command extends Command
                         ->fetchOne();
                     if ($proformaPayable == 1)
                     {
-                        dump('Proforma invoice '.$order['invoice_proforma_id'].' is payable, moving payment data as well...');
                         $dbConn->createQueryBuilder()
                             ->update('oi_invoice_proforma prof')
                             ->where('id = '.$order['invoice_proforma_id'])
@@ -371,7 +372,6 @@ class Upgrade14To15Command extends Command
 
                 if (!empty($order['invoice_regular_id'])) 
                 {
-                    dump('Processing order '.$order['id'].' with regular invoice '.$order['invoice_regular_id']);
                     // Copy to regular
                     $dbConn->createQueryBuilder()
                         ->update('oi_invoice_regular reg')
@@ -418,7 +418,7 @@ class Upgrade14To15Command extends Command
                 }
             }
 
-            $this->selectOffset += self::SELECT_BATCH_SIZE;
+            $selectOffset += self::SELECT_BATCH_SIZE;
         }
         
         $output->writeln('Done moving/copiyng money related data...');
