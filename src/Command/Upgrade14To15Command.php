@@ -140,6 +140,9 @@ class Upgrade14To15Command extends Command
                     ->where('invoice_id = :invoice_id')
                         ->setParameter('invoice_id', $rowInvoice['id'])
                     ->fetchOne();
+                    
+                if (!$orderID) {continue;}
+
                 $sellerID = $dbConn->createQueryBuilder()
                     ->select('id')
                     ->from('oi_seller')
@@ -152,6 +155,10 @@ class Upgrade14To15Command extends Command
                     ->where('invoice_id = :invoice_id')
                         ->setParameter('invoice_id', $rowInvoice['id'])
                     ->fetchOne();
+
+                // Handle missing seller/buyer/order
+                $sellerID = ($sellerID !== false) ? $sellerID : null;
+                $buyerID  = ($buyerID  !== false) ? $buyerID  : null;
 
                 $dbConn->createQueryBuilder()
                     ->update('oi_order o')
