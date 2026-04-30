@@ -137,17 +137,20 @@ class Upgrade14To15Command extends Command
                 $orderID = $dbConn->createQueryBuilder()
                     ->select('id')
                     ->from('oi_order')
-                    ->where('invoice_id = '.$rowInvoice['id'])
+                    ->where('invoice_id = :invoice_id')
+                        ->setParameter('invoice_id', $rowInvoice['id'])
                     ->fetchOne();
                 $sellerID = $dbConn->createQueryBuilder()
                     ->select('id')
                     ->from('oi_seller')
-                    ->where('invoice_id = '.$rowInvoice['id'])
+                    ->where('invoice_id = :invoice_id')
+                        ->setParameter('invoice_id', $rowInvoice['id'])
                     ->fetchOne();
                 $buyerID = $dbConn->createQueryBuilder()
                     ->select('id')
                     ->from('oi_buyer')
-                    ->where('invoice_id = '.$rowInvoice['id'])
+                    ->where('invoice_id = :invoice_id')
+                        ->setParameter('invoice_id', $rowInvoice['id'])
                     ->fetchOne();
 
                 $dbConn->createQueryBuilder()
