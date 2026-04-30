@@ -17,12 +17,13 @@
 
 
 ## 1.4.0 to 1.4.2
-- Change version in composer.json to `"psys/order-invoice-bundle": "^1.4",` and run: `composer update`
+- Run: `composer update`
 - Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
 - Optional: Update your mPDF twig template: `symfony console make:oib:invoice:mpdf_twig_template`
 
 
 ## 1.3.3 to 1.4.0
+- Change version in composer.json to `"psys/order-invoice-bundle": "^1.4",` and run: `composer update`
 - Run: `symfony console oib:upgrade:13_to_14`
 - Rename `State::NEW` to `State::UNPAID`
 - Rename `orderItem` to `item`
@@ -34,10 +35,12 @@
 
 
 ## 1.3.2 to 1.3.3
+- Run: `composer update`
 - Run: `symfony console make:migration` --> `symfony console doctrine:migrations:migrate`
 
 
 ## 1.2 to 1.3
+- Change version in composer.json to `"psys/order-invoice-bundle": "^1.3",` and run: `composer update`
 - Run: `symfony console oib:upgrade:12_to_13`
 
 During this process, you can either continue using your current (custom) file entity or switch to the new default file entity. If you decide to keep using your current (custom) file entity, you don't have to change anything. If you choose to switch to the new file entity (table `oi_file`), your current file records will not be automatically transferred to the new table `oi_file`.
