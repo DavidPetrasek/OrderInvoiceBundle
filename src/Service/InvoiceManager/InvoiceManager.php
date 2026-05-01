@@ -166,7 +166,7 @@ class InvoiceManager
 
         $dbConn->executeStatement
         (
-            "UPDATE oi_settings SET value = 1 WHERE option = 'invoice_proforma_sequential_number' OR option = 'invoice_final_sequential_number';"
+            "UPDATE oi_settings SET value = 1 WHERE option = 'invoice_proforma_sequential_number' OR option = 'invoice_advance_sequential_number' OR option = 'invoice_final_sequential_number' OR option = 'invoice_regular_sequential_number';"
         );
 
         $dbConn->executeStatement('UNLOCK TABLES;');
