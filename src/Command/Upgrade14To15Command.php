@@ -16,8 +16,7 @@ use function Symfony\Component\String\u;
 #[AsCommand(name: 'oib:upgrade:14_to_15', description: 'Upgrades OrderInvoiceBundle from version 1.3.3 to 1.4')]
 class Upgrade14To15Command extends Command
 {
-    const int DOCTRINE_BATCH_SIZE = 20;
-    const int SELECT_BATCH_SIZE = 50;
+    private const SELECT_BATCH_SIZE = 50;
 
     public function __construct
     (
