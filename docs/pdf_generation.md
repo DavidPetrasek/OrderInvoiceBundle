@@ -38,8 +38,15 @@ $mpdfGenerator->generate($htmlPDF,
 - Works with the [Styler](./templates_styling.md)
 
 Example implementation:
+
+``` yaml
+# config/packages/psys_order_invoice.yaml
+psys_order_invoice:
+    invoice_binary_provider: App\Service\OrderInvoiceBundle\InvoiceBinaryProvider
+```
+
 ``` php
-// ./src/Service/OrderInvoiceBundle.php
+// src/Service/OrderInvoiceBundle.php
 <?php
 namespace App\Service\OrderInvoiceBundle;
 
