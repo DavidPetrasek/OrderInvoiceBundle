@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table (name: 'oi_invoice_proforma')]
 class InvoiceProforma
 {
-    use InvoiceTrait, MoneyTrait;
+    use InvoiceTrait, MoneyTrait, PaidTrait;
     
     #[ORM\OneToOne(mappedBy: 'invoice_proforma', cascade: ['persist'])]
     private Order $order;

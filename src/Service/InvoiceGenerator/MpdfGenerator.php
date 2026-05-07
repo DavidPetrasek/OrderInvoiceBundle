@@ -2,10 +2,25 @@
 namespace Psys\OrderInvoiceBundle\Service\InvoiceGenerator;
 
 use Mpdf\Output\Destination;
-
+use Mpdf\HTMLParserMode;
 
 class MpdfGenerator
 {
+    private ?string $cssFilePath = null;
+
+    /**
+     * Set the absolute path to the CSS stylesheet.
+     * 
+     * @param string $cssFilePath Absolute path to the CSS file.
+     * @return self
+     */
+    public function useCss(string $cssFilePath): self
+    {
+        $this->cssFilePath = $cssFilePath;
+        
+        return $this;
+    }
+
     /**
      * Convert an HTML string into raw PDF binary data.
      *
@@ -30,7 +45,24 @@ class MpdfGenerator
                 $clbBeforeRender($mpdf);
             }
 
-            $mpdf->WriteHTML($html);
+            // Check if CSS file path is set and process it
+            if ($this->cssFilePath !== null) 
+            {
+                if (!file_exists($this->cssFilePath)) 
+                {
+                    throw new \RuntimeException(sprintf('The CSS file was not found at the specified path: "%s"', $this->cssFilePath));
+                }
+
+                $stylesheet = file_get_contents($this->cssFilePath);
+                
+                $mpdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+                $mpdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+            } 
+            else 
+            {
+                // Fallback to standard writing if no CSS is provided
+                $mpdf->WriteHTML($html);
+            }
 
             if ($clbAfterRender) 
             {

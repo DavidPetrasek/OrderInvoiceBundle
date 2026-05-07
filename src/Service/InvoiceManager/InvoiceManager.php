@@ -32,6 +32,18 @@ class InvoiceManager
 
         $table = "oi_invoice_{$type}";
 
+        $invoiceRow = $dbConn->executeQuery
+        (
+            "SELECT * FROM $table WHERE id = :id;",
+            [
+                'id' => $invoiceSpecific->getId()
+            ]
+        );
+        if (!$invoiceRow->fetchOne()) 
+        {
+            throw new \Exception("Unique payment reference number cannot be set, because {$type} invoice does not exist in the database. Make sure order was saved first.");
+        }
+
         $this->em->getConnection()->executeStatement("LOCK TABLES {$table} WRITE;");
         
         $paymentReference = $this->generateUniquePaymentReference($length, $table);
@@ -44,9 +56,10 @@ class InvoiceManager
                 'invoice_id' => $invoiceSpecific->getId()
             ]
         );
-        $invoiceSpecific->setPaymentReference($paymentReference);
         
         $dbConn->executeStatement('UNLOCK TABLES;');
+
+        $invoiceSpecific->setPaymentReference($paymentReference);
     }
 
     /**
@@ -170,7 +183,5 @@ class InvoiceManager
         );
 
         $dbConn->executeStatement('UNLOCK TABLES;');
-
-        $this->em->flush();
     }
 }

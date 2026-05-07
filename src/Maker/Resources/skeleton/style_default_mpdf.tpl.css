@@ -1,0 +1,252 @@
+/* VISUAL HELP */
+/* table
+{
+	border: 3px solid black;
+}
+th
+{
+	border: 2px solid green;
+}
+td 
+{
+	border: 2px solid purple;
+} */
+
+
+/* ==========================================================================
+   Global & Typography
+   ========================================================================== */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    color: #333333;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4 {
+    color: #111111;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+/* ==========================================================================
+   Header Section
+   ========================================================================== */
+.header {
+    width: 180mm;
+    margin-left: 15mm;
+    border-bottom: 2px solid #555555;
+    padding-top: 13mm;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.header_heading {
+    font-size: 18pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Seller & Buyer Information
+   ========================================================================== */
+.seller_buyer_detail {
+    width: 180mm;
+    margin-left: 15mm;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+
+.seller_buyer td {
+    vertical-align: top;
+    width: 50%;
+}
+
+.seller {
+    padding-right: 20px;
+}
+
+.buyer {
+    padding-left: 20px;
+}
+
+.seller h3, .buyer h3 {
+    font-size: 12pt;
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.seller_address, .buyer_address {
+    font-size: 10pt;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   Order & Payment Details
+   ========================================================================== */
+.detail {
+    width: 110mm;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.detail td {
+    padding: 4px 0;
+    vertical-align: top;
+}
+
+.detail td.label {
+    width: 60mm;
+    font-weight: bold;
+    color: #555555;
+}
+
+.detail strong {
+    color: #000000;
+}
+
+.detail em {
+    font-style: italic;
+    color: #666666;
+}
+
+/* ==========================================================================
+   Main Items Table
+   ========================================================================== */
+.items {
+    width: 180mm;
+    margin-left: 15mm;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.items th, .items td {
+    border: 1px solid #cccccc;
+    padding: 8px;
+    vertical-align: top;
+}
+
+.items thead th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #111111;
+    text-align: right;
+}
+
+.items tbody td {
+    text-align: right;
+}
+
+.items th.amount, .items td.amount {
+    text-align: center;
+}
+
+.items th.short_description, .items td.short_description {
+    text-align: left;
+    width: 50mm;
+}
+
+.final_subtotal {
+    font-weight: bold;
+    background-color: #fafafa;
+    border-top: 2px solid #555555;
+}
+
+
+/* ==========================================================================
+   Totals Tables (Summary, Advances, Remaining)
+   ========================================================================== */
+
+.totals, .remaining {
+    width: 90mm;
+    margin-left: 105mm;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.totals td, .remaining td {
+    padding: 6px 8px;
+    text-align: right;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.totals td.label, .remaining td.label {
+    text-align: left;
+    font-weight: normal;
+    color: #555555;
+}
+
+.total_vat_incl_desc, .total_amount_due_desc {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #111111;
+    border-top: 2px solid #333333;
+    border-bottom: none;
+}
+
+.total_vat_incl, .total_amount_due {
+    font-size: 11pt;
+    font-weight: bold;
+    border-top: 2px solid #333333;
+    border-bottom: none;
+}
+
+
+/* ==========================================================================
+   Advance Invoices Table
+   ========================================================================== */
+.advance_invoices_heading {
+    width: 180mm;
+    margin-left: 15mm;
+    font-size: 12pt;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 5px;
+}
+
+.advances {
+    width: 180mm;
+    margin-left: 15mm;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.advances th, .advances td {
+    border: 1px solid #cccccc;
+    padding: 6px 8px;
+    text-align: right;
+}
+
+.advances th.reference, .advances td.reference {
+    text-align: center;
+}
+
+.advances th.date, .advances td.date {
+    text-align: left; 
+}
+
+.advances_heading th {
+    background-color: #f9f9f9;
+    font-weight: bold;
+}
+
+.advances_total_deposits {
+    font-weight: bold;
+    background-color: #f2f2f2;
+    border-top: 2px solid #555555;
+}
+
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+.credit {
+    color: #cc0000;
+    font-weight: bold;
+}

@@ -22,12 +22,9 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
 {       
     $ent_Order = (new Order())
         ->setCategory(MyOrderCategory::SECOND_CATEGORY) // Optional
-        ->setCustomer($security->getUser()) // Optional
-        ->setCreatedAt(new \DateTimeImmutable())
-        ->setState(State::UNPAID);
+        ->setCustomer($security->getUser()); // Optional
 
     $ent_InvoiceRegular = (new InvoiceRegular())
-        ->setCreatedAt(new \DateTimeImmutable())
         ->setDueDate(new \DateTimeImmutable('+14 days')) // Optional
         ->setPaymentMode(PaymentMode::CREDIT_CARD)
         ->setCurrency('GBP')
@@ -71,9 +68,8 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setLegalEntityRegistrationDetails('Registered in England & Wales No. 01234567  ·  Registered office : 1 King’s Road, London SW1')
         );
 
-    $invoiceManager->setUniquePaymentReference($ent_InvoiceRegular, length: 9);
-    
     $orderManager->save($ent_Order);
+    $invoiceManager->setUniquePaymentReference($ent_InvoiceRegular, length: 9);
 }
 ```
 

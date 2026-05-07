@@ -15,16 +15,16 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 
 
-class Upgrade14To15PreparedMigration extends AbstractMaker
+class Upgrade15To16PreparedMigration extends AbstractMaker
 {
     public static function getCommandName(): string
     {
-        return 'make:oib:upgrade_14_to_15_prepared_migration';
+        return 'make:oib:upgrade_15_to_16_prepared_migration';
     }
 
     public static function getCommandDescription(): string
     {
-        return 'Updates the database during upgrade from version 1.4.6 to 1.5.0';
+        return 'Updates the database during upgrade from version 1.5.5 to 1.6.0';
     }
 
     public function configureCommand(Command $command, InputConfiguration $inputConfig): void
@@ -55,7 +55,7 @@ class Upgrade14To15PreparedMigration extends AbstractMaker
 
         $generator->generateClass(
             $changePasswordFormTypeClassNameDetails->getFullName(),
-            __DIR__.'/Resources/skeleton/Upgrade14To15PreparedMigration.tpl.php',
+            __DIR__.'/Resources/skeleton/Upgrade15To16PreparedMigration.tpl.php',
             ['use_statements' => $useStatements]
         );
 

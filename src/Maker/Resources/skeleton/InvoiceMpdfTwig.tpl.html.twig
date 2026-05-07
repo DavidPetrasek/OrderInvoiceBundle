@@ -33,31 +33,30 @@
 
 <html>
 <head>
-	<meta charset="UTF-8">	
-	{# <link rel="stylesheet" href="{{ assetsDir }}/css/pdf/whatever.css"> #}
+	<meta charset="UTF-8">
 </head>
 
 <body>
 
 	<div class="header">
-	 	<h1>
+	 	<h1 class="header_heading">
             {% if invoiceType == 'PROFORMA' %}
                 PROFORMA
             {% elseif invoiceType == 'ADVANCE' %}
-                ADVANCE PAYMENT
+                DEPOSIT
             {% endif %} 
             
             INVOICE - reference number: {{ currInvoice.referenceNumber }}
 	 	</h1>
 	</div>
 
-	<table class="seller-buyer-detail">
+	<table class="seller_buyer_detail">
     	
-    	<tr class="seller-buyer">
+    	<tr class="seller_buyer">
     		<td class="seller">
             	
             	<h3>Seller</h3>
-            	<div class="address">
+            	<div class="seller_address">
                     {{ ent_Order.seller.organization }}
                 	<br>{{ ent_Order.seller.streetAddress1 }}
                 	<br>{{ ent_Order.seller.postcode }} {{ ent_Order.seller.city }}
@@ -70,7 +69,7 @@
         	<td class="buyer">
             	
             	<h3>Buyer</h3>
-            	<div class="address">
+            	<div class="buyer_address">
 					{{ ent_Order.buyer.fullName }}
                 	<br>{{ ent_Order.buyer.streetAddress1 }}
                 	<br>{{ ent_Order.buyer.postcode }} {{ ent_Order.buyer.city }}
@@ -89,7 +88,7 @@
                     {% if showPaymentDetails %}
 
                         <tr>
-                            <td>Payment mode</td>
+                            <td class="label">Payment mode</td>
                             <td>
                                 {% if paymentMode.value == 1 %}
                                     regular bank transfer
@@ -103,26 +102,26 @@
 
                         {% if paymentMode.value == 1 %}
                             <tr>
-                                <td>Bank account</td>
+                                <td class="label">Bank account</td>
                                 <td>{{ ent_Order.paymentModeBankAccount }}</td>
                             </tr>
                         {% endif %}
                         
                         <tr>
-                    		<td>Payment reference number</td>
+                    		<td class="label">Payment reference number</td>
                         	<td>{{ currInvoice.paymentReference }}</td>
                         </tr>
 
                     {% endif %}
                     
             		<tr>
-                		<td>Issued at</td>
+                		<td class="label">Issued at</td>
                     	<td>{{ currInvoice.createdAt|format_datetime(pattern="d. MMMM y") }}</td>
                     </tr>
                     
                     {% if showPaymentDetails %}
                         <tr>
-                    		<td>Due date</td>
+                    		<td class="label">Due date</td>
                         	<td>{{ currInvoice.dueDate|format_datetime(pattern="d. MMMM y") }}</td>
                         </tr>
         		    {% endif %}
@@ -150,12 +149,12 @@
 	
     <table class="items">
         <thead>
-            <tr>
+            <tr class="items_heading">
                 <th class="amount">Amount</th>
-                <th class="short-description">Short description</th>
-                <th class="price-vat-excluded">Price (VAT excl.)</th>
+                <th class="short_description">Short description</th>
+                <th class="price_vat_excluded">Price (VAT excl.)</th>
                 <th>VAT rate</th>
-                <th>VAT total</th>
+                {% if invoiceType != 'PROFORMA' %}<th>VAT</th>{% endif %}
                 <th>Total (VAT incl.)</th>
             </tr>
         </thead>
@@ -164,52 +163,54 @@
             {% for item in items %}
                 <tr class="item">
                     <td class="amount">{{ item.amount }}</td>
-                    <td class="short-description">
+                    <td class="short_description">
                         {{ item.name }}<br>
                         {{ item.shortDescription }}
                     </td>
-                    <td class="price-vat-excluded">{{ item.priceVatExcluded|format_currency(currency) }}</td>
+                    <td class="price_vat_excluded">{{ item.priceVatExcluded|format_currency(currency) }}</td>
                     <td>{{ item.vatRate }}%</td>
-                    <td>{{ item.vat|format_currency(currency) }}</td>
+                    {% if invoiceType != 'PROFORMA' %}<td>{{ item.vat|format_currency(currency) }}</td>{% endif %}
                     <td>{{ item.priceVatIncluded|format_currency(currency) }}</td>
                 </tr>
             {% endfor %}
 
             {% if invoiceType == 'FINAL' %}
-                <tr class="final_subtotal">
-                    <td></td>
-                    <td>Subtotal (full contract value)</td>
-                    <td>{{ totalsEntity.priceVatExcluded|format_currency(currency) }}</td>
-                    <td></td>
-                    <td>{{ totalsEntity.priceVat|format_currency(currency) }}</td>
-                    <td>{{ totalsEntity.priceVatIncluded|format_currency(currency) }}</td>
+                <tr>
+                    <td class="final_subtotal"></td>
+                    <td class="final_subtotal">Subtotal</td>
+                    <td class="final_subtotal">{{ totalsEntity.priceVatExcluded|format_currency(currency) }}</td>
+                    <td class="final_subtotal"></td>
+                    <td class="final_subtotal">{{ totalsEntity.priceVat|format_currency(currency) }}</td>
+                    <td class="final_subtotal">{{ totalsEntity.priceVatIncluded|format_currency(currency) }}</td>
                 </tr>
             {% endif %}
         </tbody>
     </table>
 
     {% if invoiceType != 'FINAL' %}
-        
+
         <table class="totals">
-            <thead>
-                <tr>
-                    <th>Total (VAT excl.)</th>
-                    <th>Total (VAT incl.)</th>
-                    {% if invoiceType != 'PROFORMA' %}
-                        <th>VAT base</th>
-                        <th>VAT total</th>
-                    {% endif %}
-                </tr>
-            </thead>
+          
             <tbody>
                 <tr>
+                    <td class="label">Total (VAT excl.)</td>
                     <td>{{ totalsEntity.priceVatExcluded|format_currency(currency) }}</td>
-                    <td>{{ totalsEntity.priceVatIncluded|format_currency(currency) }}</td>
+                </tr>
 
-                    {% if invoiceType != 'PROFORMA' %}
+                {% if invoiceType != 'PROFORMA' %}
+                    <tr>
+                        <td class="label">VAT base</td>
                         <td>{{ totalsEntity.priceVatBase|format_currency(currency) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">VAT total</td>
                         <td>{{ totalsEntity.priceVat|format_currency(currency) }}</td>
-                    {% endif %}
+                    </tr>
+                {% endif %}
+
+                <tr>
+                    <td class="total_vat_incl_desc label">Total (VAT incl.)</td>
+                    <td class="total_vat_incl">{{ totalsEntity.priceVatIncluded|format_currency(currency) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -217,15 +218,15 @@
     {% elseif invoiceType == 'FINAL' %}
 
         {% if ent_Order.invoicesAdvance is not empty %}
-            <h4>Advance invoices</h4>
+            <h4 class="advance_invoices_heading">Deposits</h4>
 
             {% set advancesTotals = ent_Order|invoices_advance_totals %}
 
             <table class="advances">
                 <thead>
-                    <tr>
-                        <th>Reference</th>
-                        <th>Date</th>
+                    <tr class="advances_heading">
+                        <th class="reference">Reference</th>
+                        <th class="date">Date</th>
                         <th>Amount (VAT excl.)</th>
                         <th>VAT</th>
                         <th>Amount (incl. VAT)</th>
@@ -234,8 +235,8 @@
                 <tbody>
                     {% for adv in ent_Order.invoicesAdvance %}
                         <tr>
-                            <td>{{ adv.referenceNumber }}</td>
-                            <td>{{ adv.createdAt|format_datetime(pattern="d. MMMM y") }}</td>
+                            <td class="reference">{{ adv.referenceNumber }}</td>
+                            <td class="date">{{ adv.createdAt|format_datetime(pattern="d. MMMM y") }}</td>
                             <td>{{ adv.priceVatExcluded|format_currency(currency) }}</td>
                             <td>{{ adv.priceVat|format_currency(currency) }}</td>
                             <td>{{ adv.priceVatIncluded|format_currency(currency) }}</td>
@@ -244,10 +245,10 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="2">Total deposits</th>
-                        <th>{{ advancesTotals.vatExcluded|format_currency(currency) }}</th>
-                        <th>{{ advancesTotals.vat|format_currency(currency) }}</th>
-                        <th>{{ advancesTotals.vatIncluded|format_currency(currency) }}</th>
+                        <td colspan="2" class="advances_total_deposits">Total deposits</td>
+                        <td class="advances_total_deposits">{{ advancesTotals.vatExcluded|format_currency(currency) }}</td>
+                        <td class="advances_total_deposits">{{ advancesTotals.vat|format_currency(currency) }}</td>
+                        <td class="advances_total_deposits">{{ advancesTotals.vatIncluded|format_currency(currency) }}</td>
                     </tr>
                 </tfoot>
             </table>
@@ -259,18 +260,18 @@
 
             <table class="remaining">
                 <tr>
-                    <th>Net remaining (VAT excl.)</th>
+                    <td class="label">Net remaining (VAT excl.)</td>
                     <td>{{ remaining_net|format_currency(currency) }}</td>
                 </tr>
                 <tr>
-                    <th>Remaining VAT</th>
+                    <td class="label">Remaining VAT</td>
                     <td>{{ remaining_vat|format_currency(currency) }}</td>
                 </tr>
                 <tr>
-                    <th>Total amount due (incl. VAT)</th>
-                    <td>
+                    <td class="total_amount_due_desc label">Total amount due (incl. VAT)</td>
+                    <td class="total_amount_due">
                         {% if remaining_incl < 0 %}
-                            <span class="credit">Credit due to customer: {{ (remaining_incl * -1)|format_currency(currency) }}</span>
+                            <span class="credit">Credit due to customer:<br> {{ (remaining_incl * -1)|format_currency(currency) }}</span>
                         {% else %}
                             {{ remaining_incl|format_currency(currency) }}
                         {% endif %}
@@ -289,22 +290,22 @@
 
             <table class="remaining">
                 <tr>
-                    <th>Payment received via Proforma [{{ invProforma.createdAt|format_datetime(pattern="d. MMMM y") }}]</th>
+                    <td class="label">Payment received via Proforma [{{ invProforma.createdAt|format_datetime(pattern="d. MMMM y") }}]</td>
                     <td>- {{ invProforma.priceVatIncluded|format_currency(currency) }}</td>
                 </tr>
                 <tr>
-                    <th>Net remaining (VAT excl.)</th>
+                    <td class="label">Net remaining (VAT excl.)</td>
                     <td>{{ remaining_net|format_currency(currency) }}</td>
                 </tr>
                 <tr>
-                    <th>Remaining VAT</th>
+                    <td class="label">Remaining VAT</td>
                     <td>{{ remaining_vat|format_currency(currency) }}</td>
                 </tr>
                 <tr>
-                    <th>Total amount due (incl. VAT)</th>
-                    <td>
+                    <td class="total_amount_due_desc label">Total amount due (incl. VAT)</td>
+                    <td class="total_amount_due">
                         {% if remaining_incl < 0 %}
-                            <span class="credit">Credit due to customer: {{ (remaining_incl * -1)|format_currency(currency) }}</span>
+                            <span class="credit">Credit due to customer:<br> {{ (remaining_incl * -1)|format_currency(currency) }}</span>
                         {% else %}
                             {{ remaining_incl|format_currency(currency) }}
                         {% endif %}

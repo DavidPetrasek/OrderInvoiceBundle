@@ -56,7 +56,7 @@ class FileTest extends TestCase
         $file = new File();
         $before = new \DateTimeImmutable();
 
-        $result = $file->setCreatedAt();
+        $result = $file->setCreatedAt(new \DateTimeImmutable());
 
         $after = new \DateTimeImmutable();
 
@@ -77,14 +77,14 @@ class FileTest extends TestCase
         $this->assertSame($specificTime, $file->getCreatedAt());
     }
 
-    public function testSetCreatedAtWithNullUsesCurrentTime(): void
+    public function testSetCreatedAtWithNull(): void
     {
         $file = new File();
 
         $result = $file->setCreatedAt(null);
 
         $this->assertSame($file, $result);
-        $this->assertInstanceOf(\DateTimeImmutable::class, $file->getCreatedAt());
+        $this->assertSame(null, $file->getCreatedAt());
     }
 
     public function testCompleteFileDataFlow(): void

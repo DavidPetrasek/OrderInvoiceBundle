@@ -12,7 +12,9 @@ Example:
 ``` php
 use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
 
-$mpdfGenerator->generate($htmlPDF, 
+$mpdfGenerator
+    ->useCss('/abs_path/to/style.css') // Optional
+    ->generate($htmlPDF, 
     // Optional mPDF config
     [
         'margin_left' => 0,
@@ -54,6 +56,7 @@ use Psys\OrderInvoiceBundle\Service\InvoiceBinaryProvider\AbstractInvoiceBinaryP
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Environment;
 
 
@@ -62,7 +65,8 @@ class InvoiceBinaryProvider extends AbstractInvoiceBinaryProvider
     public function __construct
     (
         private readonly Environment $twig,
-        private readonly MpdfGenerator $mpdfGenerator
+        private readonly MpdfGenerator $mpdfGenerator,
+        #[Autowire('%kernel.project_dir%')] private string $projectDir
     ) 
     {}
 
@@ -74,7 +78,9 @@ class InvoiceBinaryProvider extends AbstractInvoiceBinaryProvider
                 'invoiceType'  => $invoiceType->name,
                 'ent_InvoiceAdvance'  => $ent_InvoiceAdvance,
             ]);
-        return $this->mpdfGenerator->generate($htmlPDF);
+        return $this->mpdfGenerator
+            ->useCss($this->projectDir.'/assets/css/invoice/default_mpdf.css')
+            ->generate($htmlPDF);
     }
 
     public function getRegular(Order $ent_Order): string

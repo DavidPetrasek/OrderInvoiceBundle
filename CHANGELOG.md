@@ -2,7 +2,33 @@
 All notable changes to this project are documented in this file.
 
 
-## [1.5.0] - 2026--
+## [1.6.0] - 2026-05-05
+### Added
+- Default invoice style for mPDF twig template
+- MpdfGenerator can specify CSS file to use (`useCss`)
+- methods: `isPaid`, `setPaid`
+- If at least a single advance invoice was marked as paid, order's state is automatically set to `PARTIALLY_PAID`
+- If final or regular invoice was marked as paid, order's state is automatically set to `PAID`
+- If the total amount due is equal to zero, after deducting advance invoice payments, the final invoice is automatically marked as paid.
+
+### Removed
+- Order: paid_at
+
+### Changed
+- docs
+- New order's state is set to `UNPAID` by default, so any `->setState(State::UNPAID)` can be removed
+- Creation date and time is automatically set to now so any `->setCreatedAt(new \DateTimeImmutable())` can be removed
+- Twig template
+
+### Fixed
+- Final invoice can be marked as paid
+- setUniquePaymentReference
+- Show exception when final is issued and order has no payment mode or currency set
+- Styler
+
+
+
+## [1.5.0] - 2026-04-30
 ### Added
 
 ### Removed

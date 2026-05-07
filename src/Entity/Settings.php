@@ -22,7 +22,7 @@ class Settings
     #[ORM\Column(length: 750, nullable: true)]
     private ?string $value = null;
 
-    #[ORM\Column (options:["default" => "CURRENT_TIMESTAMP"]) ]
+    #[ORM\Column(options:['default' => 'CURRENT_TIMESTAMP']) ]
     private \DateTimeImmutable $changed_at;
 
 

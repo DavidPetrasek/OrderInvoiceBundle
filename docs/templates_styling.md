@@ -10,7 +10,11 @@ Templates & styling
 ``` bash
 symfony console make:oib:invoice:mpdf_twig_template
 ```
-#### Available styles: none (UPCOMING FEATURE)
+#### Available styles: default
+<figure>
+    <a href="./assets/style/default_regular.png"><img src="./assets/style/default_regular.png" alt="regular_invoice" width="350"/></a>
+    <figcaption>default</figcaption>
+</figure>
 
 ### Available twig filters:
 - `invoices_advance_totals` - Adds up totals of all advance invoices

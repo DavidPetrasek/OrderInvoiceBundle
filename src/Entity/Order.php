@@ -26,7 +26,7 @@ class Order
     #[ORM\OneToMany(mappedBy: 'order', targetEntity: Item::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $items;
     
-    #[ORM\Column]
+    #[ORM\Column(insertable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private \DateTimeImmutable $created_at;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
@@ -36,8 +36,8 @@ class Order
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?CustomerInterface $customer = null;
 
-    #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true])]
-    private ?int $state = null;
+    #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true, 'default' => 1])]
+    private ?int $state = 1;
 
 
     #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]

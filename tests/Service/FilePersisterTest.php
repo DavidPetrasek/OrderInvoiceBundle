@@ -302,8 +302,6 @@ class FilePersisterTest extends TestCase
                     $file = $entity->getFile();
                     if ($file !== null) {
                         $this->assertSame('application/pdf', $file->getMimeType());
-                        $this->assertNotNull($file->getCreatedAt());
-                        $this->assertInstanceOf(\DateTimeImmutable::class, $file->getCreatedAt());
                     }
                 }
             }

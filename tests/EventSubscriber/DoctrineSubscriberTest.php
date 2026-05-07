@@ -2,83 +2,145 @@
 
 namespace Psys\OrderInvoiceBundle\Tests\EventSubscriber;
 
-use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\UnitOfWork;
 use PHPUnit\Framework\TestCase;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
+use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\EventSubscriber\DoctrineSubscriber;
+use Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException;
 
 class DoctrineSubscriberTest extends TestCase
 {
-    private function createOnFlushEventArgs(array $insertions = [], array $updates = []): OnFlushEventArgs
+    private $entityManager;
+    private $unitOfWork;
+    private $eventArgs;
+    private $subscriber;
+
+    protected function setUp(): void
     {
-        $uow = $this->createMock(UnitOfWork::class);
-        $uow->method('getScheduledEntityInsertions')->willReturn($insertions);
-        $uow->method('getScheduledEntityUpdates')->willReturn($updates);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->unitOfWork = $this->createMock(UnitOfWork::class);
+        $this->eventArgs = $this->createMock(OnFlushEventArgs::class);
 
-        $manager = $this->createMock(EntityManagerInterface::class);
-        $manager->method('getUnitOfWork')->willReturn($uow);
+        $this->eventArgs->method('getObjectManager')->willReturn($this->entityManager);
+        $this->entityManager->method('getUnitOfWork')->willReturn($this->unitOfWork);
 
-        $eventArgs = $this->createMock(OnFlushEventArgs::class);
-        $eventArgs->method('getObjectManager')->willReturn($manager);
-
-        return $eventArgs;
+        $this->subscriber = new DoctrineSubscriber();
     }
 
-    public function testFinalWithoutProformaOrAdvanceThrowsException(): void
+    /**
+     * Helper to configure UnitOfWork scheduled entities
+     */
+    private function setupUow(array $insertions = [], array $updates = []): void
     {
-        $order = new Order();
-        $order->setInvoiceFinal(new InvoiceFinal());
+        $this->unitOfWork->method('getScheduledEntityInsertions')->willReturn($insertions);
+        $this->unitOfWork->method('getScheduledEntityUpdates')->willReturn($updates);
+    }
 
-        $subscriber = new DoctrineSubscriber();
+    public function testOnFlushThrowsExceptionWhenFinalInvoiceInsertedWithoutPriorInvoices(): void
+    {
+        $order = $this->createMock(Order::class);
+        $order->method('getInvoiceFinal')->willReturn(new InvoiceFinal());
+        $order->method('getInvoicesAdvance')->willReturn(new ArrayCollection());
+        $order->method('getInvoiceProforma')->willReturn(null);
 
-        $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
+        $this->setupUow([$order]);
+
+        $this->expectException(InvalidInvoiceStateException::class);
         $this->expectExceptionMessage('Final invoice requires proforma or advance invoice to be issued first.');
 
-        $subscriber->onFlush($this->createOnFlushEventArgs([$order]));
+        $this->subscriber->onFlush($this->eventArgs);
     }
 
-    public function testProformaAndAdvanceThrowsException(): void
+    public function testOnFlushThrowsExceptionWhenFinalInvoiceInsertedOnEmptyOrder(): void
     {
-        $order = new Order();
-        $order->setInvoiceProforma(new InvoiceProforma());
+        $order = $this->createMock(Order::class);
+        $finalInvoice = new InvoiceFinal();
+        
+        // Mocking requirements for the "Final invoice issuance" check
+        $order->method('getInvoicesAdvance')->willReturn(new ArrayCollection([new InvoiceAdvance()]));
+        $order->method('getInvoiceProforma')->willReturn(null);
+        $order->method('getItems')->willReturn(new ArrayCollection()); // Empty items
 
-        $advance = new InvoiceAdvance();
-        $order->addInvoiceAdvance($advance);
+        // We need both the Order updated and the Final Invoice inserted
+        $this->setupUow([$finalInvoice], [$order]);
 
-        $subscriber = new DoctrineSubscriber();
+        $this->expectException(InvalidInvoiceStateException::class);
+        $this->expectExceptionMessage('Final invoice requires the order to have at least one item (which represents the total price).');
 
-        $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
+        $this->subscriber->onFlush($this->eventArgs);
+    }
+
+    public function testSimultaneousProformaAndAdvanceThrowsException(): void
+    {
+        $this->setupUow([
+            new InvoiceProforma(),
+            new InvoiceAdvance()
+        ]);
+
+        $this->expectException(InvalidInvoiceStateException::class);
         $this->expectExceptionMessage('Proforma and advance invoice cannot be issued simultaneously.');
 
-        $subscriber->onFlush($this->createOnFlushEventArgs([$order]));
+        $this->subscriber->onFlush($this->eventArgs);
     }
 
-    public function testProformaOnlyDoesNotThrow(): void
+    public function testSimultaneousProformaAndRegularThrowsException(): void
     {
-        $order = new Order();
-        $order->setInvoiceProforma(new InvoiceProforma());
+        $this->setupUow([
+            new InvoiceProforma(),
+            new InvoiceRegular()
+        ]);
 
-        $subscriber = new DoctrineSubscriber();
-        $subscriber->onFlush($this->createOnFlushEventArgs([$order]));
+        $this->expectException(InvalidInvoiceStateException::class);
+        $this->expectExceptionMessage('Proforma and regular invoice cannot be issued simultaneously.');
 
-        $this->assertTrue(true);
+        $this->subscriber->onFlush($this->eventArgs);
     }
 
-    public function testUpdateFinalWithoutProformaOrAdvanceThrowsException(): void
+    public function testSimultaneousAdvanceAndRegularThrowsException(): void
     {
-        $order = new Order();
-        $order->setInvoiceFinal(new InvoiceFinal());
+        $this->setupUow([
+            new InvoiceAdvance(),
+            new InvoiceRegular()
+        ]);
 
-        $subscriber = new DoctrineSubscriber();
+        $this->expectException(InvalidInvoiceStateException::class);
+        $this->expectExceptionMessage('Advance and regular invoice cannot be issued simultaneously.');
 
-        $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
-        $this->expectExceptionMessage('Final invoice requires proforma or advance invoice to be issued first.');
+        $this->subscriber->onFlush($this->eventArgs);
+    }
 
-        $subscriber->onFlush($this->createOnFlushEventArgs([], [$order]));
+    public function testSimultaneousFinalAndProformaThrowsException(): void
+    {
+        $this->setupUow([
+            new InvoiceFinal(),
+            new InvoiceProforma()
+        ]);
+
+        $this->expectException(InvalidInvoiceStateException::class);
+        $this->expectExceptionMessage('Final and proforma invoice cannot be issued simultaneously.');
+
+        $this->subscriber->onFlush($this->eventArgs);
+    }
+
+    public function testSuccessfulOnFlushWithValidOrder(): void
+    {
+        $order = $this->createMock(Order::class);
+        // Valid state: Order inserted, no invoices yet
+        $order->method('getInvoiceFinal')->willReturn(null);
+        $order->method('getInvoicesAdvance')->willReturn(new ArrayCollection());
+        $order->method('getInvoiceProforma')->willReturn(null);
+
+        $this->setupUow([$order]);
+
+        // Should not throw any exception
+        $this->subscriber->onFlush($this->eventArgs);
+        $this->assertTrue(true); 
     }
 }

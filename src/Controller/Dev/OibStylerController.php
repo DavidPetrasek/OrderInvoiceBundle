@@ -164,6 +164,8 @@ class OibStylerController extends AbstractController
             ->setDueDate(new \DateTimeImmutable('+14 days'))
             ->setSequentialNumber(1)
             ->setPaymentMode(PaymentMode::CREDIT_CARD)
+            ->setCurrency('GBP')
+            ->setPaymentReference('777444663')
             ->addItem((new Item())
                 ->setName('Shoes')
                 ->setPriceVatIncluded(15)

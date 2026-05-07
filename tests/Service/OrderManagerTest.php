@@ -362,7 +362,7 @@ class OrderManagerTest extends TestCase
         $order->addItem($item);
 
         $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);
-        $this->expectExceptionMessage('This proforma invoice is payable and has no payment mode set.');
+        $this->expectExceptionMessage('Proforma invoice is payable and has no payment mode set.');
 
         $manager->save($order);
     }

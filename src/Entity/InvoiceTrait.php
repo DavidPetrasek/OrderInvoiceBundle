@@ -22,7 +22,7 @@ trait InvoiceTrait
     #[ORM\Column(type: Types::BIGINT, nullable: true, options:["unsigned" => true])]
     private ?string $payment_reference = null;
 
-    #[ORM\Column]
+    #[ORM\Column(insertable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private \DateTimeImmutable $created_at;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]

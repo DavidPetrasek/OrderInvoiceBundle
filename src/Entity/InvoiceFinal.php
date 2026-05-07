@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table (name: 'oi_invoice_final')]
 class InvoiceFinal
 {
-    use InvoiceTrait;
+    use InvoiceTrait, PaidTrait;
     
     #[ORM\OneToOne(mappedBy: 'invoice_final', cascade: ['persist'])]
     private Order $order;

@@ -8,9 +8,6 @@ use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
 
 trait MoneyTrait
 {
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $paid_at = null;
-
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
     private ?int $payment_mode = null;
 
@@ -32,18 +29,6 @@ trait MoneyTrait
     #[ORM\Column(length: 3, nullable: true, options:["fixed" => true, "comment" => "Three-letter alphabetic code (ISO 4217)"])]
     private ?string $currency = null;
 
-
-    public function getPaidAt(): ?\DateTimeImmutable
-    {
-        return $this->paid_at;
-    }
-
-    public function setPaidAt(?\DateTimeImmutable $paid_at): self
-    {        
-        $this->paid_at = $paid_at;
-
-        return $this;
-    }
     
     public function getPaymentMode(): ?PaymentMode
     {

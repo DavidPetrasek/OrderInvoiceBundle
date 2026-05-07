@@ -9,6 +9,7 @@ use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\Item;
+use Psys\OrderInvoiceBundle\Model\Order\State;
 use Psys\Utils\Math;
 
 
@@ -55,17 +56,54 @@ class OrderManager
                             ->setPriceVatExcluded($regularTotals['vatExcluded'])
                             ->setPriceVatBase($regularTotals['vatBase'])
                             ->setPriceVat($regularTotals['vat']);
+
+            if ($ent_InvoiceRegular->isPaid())
+            {
+                $ent_Order->setState(State::PAID);
+            }
         }
 
+        // Process final invoice
+        $ent_InvoiceFinal = $ent_Order->getInvoiceFinal();
+        
+        if ($ent_InvoiceFinal)
+        {
+            // Calculate total amount due after deducting advance invoice payments
+            $advancesTotals = $this->getInvoicesAdvanceTotals($ent_Order);
+            $totalAmountDue = $ent_Order->getPriceVatIncluded() - $advancesTotals['vatIncluded'];
+
+            // Mark final invoice as paid if no amount remains due
+            if (abs($totalAmountDue) < PHP_FLOAT_EPSILON)
+            {
+                $ent_InvoiceFinal->setPaid(true);
+            }
+        }
+        
         // Process advance invoices
+        $allAdvancesWerePaid = true;
+
         foreach ($ent_Order->getInvoicesAdvance() as $ent_InvoiceAdvance) 
         {
+            if (!$ent_InvoiceFinal && $ent_InvoiceAdvance->isPaid())
+            {
+                $ent_Order->setState(State::PARTIALLY_PAID);
+            }
+            else if ($ent_InvoiceFinal && !$ent_InvoiceAdvance->isPaid())
+            {
+                $allAdvancesWerePaid = false;
+            }
+
             $invoiceAdvanceTotals = $this->calculateTotals($ent_InvoiceAdvance);
 
             $ent_InvoiceAdvance->setPriceVatIncluded($invoiceAdvanceTotals['vatIncluded'])
                     ->setPriceVatExcluded($invoiceAdvanceTotals['vatExcluded'])
                     ->setPriceVatBase($invoiceAdvanceTotals['vatBase'])
                     ->setPriceVat($invoiceAdvanceTotals['vat']);
+        }
+
+        if ($ent_InvoiceFinal && $ent_InvoiceFinal->isPaid() && $allAdvancesWerePaid)
+        {
+            $ent_Order->setState(State::PAID);
         }
 
         $this->em->persist($ent_Order);        
@@ -86,13 +124,30 @@ class OrderManager
             {
                 if (empty($ent_InvoiceProforma->getPaymentMode()))
                 {
-                    throw new InvalidInvoiceStateException('This proforma invoice is payable and has no payment mode set.');
+                    throw new InvalidInvoiceStateException('Proforma invoice is payable and has no payment mode set.');
                 }
+            }
+            else if ($ent_InvoiceProforma->isPaid())
+            {
+                throw new InvalidInvoiceStateException('Proforma invoice is not payable and therefore can\'t be marked as paid.');
             }
 
             if (empty($ent_InvoiceProforma->getCurrency()))
             {
                 throw new InvalidInvoiceStateException('Proforma invoice has no currency set.');
+            }
+        }
+
+        $ent_InvoiceFinal = $ent_Order->getInvoiceFinal();
+        if (($ent_InvoiceProforma || !$ent_Order->getInvoicesAdvance()->isEmpty()) && $ent_InvoiceFinal)
+        {
+            if (empty($ent_Order->getPaymentMode()))
+            {
+                throw new InvalidInvoiceStateException('Order has no payment mode set.');
+            }
+            if (empty($ent_Order->getCurrency()))
+            {
+                throw new InvalidInvoiceStateException('Order has no currency set.');
             }
         }
 

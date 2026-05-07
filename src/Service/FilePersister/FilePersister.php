@@ -136,8 +136,7 @@ class FilePersister
             $ent_File = (new $this->fileEntityFQCN())
                 ->setMimeType($mimeType)
                 ->setNameFileSystem($nameFileSystem)
-                ->setNameDisplay($nameDisplay)
-                ->setCreatedAt();
+                ->setNameDisplay($nameDisplay);
 
             if ($invoiceType === InvoiceType::PROFORMA)
             {

@@ -25,7 +25,7 @@ class File implements FileInterface
     #[ORM\Column(length: 200)]
     private ?string $name_display = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, insertable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
 
 
@@ -76,12 +76,7 @@ class File implements FileInterface
     }
 
     public function setCreatedAt(?\DateTimeImmutable $created_at = null): self
-    {
-        if ($created_at === null)
-        {
-            $created_at = new \DateTimeImmutable();
-        }
-        
+    {        
         $this->created_at = $created_at;
 
         return $this;

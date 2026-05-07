@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table (name: 'oi_invoice_advance')]
 class InvoiceAdvance
 {
-    use InvoiceTrait, MoneyTrait;
+    use InvoiceTrait, MoneyTrait, PaidTrait;
     
     #[ORM\ManyToOne(inversedBy: 'invoices_advance', cascade: ['persist'])]
     private Order $order;
