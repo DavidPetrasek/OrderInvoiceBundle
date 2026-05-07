@@ -2,7 +2,7 @@
 All notable changes to this project are documented in this file.
 
 
-## [1.6.0] - 2026-05-05
+## [1.6.0] - 2026-05-07
 ### Added
 - Default invoice style for mPDF twig template
 - MpdfGenerator can specify CSS file to use (`useCss`)
