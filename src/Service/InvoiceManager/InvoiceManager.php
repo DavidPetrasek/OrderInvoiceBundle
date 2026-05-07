@@ -170,7 +170,5 @@ class InvoiceManager
         );
 
         $dbConn->executeStatement('UNLOCK TABLES;');
-
-        $this->em->flush();
     }
 }

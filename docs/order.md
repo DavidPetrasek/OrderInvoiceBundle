@@ -70,10 +70,9 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setCompanyIdentificationNumber('5655')
             ->setLegalEntityRegistrationDetails('Registered in England & Wales No. 01234567  ·  Registered office : 1 King’s Road, London SW1')
         );
-
-    $invoiceManager->setUniquePaymentReference($ent_InvoiceRegular, length: 9);
     
     $orderManager->save($ent_Order);
+    $invoiceManager->setUniquePaymentReference($ent_InvoiceRegular, length: 9);
 }
 ```
 

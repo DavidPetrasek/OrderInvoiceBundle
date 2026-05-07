@@ -16,8 +16,8 @@ final class <?= $class_name ?> extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('RENAME TABLE oi_invoice_buyer TO oi_buyer;');
-        $this->addSql('RENAME TABLE oi_invoice_seller TO oi_seller;');
+        $this->addSql('RENAME TABLE oi_invoice_buyer TO oi_buyer');
+        $this->addSql('RENAME TABLE oi_invoice_seller TO oi_seller');
 
         $this->addSql('ALTER TABLE oi_invoice DROP FOREIGN KEY `FK_B2A9292419323A61`');
         $this->addSql('ALTER TABLE oi_invoice DROP FOREIGN KEY `FK_B2A92924A5259CBE`');
