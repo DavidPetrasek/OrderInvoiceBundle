@@ -175,7 +175,7 @@ class InvoiceManagerTest extends TestCase
             ->method('executeStatement');
 
         $result = $this->createMock(Result::class);
-        $result->method('fetchOne')->willReturn(false);
+        $result->method('fetchAssociative')->willReturn(false);
         $connection->method('executeQuery')->willReturn($result);
 
         $em = $this->createMock(EntityManagerInterface::class);
@@ -203,7 +203,7 @@ class InvoiceManagerTest extends TestCase
             ->willReturn(1);
 
         $result = $this->createMock(Result::class);
-        $result->method('fetchOne')->willReturn(1);
+        $result->method('fetchAssociative')->willReturn([1]);
         $connection->method('executeQuery')->willReturn($result);
 
         $duplicateQuery = $this->createMock(NativeQuery::class);
