@@ -31,7 +31,6 @@ class InvoiceManager
         else if ($invoiceSpecific instanceof InvoiceAdvance)  {$type = 'advance';}
 
         $table = "oi_invoice_{$type}";
-
         $invoiceRow = $dbConn->executeQuery
         (
             "SELECT * FROM $table WHERE id = :id;",
@@ -39,7 +38,7 @@ class InvoiceManager
                 'id' => $invoiceSpecific->getId()
             ]
         );
-        if (!$invoiceRow->fetchOne()) 
+        if (empty($invoiceRow->fetchAssociative()))
         {
             throw new \Exception("Unique payment reference number cannot be set, because {$type} invoice does not exist in the database. Make sure order was saved first.");
         }
