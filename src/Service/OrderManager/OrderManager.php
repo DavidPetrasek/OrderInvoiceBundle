@@ -96,6 +96,19 @@ class OrderManager
             }
         }
 
+        $ent_InvoiceFinal = $ent_Order->getInvoiceFinal();
+        if (($ent_InvoiceProforma || !$ent_Order->getInvoicesAdvance()->isEmpty()) && $ent_InvoiceFinal)
+        {
+            if (empty($ent_Order->getPaymentMode()))
+            {
+                throw new InvalidInvoiceStateException('Order has no payment mode set.');
+            }
+            if (empty($ent_Order->getCurrency()))
+            {
+                throw new InvalidInvoiceStateException('Order has no currency set.');
+            }
+        }
+
         $ent_InvoiceRegular = $ent_Order->getInvoiceRegular();
         if ($ent_InvoiceRegular)
         {
