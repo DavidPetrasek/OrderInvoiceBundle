@@ -3,8 +3,9 @@
 - Change version in composer.json to `"psys/order-invoice-bundle": "^1.6",` and run: `composer update`
 - Backup your database and run: `symfony console oib:upgrade:15_to_16`
 - Make sure `setUniquePaymentReference` is executed after order was saved.
-- Optional: remove `->setState(State::UNPAID)`
-- Optional: remove `->setCreatedAt(new \DateTimeImmutable())`
+- Remove `->setPaidAt` from order.
+- Optional: remove `->setState(State::UNPAID)` when creating new order
+- Optional: remove `->setCreatedAt`  when creating new order/invoice/file
 - Optional: update your mPDF twig template or stylesheet: `symfony console make:oib:invoice:mpdf_twig_template`
 
 
