@@ -13,8 +13,8 @@
 ## Installation
 
 Minimal requirements:
-- Symfony 7
-- PHP 8.1
+- Symfony 7.2
+- PHP 8.2
 
 Run: 
 ``` bash
