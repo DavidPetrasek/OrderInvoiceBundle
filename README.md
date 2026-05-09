@@ -6,6 +6,7 @@
 
 ### Features
 - manage orders and associated invoices
+- invoice types: regular, proforma, advance and final
 - generate invoices in PDF format
 - file management: persist/delete invoices
 
