@@ -7,7 +7,7 @@ use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 
 abstract class AbstractInvoiceBinaryProvider implements InvoiceBinaryProviderInterface
 {
-    public function getBinary(Order $order, InvoiceType $invoiceType, ?InvoiceAdvance $ent_InvoiceAdvance = null): string
+    public function getBinary(Order $order, InvoiceType $invoiceType, ?InvoiceAdvance $invoiceAdvance = null): string
     {
         throw new \BadMethodCallException('Not implemented');
     }
@@ -17,7 +17,7 @@ abstract class AbstractInvoiceBinaryProvider implements InvoiceBinaryProviderInt
         throw new \BadMethodCallException('Not implemented');
     }
 
-    public function getAdvance(InvoiceAdvance $ent_InvoiceAdvance): string
+    public function getAdvance(InvoiceAdvance $invoiceAdvance): string
     {
         throw new \BadMethodCallException('Not implemented');
     }

@@ -1,28 +1,28 @@
 {% if invoiceType == 'REGULAR' %}
 
-    {% set currInvoice = ent_Order.invoiceRegular %}
+    {% set currInvoice = order.invoiceRegular %}
 
 {% elseif invoiceType == 'PROFORMA' %}
 
-    {% set currInvoice = ent_Order.invoiceProforma %}
+    {% set currInvoice = order.invoiceProforma %}
 
 {% elseif invoiceType == 'ADVANCE' %}
 
-    {% set currInvoice = ent_InvoiceAdvance %}
+    {% set currInvoice = invoiceAdvance %}
 
 {% elseif invoiceType == 'FINAL' %}
 
-    {% set currInvoice = ent_Order.invoiceFinal %}
+    {% set currInvoice = order.invoiceFinal %}
     
 {% endif %}
 
 {% set showPaymentDetails = invoiceType == 'REGULAR' or (invoiceType == 'PROFORMA' and currInvoice.payable) or invoiceType == 'ADVANCE' or invoiceType == 'FINAL' %}
 
 {% if invoiceType == 'FINAL' %}
-    {% set items = ent_Order.items %}
-    {% set currency = ent_Order.currency %}
-    {% set totalsEntity = ent_Order %}
-    {% set paymentMode = ent_Order.paymentMode %}
+    {% set items = order.items %}
+    {% set currency = order.currency %}
+    {% set totalsEntity = order %}
+    {% set paymentMode = order.paymentMode %}
 {% else %}
     {% set items = currInvoice.items %}
     {% set currency = currInvoice.currency %}
@@ -57,12 +57,12 @@
             	
             	<h3>Seller</h3>
             	<div class="seller_address">
-                    {{ ent_Order.seller.organization }}
-                	<br>{{ ent_Order.seller.streetAddress1 }}
-                	<br>{{ ent_Order.seller.postcode }} {{ ent_Order.seller.city }}
-                	{% if ent_Order.seller.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.seller.companyIdentificationNumber }}{% endif %}
-                	{% if ent_Order.seller.vatIdentificationNumber is not empty %}<br>VIN: {{ ent_Order.seller.vatIdentificationNumber }}{% endif %}
-                    {% if ent_Order.seller.legalEntityRegistrationDetails is not empty %}<br>{{ ent_Order.seller.legalEntityRegistrationDetails }}{% endif %}
+                    {{ order.seller.organization }}
+                	<br>{{ order.seller.streetAddress1 }}
+                	<br>{{ order.seller.postcode }} {{ order.seller.city }}
+                	{% if order.seller.companyIdentificationNumber is not empty %}<br>CIN: {{ order.seller.companyIdentificationNumber }}{% endif %}
+                	{% if order.seller.vatIdentificationNumber is not empty %}<br>VIN: {{ order.seller.vatIdentificationNumber }}{% endif %}
+                    {% if order.seller.legalEntityRegistrationDetails is not empty %}<br>{{ order.seller.legalEntityRegistrationDetails }}{% endif %}
             	</div>
 
         	</td> 
@@ -70,11 +70,11 @@
             	
             	<h3>Buyer</h3>
             	<div class="buyer_address">
-					{{ ent_Order.buyer.fullName }}
-                	<br>{{ ent_Order.buyer.streetAddress1 }}
-                	<br>{{ ent_Order.buyer.postcode }} {{ ent_Order.buyer.city }}
-                	{% if ent_Order.buyer.companyIdentificationNumber is not empty %}<br>CIN: {{ ent_Order.buyer.companyIdentificationNumber }}{% endif %}
-                	{% if ent_Order.buyer.vatIdentificationNumber is not empty %}<br>VIN: {{ ent_Order.buyer.vatIdentificationNumber }}{% endif %}
+					{{ order.buyer.fullName }}
+                	<br>{{ order.buyer.streetAddress1 }}
+                	<br>{{ order.buyer.postcode }} {{ order.buyer.city }}
+                	{% if order.buyer.companyIdentificationNumber is not empty %}<br>CIN: {{ order.buyer.companyIdentificationNumber }}{% endif %}
+                	{% if order.buyer.vatIdentificationNumber is not empty %}<br>VIN: {{ order.buyer.vatIdentificationNumber }}{% endif %}
             	</div>
 				
         	</td>
@@ -103,7 +103,7 @@
                         {% if paymentMode.value == 1 %}
                             <tr>
                                 <td class="label">Bank account</td>
-                                <td>{{ ent_Order.paymentModeBankAccount }}</td>
+                                <td>{{ order.paymentModeBankAccount }}</td>
                             </tr>
                         {% endif %}
                         
@@ -217,10 +217,10 @@
 
     {% elseif invoiceType == 'FINAL' %}
 
-        {% if ent_Order.invoicesAdvance is not empty %}
+        {% if order.invoicesAdvance is not empty %}
             <h4 class="advance_invoices_heading">Deposits</h4>
 
-            {% set advancesTotals = ent_Order|invoices_advance_totals %}
+            {% set advancesTotals = order|invoices_advance_totals %}
 
             <table class="advances">
                 <thead>
@@ -233,7 +233,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for adv in ent_Order.invoicesAdvance %}
+                    {% for adv in order.invoicesAdvance %}
                         <tr>
                             <td class="reference">{{ adv.referenceNumber }}</td>
                             <td class="date">{{ adv.createdAt|format_datetime(pattern="d. MMMM y") }}</td>
@@ -254,9 +254,9 @@
             </table>
 
             {# Remaining / amount due calculation #}
-            {% set remaining_net = (ent_Order.priceVatExcluded - advancesTotals.vatExcluded) %}
-            {% set remaining_vat = (ent_Order.priceVat - advancesTotals.vat) %}
-            {% set remaining_incl = (ent_Order.priceVatIncluded - advancesTotals.vatIncluded) %}
+            {% set remaining_net = (order.priceVatExcluded - advancesTotals.vatExcluded) %}
+            {% set remaining_vat = (order.priceVat - advancesTotals.vat) %}
+            {% set remaining_incl = (order.priceVatIncluded - advancesTotals.vatIncluded) %}
 
             <table class="remaining">
                 <tr>
@@ -279,14 +279,14 @@
                 </tr>
             </table>
 
-        {% elseif ent_Order.invoiceProforma is not empty and ent_Order.invoiceProforma.payable %}
+        {% elseif order.invoiceProforma is not empty and order.invoiceProforma.payable %}
 
-            {% set invProforma = ent_Order.invoiceProforma %}
+            {% set invProforma = order.invoiceProforma %}
 
             {# Remaining / amount due calculation #}
-            {% set remaining_net = (ent_Order.priceVatExcluded - invProforma.priceVatExcluded) %}
-            {% set remaining_vat = (ent_Order.priceVat - invProforma.priceVat) %}
-            {% set remaining_incl = (ent_Order.priceVatIncluded - invProforma.priceVatIncluded) %}
+            {% set remaining_net = (order.priceVatExcluded - invProforma.priceVatExcluded) %}
+            {% set remaining_vat = (order.priceVat - invProforma.priceVat) %}
+            {% set remaining_incl = (order.priceVatIncluded - invProforma.priceVatIncluded) %}
 
             <table class="remaining">
                 <tr>

@@ -12,7 +12,7 @@ interface InvoiceBinaryProviderInterface
      * 
      * @return string binary
      */
-    public function getBinary(Order $order, InvoiceType $invoiceType, ?InvoiceAdvance $ent_InvoiceAdvance = null): string;
+    public function getBinary(Order $order, InvoiceType $invoiceType, ?InvoiceAdvance $invoiceAdvance = null): string;
 
     /**
      * Get regular invoice binary content
@@ -33,7 +33,7 @@ interface InvoiceBinaryProviderInterface
      * 
      * @return string binary
      */
-    public function getAdvance(InvoiceAdvance $ent_InvoiceAdvance): string;
+    public function getAdvance(InvoiceAdvance $invoiceAdvance): string;
 
     /**
      * Get final invoice binary content

@@ -29,9 +29,9 @@ class FilePersister
       * Persists the proforma file binary to disk and saves a reference to it in the database using the default File entity.
       * If a custom File entity is used, only saves the file to disk and returns the file info for further processing.
      */
-    public function persistProforma(string $binary, Order $ent_Order): ?array
+    public function persistProforma(string $binary, Order $order): ?array
     {
-        return $this->persist($binary, $ent_Order, InvoiceType::PROFORMA);
+        return $this->persist($binary, $order, InvoiceType::PROFORMA);
     }
 
     /**
@@ -40,9 +40,9 @@ class FilePersister
       *
       * @return array|null file info array properties: mimeType, nameFileSystem, nameDisplay
      */
-    public function persistAdvance(string $binary, InvoiceAdvance $ent_InvoiceAdvance): ?array
+    public function persistAdvance(string $binary, InvoiceAdvance $invoiceAdvance): ?array
     {
-        return $this->persist($binary, $ent_InvoiceAdvance->getOrder(), InvoiceType::ADVANCE, $ent_InvoiceAdvance);
+        return $this->persist($binary, $invoiceAdvance->getOrder(), InvoiceType::ADVANCE, $invoiceAdvance);
     }
 
     /**
@@ -51,9 +51,9 @@ class FilePersister
       *
       * @return array|null file info array properties: mimeType, nameFileSystem, nameDisplay
      */
-    public function persistFinal(string $binary, Order $ent_Order): ?array
+    public function persistFinal(string $binary, Order $order): ?array
     {
-        return $this->persist($binary, $ent_Order, InvoiceType::FINAL);
+        return $this->persist($binary, $order, InvoiceType::FINAL);
     }
 
     /**
@@ -62,9 +62,9 @@ class FilePersister
       *
       * @return array|null file info array properties: mimeType, nameFileSystem, nameDisplay
      */
-    public function persistRegular(string $binary, Order $ent_Order): ?array
+    public function persistRegular(string $binary, Order $order): ?array
     {
-        return $this->persist($binary, $ent_Order, InvoiceType::REGULAR);
+        return $this->persist($binary, $order, InvoiceType::REGULAR);
     }
 
     /**
@@ -73,7 +73,7 @@ class FilePersister
       *
       * @return array|null file info array properties: mimeType, nameFileSystem, nameDisplay
      */
-    private function persist(string $binary, Order $ent_Order, InvoiceType $invoiceType, ?InvoiceAdvance $ent_InvoiceAdvance = null): ?array
+    private function persist(string $binary, Order $order, InvoiceType $invoiceType, ?InvoiceAdvance $invoiceAdvance = null): ?array
     {
         // Guess MIME Type and file extension from binary data       
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
@@ -109,19 +109,19 @@ class FilePersister
             // Remove existing file to avoid orphaned files
             if ($invoiceType === InvoiceType::PROFORMA)
             {
-                $this->fileDeleter->deleteProforma($ent_Order);
+                $this->fileDeleter->deleteProforma($order);
             }
             else if ($invoiceType === InvoiceType::ADVANCE)
             {
-                $this->fileDeleter->deleteAdvance($ent_InvoiceAdvance);
+                $this->fileDeleter->deleteAdvance($invoiceAdvance);
             }
             else if ($invoiceType === InvoiceType::FINAL)
             {
-                $this->fileDeleter->deleteFinal($ent_Order);
+                $this->fileDeleter->deleteFinal($order);
             }
             else if ($invoiceType === InvoiceType::REGULAR)
             {
-                $this->fileDeleter->deleteRegular($ent_Order);
+                $this->fileDeleter->deleteRegular($order);
             }
         }
 
@@ -133,33 +133,33 @@ class FilePersister
         // Save reference to the file in the database using the default File entity
         if ($this->fileEntityFQCN === self::FILE_ENTITY_FQCN_DEFAULT)
         {
-            $ent_File = (new $this->fileEntityFQCN())
+            $file = (new $this->fileEntityFQCN())
                 ->setMimeType($mimeType)
                 ->setNameFileSystem($nameFileSystem)
                 ->setNameDisplay($nameDisplay);
 
             if ($invoiceType === InvoiceType::PROFORMA)
             {
-                $ent_InvoiceProforma = $ent_Order->getInvoiceProforma();
-                $ent_InvoiceProforma->setFile($ent_File);
-                $this->em->persist($ent_InvoiceProforma);
+                $invoiceProforma = $order->getInvoiceProforma();
+                $invoiceProforma->setFile($file);
+                $this->em->persist($invoiceProforma);
             }
             else if ($invoiceType === InvoiceType::ADVANCE)
             {
-                $ent_InvoiceAdvance->setFile($ent_File);
-                $this->em->persist($ent_InvoiceAdvance);
+                $invoiceAdvance->setFile($file);
+                $this->em->persist($invoiceAdvance);
             }
             else if ($invoiceType === InvoiceType::FINAL)
             {
-                $ent_InvoiceFinal = $ent_Order->getInvoiceFinal();
-                $ent_InvoiceFinal->setFile($ent_File);
-                $this->em->persist($ent_InvoiceFinal);
+                $invoiceFinal = $order->getInvoiceFinal();
+                $invoiceFinal->setFile($file);
+                $this->em->persist($invoiceFinal);
             }
             else if ($invoiceType === InvoiceType::REGULAR)
             {
-                $ent_InvoiceRegular = $ent_Order->getInvoiceRegular();
-                $ent_InvoiceRegular->setFile($ent_File);
-                $this->em->persist($ent_InvoiceRegular);
+                $invoiceRegular = $order->getInvoiceRegular();
+                $invoiceRegular->setFile($file);
+                $this->em->persist($invoiceRegular);
             }
             
             $this->em->flush();

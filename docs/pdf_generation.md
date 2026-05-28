@@ -70,37 +70,37 @@ class InvoiceBinaryProvider extends AbstractInvoiceBinaryProvider
     ) 
     {}
 
-    public function getBinary(Order $ent_Order, InvoiceType $invoiceType, ?InvoiceAdvance $ent_InvoiceAdvance = null): string
+    public function getBinary(Order $order, InvoiceType $invoiceType, ?InvoiceAdvance $invoiceAdvance = null): string
     {
         $htmlPDF = $this->twig->render('invoice/oi_default.html.twig', 
             [
-                'ent_Order'  => $ent_Order,
+                'order'  => $order,
                 'invoiceType'  => $invoiceType->name,
-                'ent_InvoiceAdvance'  => $ent_InvoiceAdvance,
+                'invoiceAdvance'  => $invoiceAdvance,
             ]);
         return $this->mpdfGenerator
             ->useCss($this->projectDir.'/assets/css/invoice/default_mpdf.css')
             ->generate($htmlPDF);
     }
 
-    public function getRegular(Order $ent_Order): string
+    public function getRegular(Order $order): string
     {
-        return $this->getBinary($ent_Order, InvoiceType::REGULAR);
+        return $this->getBinary($order, InvoiceType::REGULAR);
     }
 
-    public function getProforma(Order $ent_Order): string
+    public function getProforma(Order $order): string
     {
-        return $this->getBinary($ent_Order, InvoiceType::PROFORMA);
+        return $this->getBinary($order, InvoiceType::PROFORMA);
     }
 
-    public function getAdvance(InvoiceAdvance $ent_InvoiceAdvance): string
+    public function getAdvance(InvoiceAdvance $invoiceAdvance): string
     {
-        return $this->getBinary($ent_InvoiceAdvance->getOrder(), InvoiceType::ADVANCE, $ent_InvoiceAdvance);
+        return $this->getBinary($invoiceAdvance->getOrder(), InvoiceType::ADVANCE, $invoiceAdvance);
     }
 
-    public function getFinal(Order $ent_Order): string
+    public function getFinal(Order $order): string
     {
-        return $this->getBinary($ent_Order, InvoiceType::FINAL);
+        return $this->getBinary($order, InvoiceType::FINAL);
     }
 }
 ```

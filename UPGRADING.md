@@ -41,7 +41,7 @@
 - Rename `variableSymbol` to `paymentReference`
 - Rename `VariableSymbol` to `PaymentReference`
 - Rename `processAndSaveNewOrder` to `save`
-- If a custom binary provider is being used, add third parameter `?InvoiceAdvance $ent_InvoiceAdvance = null` to the `getBinary` method. 
+- If a custom binary provider is being used, add third parameter `?InvoiceAdvance $invoiceAdvance = null` to the `getBinary` method. 
 
 
 ## 1.3.2 to 1.3.3

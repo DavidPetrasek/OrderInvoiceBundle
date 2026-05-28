@@ -14,8 +14,8 @@ class OrderRuntime implements RuntimeExtensionInterface
     )
     {}
 
-    public function getInvoicesAdvanceTotals(Order $ent_Order): array
+    public function getInvoicesAdvanceTotals(Order $order): array
     {
-        return $this->orderManager->getInvoicesAdvanceTotals($ent_Order);
+        return $this->orderManager->getInvoicesAdvanceTotals($order);
     }
 }

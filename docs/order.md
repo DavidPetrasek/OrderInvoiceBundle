@@ -20,11 +20,11 @@ use App\Model\MyOrderCategory;
 
 public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceManager, Security $security) : void
 {       
-    $ent_Order = (new Order())
+    $order = (new Order())
         ->setCategory(MyOrderCategory::SECOND_CATEGORY) // Optional
         ->setCustomer($security->getUser()); // Optional
 
-    $ent_InvoiceRegular = (new InvoiceRegular())
+    $invoiceRegular = (new InvoiceRegular())
         ->setDueDate(new \DateTimeImmutable('+14 days')) // Optional
         ->setPaymentMode(PaymentMode::CREDIT_CARD)
         ->setCurrency('GBP')
@@ -37,11 +37,11 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setAmountType(AmountType::ITEM)
     );
     
-    $invoiceManager->setSequentialNumber($ent_InvoiceRegular);
-    $ent_InvoiceRegular->setReferenceNumber(date('Y').$ent_InvoiceRegular->getSequentialNumber());
+    $invoiceManager->setSequentialNumber($invoiceRegular);
+    $invoiceRegular->setReferenceNumber(date('Y').$invoiceRegular->getSequentialNumber());
 
-    $ent_Order
-        ->setInvoiceRegular($ent_InvoiceRegular)
+    $order
+        ->setInvoiceRegular($invoiceRegular)
         ->setBuyer
         (
             (new Buyer())
@@ -68,8 +68,8 @@ public function newOrder(OrderManager $orderManager, InvoiceManager $invoiceMana
             ->setLegalEntityRegistrationDetails('Registered in England & Wales No. 01234567  ·  Registered office : 1 King’s Road, London SW1')
         );
 
-    $orderManager->save($ent_Order);
-    $invoiceManager->setUniquePaymentReference($ent_InvoiceRegular, length: 9);
+    $orderManager->save($order);
+    $invoiceManager->setUniquePaymentReference($invoiceRegular, length: 9);
 }
 ```
 
@@ -77,5 +77,5 @@ Editing existing order
 ======================
 - After edits are made to the `Order` (or its invoices, seller, ...), at the end just call:
 ``` php
-    $orderManager->save($ent_Order);
+    $orderManager->save($order);
 ```

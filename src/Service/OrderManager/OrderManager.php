@@ -22,164 +22,164 @@ class OrderManager
     )
     {}    
     
-    public function save(Order $ent_Order): void
+    public function save(Order $order): void
     {
-        $this->saveChecks($ent_Order);
+        $this->saveChecks($order);
 
         // Process order
-        if (!$ent_Order->getItems()->isEmpty())
+        if (!$order->getItems()->isEmpty())
         {
-            $orderTotals = $this->calculateTotals($ent_Order);
-            $ent_Order->setPriceVatIncluded($orderTotals['vatIncluded'])
+            $orderTotals = $this->calculateTotals($order);
+            $order->setPriceVatIncluded($orderTotals['vatIncluded'])
                     ->setPriceVatExcluded($orderTotals['vatExcluded'])
                     ->setPriceVatBase($orderTotals['vatBase'])
                     ->setPriceVat($orderTotals['vat']);
         }
 
         // Process proforma invoice
-        $ent_InvoiceProforma = $ent_Order->getInvoiceProforma();
-        if ($ent_InvoiceProforma)
+        $invoiceProforma = $order->getInvoiceProforma();
+        if ($invoiceProforma)
         {
-            $proformaTotals = $this->calculateTotals($ent_InvoiceProforma);
-            $ent_InvoiceProforma->setPriceVatIncluded($proformaTotals['vatIncluded'])
+            $proformaTotals = $this->calculateTotals($invoiceProforma);
+            $invoiceProforma->setPriceVatIncluded($proformaTotals['vatIncluded'])
                                 ->setPriceVatExcluded($proformaTotals['vatExcluded'])
                                 ->setPriceVatBase($proformaTotals['vatBase'])
                                 ->setPriceVat($proformaTotals['vat']);
         }
 
         // Process regural invoice
-        $ent_InvoiceRegular = $ent_Order->getInvoiceRegular();
-        if ($ent_InvoiceRegular)
+        $invoiceRegular = $order->getInvoiceRegular();
+        if ($invoiceRegular)
         {
-            $regularTotals = $this->calculateTotals($ent_InvoiceRegular);
-            $ent_InvoiceRegular->setPriceVatIncluded($regularTotals['vatIncluded'])
+            $regularTotals = $this->calculateTotals($invoiceRegular);
+            $invoiceRegular->setPriceVatIncluded($regularTotals['vatIncluded'])
                             ->setPriceVatExcluded($regularTotals['vatExcluded'])
                             ->setPriceVatBase($regularTotals['vatBase'])
                             ->setPriceVat($regularTotals['vat']);
 
-            if ($ent_InvoiceRegular->isPaid())
+            if ($invoiceRegular->isPaid())
             {
-                $ent_Order->setState(State::PAID);
+                $order->setState(State::PAID);
             }
         }
 
         // Process final invoice
-        $ent_InvoiceFinal = $ent_Order->getInvoiceFinal();
+        $invoiceFinal = $order->getInvoiceFinal();
         
-        if ($ent_InvoiceFinal)
+        if ($invoiceFinal)
         {
             // Calculate total amount due after deducting advance invoice payments
-            $advancesTotals = $this->getInvoicesAdvanceTotals($ent_Order);
-            $totalAmountDue = $ent_Order->getPriceVatIncluded() - $advancesTotals['vatIncluded'];
+            $advancesTotals = $this->getInvoicesAdvanceTotals($order);
+            $totalAmountDue = $order->getPriceVatIncluded() - $advancesTotals['vatIncluded'];
 
             // Mark final invoice as paid if no amount remains due
             if (abs($totalAmountDue) < PHP_FLOAT_EPSILON)
             {
-                $ent_InvoiceFinal->setPaid(true);
+                $invoiceFinal->setPaid(true);
             }
         }
         
         // Process advance invoices
         $allAdvancesWerePaid = true;
 
-        foreach ($ent_Order->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        foreach ($order->getInvoicesAdvance() as $invoiceAdvance) 
         {
-            if (!$ent_InvoiceFinal && $ent_InvoiceAdvance->isPaid())
+            if (!$invoiceFinal && $invoiceAdvance->isPaid())
             {
-                $ent_Order->setState(State::PARTIALLY_PAID);
+                $order->setState(State::PARTIALLY_PAID);
             }
-            else if ($ent_InvoiceFinal && !$ent_InvoiceAdvance->isPaid())
+            else if ($invoiceFinal && !$invoiceAdvance->isPaid())
             {
                 $allAdvancesWerePaid = false;
             }
 
-            $invoiceAdvanceTotals = $this->calculateTotals($ent_InvoiceAdvance);
+            $invoiceAdvanceTotals = $this->calculateTotals($invoiceAdvance);
 
-            $ent_InvoiceAdvance->setPriceVatIncluded($invoiceAdvanceTotals['vatIncluded'])
+            $invoiceAdvance->setPriceVatIncluded($invoiceAdvanceTotals['vatIncluded'])
                     ->setPriceVatExcluded($invoiceAdvanceTotals['vatExcluded'])
                     ->setPriceVatBase($invoiceAdvanceTotals['vatBase'])
                     ->setPriceVat($invoiceAdvanceTotals['vat']);
         }
 
-        if ($ent_InvoiceFinal && $ent_InvoiceFinal->isPaid() && $allAdvancesWerePaid)
+        if ($invoiceFinal && $invoiceFinal->isPaid() && $allAdvancesWerePaid)
         {
-            $ent_Order->setState(State::PAID);
+            $order->setState(State::PAID);
         }
 
-        $this->em->persist($ent_Order);        
+        $this->em->persist($order);        
         $this->em->flush();
     }
 
-    private function saveChecks(Order $ent_Order): void
+    private function saveChecks(Order $order): void
     {
-        $ent_InvoiceProforma = $ent_Order->getInvoiceProforma();
-        if ($ent_InvoiceProforma)
+        $invoiceProforma = $order->getInvoiceProforma();
+        if ($invoiceProforma)
         {
-            if ($ent_InvoiceProforma->getItems()->isEmpty())
+            if ($invoiceProforma->getItems()->isEmpty())
             {
                 throw new InvalidInvoiceStateException('Proforma invoice has no items.');
             }
 
-            if ($ent_InvoiceProforma->isPayable())
+            if ($invoiceProforma->isPayable())
             {
-                if (empty($ent_InvoiceProforma->getPaymentMode()))
+                if (empty($invoiceProforma->getPaymentMode()))
                 {
                     throw new InvalidInvoiceStateException('Proforma invoice is payable and has no payment mode set.');
                 }
             }
-            else if ($ent_InvoiceProforma->isPaid())
+            else if ($invoiceProforma->isPaid())
             {
                 throw new InvalidInvoiceStateException('Proforma invoice is not payable and therefore can\'t be marked as paid.');
             }
 
-            if (empty($ent_InvoiceProforma->getCurrency()))
+            if (empty($invoiceProforma->getCurrency()))
             {
                 throw new InvalidInvoiceStateException('Proforma invoice has no currency set.');
             }
         }
 
-        $ent_InvoiceFinal = $ent_Order->getInvoiceFinal();
-        if (($ent_InvoiceProforma || !$ent_Order->getInvoicesAdvance()->isEmpty()) && $ent_InvoiceFinal)
+        $invoiceFinal = $order->getInvoiceFinal();
+        if (($invoiceProforma || !$order->getInvoicesAdvance()->isEmpty()) && $invoiceFinal)
         {
-            if (empty($ent_Order->getPaymentMode()))
+            if (empty($order->getPaymentMode()))
             {
                 throw new InvalidInvoiceStateException('Order has no payment mode set.');
             }
-            if (empty($ent_Order->getCurrency()))
+            if (empty($order->getCurrency()))
             {
                 throw new InvalidInvoiceStateException('Order has no currency set.');
             }
         }
 
-        $ent_InvoiceRegular = $ent_Order->getInvoiceRegular();
-        if ($ent_InvoiceRegular)
+        $invoiceRegular = $order->getInvoiceRegular();
+        if ($invoiceRegular)
         {
-            if ($ent_InvoiceRegular->getItems()->isEmpty())
+            if ($invoiceRegular->getItems()->isEmpty())
             {
                 throw new InvalidInvoiceStateException('Regular invoice has no items.');
             }
 
-            if (empty($ent_InvoiceRegular->getPaymentMode()))
+            if (empty($invoiceRegular->getPaymentMode()))
             {
                 throw new InvalidInvoiceStateException('Regular invoice has no payment mode set.');
             }
-            if (empty($ent_InvoiceRegular->getCurrency()))
+            if (empty($invoiceRegular->getCurrency()))
             {
                 throw new InvalidInvoiceStateException('Regular invoice has no currency set.');
             }
         }
 
-        foreach ($ent_Order->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        foreach ($order->getInvoicesAdvance() as $invoiceAdvance) 
         {
-            if ($ent_InvoiceAdvance->getItems()->isEmpty())
+            if ($invoiceAdvance->getItems()->isEmpty())
             {
                 throw new InvalidInvoiceStateException('Advance invoice has no items.');
             }
-            if (empty($ent_InvoiceAdvance->getPaymentMode()))
+            if (empty($invoiceAdvance->getPaymentMode()))
             {
                 throw new InvalidInvoiceStateException('Advance invoice has no payment mode set.');
             }
-            if (empty($ent_InvoiceAdvance->getCurrency()))
+            if (empty($invoiceAdvance->getCurrency()))
             {
                 throw new InvalidInvoiceStateException('Advance invoice has no currency set.');
             }
@@ -189,7 +189,7 @@ class OrderManager
     /**
      * Adds up totals of all advance invoices
      */
-    public function getInvoicesAdvanceTotals(Order $ent_Order): array
+    public function getInvoicesAdvanceTotals(Order $order): array
     {
         $advanceTotals = [
             'vatIncluded' => 0.0,
@@ -198,12 +198,12 @@ class OrderManager
             'vat'         => 0.0,
         ];
 
-        foreach ($ent_Order->getInvoicesAdvance() as $ent_InvoiceAdvance) 
+        foreach ($order->getInvoicesAdvance() as $invoiceAdvance) 
         {
-            $advanceTotals['vatIncluded'] += $ent_InvoiceAdvance->getPriceVatIncluded();
-            $advanceTotals['vatExcluded'] += $ent_InvoiceAdvance->getPriceVatExcluded();
-            $advanceTotals['vatBase']     += $ent_InvoiceAdvance->getPriceVatBase();
-            $advanceTotals['vat']         += $ent_InvoiceAdvance->getPriceVat();
+            $advanceTotals['vatIncluded'] += $invoiceAdvance->getPriceVatIncluded();
+            $advanceTotals['vatExcluded'] += $invoiceAdvance->getPriceVatExcluded();
+            $advanceTotals['vatBase']     += $invoiceAdvance->getPriceVatBase();
+            $advanceTotals['vat']         += $invoiceAdvance->getPriceVat();
         }
 
         return $advanceTotals;
