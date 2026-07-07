@@ -1,16 +1,17 @@
 {
     "name": "psys/order-invoice-bundle",
-    "description": "Manage orders & invoices in your Symfony application",
+    "description": "Order & invoice management for Symfony, ideal for SaaS, services, and digital products.",
     "type": "symfony-bundle",
     "keywords": 
     [
         "symfony",
         "symfony-bundle",
-        "invoice",
-        "invoicing",
+        "digital-products-billing",
+        "services-billing",
+        "saas-billing",
+        "invoicing",        
         "order",
-        "billing",
-        "accounting",
+        "invoice",
         "invoice-pdf",
         "pdf-export",
         "pdf-generation",
@@ -22,7 +23,6 @@
         "deposit-invoice",
         "regular-invoice",
         "final-invoice",
-        "e-commerce",
         "file-management"
     ],
     "license": "MIT",

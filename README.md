@@ -3,12 +3,18 @@
 
 # OrderInvoiceBundle
 
+**Perfect for SaaS platforms, digital product sales, online courses, and service providers** who need a robust invoicing system without the bloat of a full e-commerce engine. It supports complex, multi-step accounting flows out of the box.
 
 ### Features
-- manage orders and associated invoices
-- invoice types: regular, proforma, advance and final
-- generate invoices in PDF format
-- file management: persist/delete invoices
+
+- **Complete Order & Invoice Lifecycle:** Seamlessly manage service orders and their associated financial documents.
+- **Invoice Types:** Native support for the full accounting cycle:
+  - `Proforma`
+  - `Advance` (Deposit)
+  - `Regular` (Standard)
+  - `Final` (Closing invoice linked with advance payments)
+- **PDF Generation:** Generate custom professional PDF invoices for your customers.
+- **File Management:** Build-in logic to persist, retrieve, and delete generated invoice files securely.
 
 
 ## Installation
