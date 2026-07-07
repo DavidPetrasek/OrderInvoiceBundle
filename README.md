@@ -9,9 +9,9 @@
 
 - **Complete Order & Invoice Lifecycle:** Seamlessly manage service orders and their associated financial documents.
 - **Invoice Types:** Native support for the full accounting cycle:
+  - `Regular` (Standard)
   - `Proforma`
   - `Advance` (Deposit)
-  - `Regular` (Standard)
   - `Final` (Closing invoice linked with advance payments)
 - **PDF Generation:** Generate custom professional PDF invoices for your customers.
 - **File Management:** Build-in logic to persist, retrieve, and delete generated invoice files securely.
