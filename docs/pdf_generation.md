@@ -48,7 +48,6 @@ psys_order_invoice:
 ```
 
 ``` php
-// src/Service/OrderInvoiceBundle.php
 <?php
 namespace App\Service\OrderInvoiceBundle;
 
