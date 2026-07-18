@@ -28,6 +28,11 @@ Run:
 composer req psys/order-invoice-bundle
 ```
 
+Optional: Install mPDF if you want to use the default PDF generator
+``` bash
+composer req mpdf/mpdf
+```
+
 Finish installation: 
 ``` bash
 symfony console oib:install
