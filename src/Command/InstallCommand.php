@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Filesystem\Filesystem;
@@ -33,15 +34,14 @@ class InstallCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $process = new Process(['git', 'update-index', '--refresh']);
-        $process->run();
-        $process = new Process(['git', 'diff-index', '--quiet', 'HEAD', '--']);
+        $process = new Process(['git', 'status', '--porcelain']);
         $process->run();
 
-        if (!$process->isSuccessful())
+        if ($process->isSuccessful() && !empty(trim($process->getOutput()))) 
         {
-            $output->writeln('<error>You have uncommitted changes. Please commit them first.</error>');
-            return Command::FAILURE;
+            $output->writeln('<error>You have uncommitted changes.</error>');
+            $continue = $this->qHelper->ask($input, $output, new ConfirmationQuestion('Do you want to continue anyway? [y/N] ', false));
+            if (!$continue) return Command::FAILURE;
         }
 
         $getEntitiesFromInputResult = $this->getEntitiesFromInput($input, $output);
