@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
@@ -106,6 +108,7 @@ class PaidTraitTest extends TestCase
         $invoice = new InvoiceRegular();
 
         $invoice->setPaid(true);
+
         $firstPaidAt = $invoice->getPaidAt();
 
         $invoice->setPaid(true);

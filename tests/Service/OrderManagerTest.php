@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,6 +66,7 @@ class OrderManagerTest extends TestCase
         $item->setAmount(2);
         $item->setPriceVatIncluded(120.00);
         $item->setVatRate(20.00);
+
         $invoiceAdvance->addItem($item);
 
         $order->addItem($item);
@@ -234,6 +237,7 @@ class OrderManagerTest extends TestCase
         $advance1->setPriceVatExcluded(200.00);
         $advance1->setPriceVatBase(200.00);
         $advance1->setPriceVat(40.00);
+
         $order->addInvoiceAdvance($advance1);
 
         $advance2 = new InvoiceAdvance();
@@ -241,6 +245,7 @@ class OrderManagerTest extends TestCase
         $advance2->setPriceVatExcluded(100.00);
         $advance2->setPriceVatBase(100.00);
         $advance2->setPriceVat(20.00);
+
         $order->addInvoiceAdvance($advance2);
 
         $totals = $manager->getInvoicesAdvanceTotals($order);
@@ -286,12 +291,14 @@ class OrderManagerTest extends TestCase
         $proforma = new \Psys\OrderInvoiceBundle\Entity\InvoiceProforma();
         $proforma->setPayable(false);
         $proforma->setCurrency('CZK');
+
         $order->setInvoiceProforma($proforma);
 
         $item = new Item();
         $item->setAmount(1);
         $item->setPriceVatIncluded(120.00);
         $item->setVatRate(20.00);
+
         $proforma->addItem($item);
 
         $order->addItem($item);
@@ -318,12 +325,14 @@ class OrderManagerTest extends TestCase
 
         $proforma = new \Psys\OrderInvoiceBundle\Entity\InvoiceProforma();
         $proforma->setPayable(false);
+
         $order->setInvoiceProforma($proforma);
 
         $item = new Item();
         $item->setAmount(1);
         $item->setPriceVatIncluded(120.00);
         $item->setVatRate(20.00);
+
         $proforma->addItem($item);
 
         $order->addItem($item);
@@ -351,12 +360,14 @@ class OrderManagerTest extends TestCase
         $proforma = new \Psys\OrderInvoiceBundle\Entity\InvoiceProforma();
         $proforma->setPayable(true);
         $proforma->setCurrency('CZK');
+
         $order->setInvoiceProforma($proforma);
 
         $item = new Item();
         $item->setAmount(1);
         $item->setPriceVatIncluded(120.00);
         $item->setVatRate(20.00);
+
         $proforma->addItem($item);
 
         $order->addItem($item);
@@ -382,6 +393,7 @@ class OrderManagerTest extends TestCase
         $proforma = new \Psys\OrderInvoiceBundle\Entity\InvoiceProforma();
         $proforma->setPayable(false);
         $proforma->setCurrency('CZK');
+
         $order->setInvoiceProforma($proforma);
 
         $this->expectException(\Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException::class);

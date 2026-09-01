@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\EventSubscriber;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\UnitOfWork;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
@@ -17,10 +20,10 @@ use Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException;
 
 class DoctrineSubscriberTest extends TestCase
 {
-    private $entityManager;
-    private $unitOfWork;
-    private $eventArgs;
-    private $subscriber;
+    private MockObject $entityManager;
+    private MockObject $unitOfWork;
+    private MockObject $eventArgs;
+    private DoctrineSubscriber $subscriber;
 
     protected function setUp(): void
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
@@ -81,7 +83,7 @@ class FileTest extends TestCase
     {
         $file = new File();
 
-        $result = $file->setCreatedAt(null);
+        $result = $file->setCreatedAt();
 
         $this->assertSame($file, $result);
         $this->assertSame(null, $file->getCreatedAt());

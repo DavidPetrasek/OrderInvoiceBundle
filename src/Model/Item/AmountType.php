@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Model\Item;
 
 
@@ -8,4 +11,3 @@ enum AmountType :int
     case HOUR = 2;
     case KILOGRAM = 3;
 }
-?>

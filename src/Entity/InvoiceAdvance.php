@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,12 +14,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table (name: 'oi_invoice_advance')]
 class InvoiceAdvance
 {
-    use InvoiceTrait, MoneyTrait, PaidTrait;
+    use InvoiceTrait;
+    use MoneyTrait;
+    use PaidTrait;
     
-    #[ORM\ManyToOne(inversedBy: 'invoices_advance', cascade: ['persist'])]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'invoices_advance')]
     private Order $order;
 
-    #[ORM\OneToMany(mappedBy: 'invoice_advance', targetEntity: Item::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'invoice_advance', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $items;
 
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -92,6 +94,7 @@ class OrderTest extends TestCase
         $order = new Order();
         $item1 = new Item();
         $item1->setName('Item 1');
+
         $item2 = new Item();
         $item2->setName('Item 2');
 

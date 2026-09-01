@@ -43,17 +43,17 @@
         "php": ">=8.2",
         "doctrine/orm": ">=3.3",
         "doctrine/doctrine-bundle": ">=2.14",
-        "symfony/console": ">=7.2",
-        "symfony/finder": ">=7.2",
-        "symfony/string": ">=7.2",
-        "symfony/filesystem": ">=7.2",
+        "symfony/console": ">=7.4",
+        "symfony/finder": ">=7.4",
+        "symfony/string": ">=7.4",
+        "symfony/filesystem": ">=7.4",
         "symfony/maker-bundle": ">=1.63.0",
         "psys/utils": ">=1.0.10",
-        "symfony/yaml": ">=7.2",
-        "symfony/mime": ">=7.2",
-        "symfony/routing": ">=7.2",
+        "symfony/yaml": ">=7.4",
+        "symfony/mime": ">=7.4",
+        "symfony/routing": ">=7.4",
         "doctrine/doctrine-migrations-bundle": ">=3.7",
-        "symfony/twig-bundle": ">=7.2"
+        "symfony/twig-bundle": ">=7.4"
     },
     "suggest": {
         "mpdf/mpdf": "Required by the MpdfGenerator"

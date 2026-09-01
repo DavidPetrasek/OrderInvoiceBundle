@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Service\InvoiceGenerator;
 
 use Mpdf\Output\Destination;
@@ -10,9 +13,8 @@ class MpdfGenerator
 
     /**
      * Set the absolute path to the CSS stylesheet.
-     * 
+     *
      * @param string $cssFilePath Absolute path to the CSS file.
-     * @return self
      */
     public function useCss(string $cssFilePath): self
     {

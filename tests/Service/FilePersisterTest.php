@@ -1,33 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psys\OrderInvoiceBundle\Entity\File;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\Order;
-use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
 use Psys\OrderInvoiceBundle\Service\FilePersister\FilePersister;
 use Symfony\Component\Filesystem\Filesystem;
 
 class FilePersisterTest extends TestCase
 {
-    /** @var MockObject&Filesystem */
-    private Filesystem $filesystem;
-    /** @var MockObject&EntityManagerInterface */
-    private EntityManagerInterface $em;
-    /** @var MockObject&FileDeleter */
-    private FileDeleter $fileDeleter;
+    private MockObject $filesystem;
+    private MockObject $em;
+    private MockObject $fileDeleter;
     private FilePersister $filePersister;
     private string $projectDir = '/app';
     private array $storagePath;
-    private string $fileEntityFQCN = 'Psys\OrderInvoiceBundle\Entity\File';
+    private string $fileEntityFQCN = \Psys\OrderInvoiceBundle\Entity\File::class;
 
     protected function setUp(): void
     {
@@ -266,10 +263,10 @@ class FilePersisterTest extends TestCase
         $this->fileDeleter->expects($this->once())->method('deleteProforma');
 
         $this->em->expects($this->once())->method('persist')->willReturnCallback(
-            function ($entity) {
+            function ($entity): void {
                 if ($entity instanceof InvoiceProforma) {
                     $file = $entity->getFile();
-                    if ($file !== null) {
+                    if ($file instanceof \Psys\OrderInvoiceBundle\Model\FileInterface) {
                         $this->assertSame('proforma_invoice.pdf', $file->getNameDisplay());
                     }
                 }
@@ -297,10 +294,10 @@ class FilePersisterTest extends TestCase
         $this->fileDeleter->expects($this->once())->method('deleteProforma');
 
         $this->em->expects($this->once())->method('persist')->willReturnCallback(
-            function ($entity) {
+            function ($entity): void {
                 if ($entity instanceof InvoiceProforma) {
                     $file = $entity->getFile();
-                    if ($file !== null) {
+                    if ($file instanceof \Psys\OrderInvoiceBundle\Model\FileInterface) {
                         $this->assertSame('application/pdf', $file->getMimeType());
                     }
                 }

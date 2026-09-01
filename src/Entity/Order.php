@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -23,7 +25,7 @@ class Order
     #[ORM\Column(options:["unsigned" => true])]
     private ?int $id = null;
 
-    #[ORM\OneToMany(mappedBy: 'order', targetEntity: Item::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'order', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $items;
     
     #[ORM\Column(insertable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]

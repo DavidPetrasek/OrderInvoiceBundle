@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
@@ -66,6 +68,7 @@ class BuyerTest extends TestCase
 
         $buyer->setCity('Prague');
         $buyer->setPostcode('11000');
+
         $result = $buyer->setRegion('Prague Region');
 
         $this->assertSame($buyer, $result);

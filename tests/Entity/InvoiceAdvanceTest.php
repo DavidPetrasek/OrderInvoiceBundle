@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
@@ -118,8 +120,10 @@ class InvoiceAdvanceTest extends TestCase
         $invoice = new InvoiceAdvance();
         $item1 = new Item();
         $item1->setName('Service 1');
+
         $item2 = new Item();
         $item2->setName('Service 2');
+
         $item3 = new Item();
         $item3->setName('Service 3');
 

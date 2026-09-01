@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Model\Invoice;
 
 
@@ -21,4 +24,3 @@ enum InvoiceType :int
         throw new \ValueError("$name is not a valid case name for enum " . self::class );
     }
 }
-?>

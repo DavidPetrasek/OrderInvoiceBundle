@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -15,7 +18,7 @@ use Symfony\Component\Process\Process;
 #[AsCommand(name: 'oib:styler:enable', description: 'Enables the Styler')]
 class StylerEnableCommand extends Command
 {
-    private QuestionHelper $qHelper;
+    private readonly QuestionHelper $qHelper;
 
     public function __construct
     (
@@ -62,7 +65,7 @@ class StylerEnableCommand extends Command
         {
             $refInvoiceBinaryProvider = new \ReflectionClass($invoiceBinaryProviderFQCN);
         } 
-        catch (\ReflectionException $e)
+        catch (\ReflectionException)
         {
             $output->writeln("<error>The file '".$invoiceBinaryProviderFQCN."' does not exist</error>");
             return Command::FAILURE;
@@ -93,7 +96,7 @@ class StylerEnableCommand extends Command
         return true;
     }
 
-    private function generateRouteConfig(OutputInterface $output): bool|int
+    private function generateRouteConfig(OutputInterface $output): int|bool
     {
         $yamlAbs = $this->projectDir.'/config/routes/psys_order_invoice.yaml';
         $data = 

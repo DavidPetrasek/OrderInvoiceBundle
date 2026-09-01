@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Maker;
 
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;

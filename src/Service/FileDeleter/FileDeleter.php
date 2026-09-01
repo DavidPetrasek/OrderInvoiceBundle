@@ -1,9 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Service\FileDeleter;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\Order;
+use Psys\OrderInvoiceBundle\Model\FileInterface;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -81,9 +85,9 @@ class FileDeleter
         }
 
         // No file to delete
-        if ($file === null) {return;}
+        if (!$file instanceof FileInterface) {return;}
 
-        if ($nameFileSystem === null) {$nameFileSystem = $file->getNameFileSystem();}
+        $nameFileSystem ??= $file->getNameFileSystem();
 
         // Delete from disk
         $this->filesystem->remove($this->projectDir.$storagePath.'/'.$nameFileSystem);

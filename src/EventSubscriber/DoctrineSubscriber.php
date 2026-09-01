@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\EventSubscriber;
 
 use Doctrine\ORM\Event\OnFlushEventArgs;
@@ -47,21 +50,21 @@ class DoctrineSubscriber
             if ($entUpdate instanceof Order) {$order_update = $entUpdate;}
         }
 
-        if ($order_insert) // When creating a new order
+        if ($order_insert instanceof Order) // When creating a new order
         {
             $this->checkInvoice($order_insert);
         }
         
-        if ($order_update) // Editing existing order
+        if ($order_update instanceof Order) // Editing existing order
         {
             $this->checkInvoice($order_update);
         }
 
         // If the final invoice is just being issued
-        if ($invoiceFinal_insert) 
+        if ($invoiceFinal_insert instanceof InvoiceFinal) 
         {
             // and proforma or advance invoice exists
-            if ($order_update && (!$order_update->getInvoicesAdvance()->isEmpty() || $order_update->getInvoiceProforma()))
+            if ($order_update instanceof Order && (!$order_update->getInvoicesAdvance()->isEmpty() || $order_update->getInvoiceProforma() instanceof InvoiceProforma))
             {
                 // and order has no items
                 if ($order_update->getItems()->isEmpty())
@@ -72,22 +75,22 @@ class DoctrineSubscriber
         }
 
         // Simultaneous checks
-        if ($invoiceProforma_insert && $invoiceAdvance_insert)
+        if ($invoiceProforma_insert instanceof InvoiceProforma && $invoiceAdvance_insert instanceof InvoiceAdvance)
         {
             throw new InvalidInvoiceStateException('Proforma and advance invoice cannot be issued simultaneously.');
         }
 
-        if ($invoiceProforma_insert && $invoiceRegular_insert)
+        if ($invoiceProforma_insert && $invoiceRegular_insert instanceof InvoiceRegular)
         {
             throw new InvalidInvoiceStateException('Proforma and regular invoice cannot be issued simultaneously.');
         }
 
-        if ($invoiceAdvance_insert && $invoiceRegular_insert)
+        if ($invoiceAdvance_insert && $invoiceRegular_insert instanceof InvoiceRegular)
         {
             throw new InvalidInvoiceStateException('Advance and regular invoice cannot be issued simultaneously.');
         }
 
-        if ($invoiceFinal_insert && $invoiceProforma_insert)
+        if ($invoiceFinal_insert instanceof InvoiceFinal && $invoiceProforma_insert)
         {
             throw new InvalidInvoiceStateException('Final and proforma invoice cannot be issued simultaneously.');
         }
@@ -99,7 +102,7 @@ class DoctrineSubscriber
         $invoicesAdvance = $order->getInvoicesAdvance();
         $invoiceFinal = $order->getInvoiceFinal();
 
-        if (empty($invoiceProforma) && $invoicesAdvance->isEmpty() && !empty($invoiceFinal)) 
+        if (!$invoiceProforma instanceof InvoiceProforma && $invoicesAdvance->isEmpty() && $invoiceFinal instanceof InvoiceFinal) 
         {
             throw new InvalidInvoiceStateException('Final invoice requires proforma or advance invoice to be issued first.');
         }

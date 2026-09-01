@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Maker;
 
 use Symfony\Bundle\MakerBundle\ConsoleStyle;
@@ -18,7 +20,7 @@ class InvoiceMpdfTwigTemplate extends AbstractMaker
 
     public function __construct
     (
-        private string $projectDir,
+        private readonly string $projectDir,
     )
     {}
 

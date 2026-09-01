@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -69,7 +72,7 @@ class Upgrade15To16Command extends Command
         $finder = new Finder();
         $finder->files()->in($migrationsDir)->sortByChangedTime()->reverseSorting();  
         $finderArr = iterator_to_array($finder);
-        if (!empty($finderArr)) // At least one migration exists 
+        if ($finderArr !== []) // At least one migration exists 
         {
             $latestMigration = $finderArr[array_key_first($finderArr)];
             $latestMigrationDateStr = u($latestMigration)->match('/Version(\d+)/')[1];
@@ -117,7 +120,7 @@ class Upgrade15To16Command extends Command
                     ->setFirstResult($selectOffset)
                     ->setMaxResults(self::SELECT_BATCH_SIZE);
                 
-            $ordersBatch = $qb->fetchAllAssociative();   if (empty($ordersBatch)) {break;}
+            $ordersBatch = $qb->fetchAllAssociative();   if ($ordersBatch === []) {break;}
             
             foreach ($ordersBatch as $order)
             {

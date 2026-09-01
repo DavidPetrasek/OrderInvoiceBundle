@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Controller\Dev;
 
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
@@ -36,11 +38,11 @@ class OibStylerController extends AbstractController
     {
         $invoiceType = InvoiceType::fromName($invoiceType);
 
-        if (null === $order 
-            || null === $order->getInvoiceProforma() && $invoiceType === InvoiceType::PROFORMA
-            || null === $order->getInvoiceFinal() && $invoiceType === InvoiceType::FINAL
+        if (!$order instanceof Order 
+            || !$order->getInvoiceProforma() instanceof InvoiceProforma && $invoiceType === InvoiceType::PROFORMA
+            || !$order->getInvoiceFinal() instanceof InvoiceFinal && $invoiceType === InvoiceType::FINAL
             || $order->getInvoicesAdvance()->isEmpty() && $invoiceType === InvoiceType::ADVANCE
-            || null === $order->getInvoiceRegular() && $invoiceType === InvoiceType::REGULAR
+            || !$order->getInvoiceRegular() instanceof InvoiceRegular && $invoiceType === InvoiceType::REGULAR
         ) 
         {
             $order = $this->getDummyOrder();

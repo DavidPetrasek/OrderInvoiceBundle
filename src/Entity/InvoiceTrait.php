@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -109,9 +112,3 @@ trait InvoiceTrait
         return $this;
     }
 }
-
-
-
-
-
-?>

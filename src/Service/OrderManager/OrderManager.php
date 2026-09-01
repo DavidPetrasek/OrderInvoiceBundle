@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Service\OrderManager;
 
 use Psys\OrderInvoiceBundle\Entity\Order;
@@ -6,10 +9,12 @@ use Psys\OrderInvoiceBundle\Entity\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
+use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\OrderInvoiceBundle\Model\Order\State;
+use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
 use Psys\Utils\Math;
 
 
@@ -38,7 +43,7 @@ class OrderManager
 
         // Process proforma invoice
         $invoiceProforma = $order->getInvoiceProforma();
-        if ($invoiceProforma)
+        if ($invoiceProforma instanceof InvoiceProforma)
         {
             $proformaTotals = $this->calculateTotals($invoiceProforma);
             $invoiceProforma->setPriceVatIncluded($proformaTotals['vatIncluded'])
@@ -49,7 +54,7 @@ class OrderManager
 
         // Process regural invoice
         $invoiceRegular = $order->getInvoiceRegular();
-        if ($invoiceRegular)
+        if ($invoiceRegular instanceof InvoiceRegular)
         {
             $regularTotals = $this->calculateTotals($invoiceRegular);
             $invoiceRegular->setPriceVatIncluded($regularTotals['vatIncluded'])
@@ -66,7 +71,7 @@ class OrderManager
         // Process final invoice
         $invoiceFinal = $order->getInvoiceFinal();
         
-        if ($invoiceFinal)
+        if ($invoiceFinal instanceof InvoiceFinal)
         {
             // Calculate total amount due after deducting advance invoice payments
             $advancesTotals = $this->getInvoicesAdvanceTotals($order);
@@ -88,7 +93,7 @@ class OrderManager
             {
                 $order->setState(State::PARTIALLY_PAID);
             }
-            else if ($invoiceFinal && !$invoiceAdvance->isPaid())
+            else if ($invoiceFinal instanceof InvoiceFinal && !$invoiceAdvance->isPaid())
             {
                 $allAdvancesWerePaid = false;
             }
@@ -101,7 +106,7 @@ class OrderManager
                     ->setPriceVat($invoiceAdvanceTotals['vat']);
         }
 
-        if ($invoiceFinal && $invoiceFinal->isPaid() && $allAdvancesWerePaid)
+        if ($invoiceFinal instanceof InvoiceFinal && $invoiceFinal->isPaid() && $allAdvancesWerePaid)
         {
             $order->setState(State::PAID);
         }
@@ -113,7 +118,7 @@ class OrderManager
     private function saveChecks(Order $order): void
     {
         $invoiceProforma = $order->getInvoiceProforma();
-        if ($invoiceProforma)
+        if ($invoiceProforma instanceof InvoiceProforma)
         {
             if ($invoiceProforma->getItems()->isEmpty())
             {
@@ -122,14 +127,14 @@ class OrderManager
 
             if ($invoiceProforma->isPayable())
             {
-                if (empty($invoiceProforma->getPaymentMode()))
+                if (!$invoiceProforma->getPaymentMode() instanceof PaymentMode)
                 {
                     throw new InvalidInvoiceStateException('Proforma invoice is payable and has no payment mode set.');
                 }
             }
             else if ($invoiceProforma->isPaid())
             {
-                throw new InvalidInvoiceStateException('Proforma invoice is not payable and therefore can\'t be marked as paid.');
+                throw new InvalidInvoiceStateException("Proforma invoice is not payable and therefore can't be marked as paid.");
             }
 
             if (empty($invoiceProforma->getCurrency()))
@@ -139,9 +144,9 @@ class OrderManager
         }
 
         $invoiceFinal = $order->getInvoiceFinal();
-        if (($invoiceProforma || !$order->getInvoicesAdvance()->isEmpty()) && $invoiceFinal)
+        if (($invoiceProforma instanceof InvoiceProforma || !$order->getInvoicesAdvance()->isEmpty()) && $invoiceFinal instanceof InvoiceFinal)
         {
-            if (empty($order->getPaymentMode()))
+            if (!$order->getPaymentMode() instanceof PaymentMode)
             {
                 throw new InvalidInvoiceStateException('Order has no payment mode set.');
             }
@@ -152,14 +157,14 @@ class OrderManager
         }
 
         $invoiceRegular = $order->getInvoiceRegular();
-        if ($invoiceRegular)
+        if ($invoiceRegular instanceof InvoiceRegular)
         {
             if ($invoiceRegular->getItems()->isEmpty())
             {
                 throw new InvalidInvoiceStateException('Regular invoice has no items.');
             }
 
-            if (empty($invoiceRegular->getPaymentMode()))
+            if (!$invoiceRegular->getPaymentMode() instanceof PaymentMode)
             {
                 throw new InvalidInvoiceStateException('Regular invoice has no payment mode set.');
             }
@@ -265,5 +270,3 @@ class OrderManager
         ];
     }
 }
-
-?>

@@ -1,6 +1,5 @@
 
 /vendor/
-rector.php
 composer.lock
 
 

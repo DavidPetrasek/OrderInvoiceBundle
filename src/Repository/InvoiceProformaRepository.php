@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Repository;
 
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;

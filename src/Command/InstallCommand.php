@@ -1,6 +1,12 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Command;
 
+use Psys\OrderInvoiceBundle\Entity\File;
+use Psys\OrderInvoiceBundle\Model\CustomerInterface;
+use Psys\OrderInvoiceBundle\Model\FileInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -18,8 +24,8 @@ use function Symfony\Component\String\u;
 #[AsCommand(name: 'oib:install', description: 'Sets target entities, generates and applies migrations, implements interfaces, generates config file.')]
 class InstallCommand extends Command
 {
-    private QuestionHelper $qHelper;
-    private const FILE_ENTITY_FQCN_DEFAULT = 'Psys\OrderInvoiceBundle\Entity\File';
+    private readonly QuestionHelper $qHelper;
+    private const FILE_ENTITY_FQCN_DEFAULT = File::class;
 
     public function __construct
     (
@@ -80,7 +86,7 @@ class InstallCommand extends Command
         {
             $refCustomer = new \ReflectionClass($customerEntFQCN);
         } 
-        catch (\ReflectionException $e)
+        catch (\ReflectionException)
         {
             $output->writeln("<error>The file '".$customerEntFQCN."' does not exist</error>");
             return Command::FAILURE;
@@ -92,7 +98,7 @@ class InstallCommand extends Command
         {
             $refFile = new \ReflectionClass($fileEntFQCN);
         } 
-        catch (\ReflectionException $e)
+        catch (\ReflectionException)
         {
             $output->writeln("<error>The file '".$fileEntFQCN."' does not exist</error>");
             return Command::FAILURE;
@@ -119,8 +125,8 @@ class InstallCommand extends Command
         $data = Yaml::parseFile($doctrineYamlAbs);
         $rte = &$data['doctrine']['orm']['resolve_target_entities'];
         $add = [
-            'Psys\OrderInvoiceBundle\Model\CustomerInterface' => $getEntitiesFromInputResult['customerEntFQCN'],
-            'Psys\OrderInvoiceBundle\Model\FileInterface' => $getEntitiesFromInputResult['fileEntFQCN'],
+            CustomerInterface::class => $getEntitiesFromInputResult['customerEntFQCN'],
+            FileInterface::class => $getEntitiesFromInputResult['fileEntFQCN'],
         ];
         $changed = false;
         foreach ($add as $k => $v) 
@@ -160,7 +166,7 @@ class InstallCommand extends Command
         $finder = new Finder();
         $finder->files()->in($migrationsDir)->sortByChangedTime()->reverseSorting();  
         $finderArr = iterator_to_array($finder);
-        if (!empty($finderArr)) // At least one migration exists 
+        if ($finderArr !== []) // At least one migration exists 
         {
             $latestMigration = $finderArr[array_key_first($finderArr)];
             $latestMigrationDateStr = u($latestMigration)->match('/Version(\d+)/')[1];
@@ -216,7 +222,7 @@ class InstallCommand extends Command
         $code = file_get_contents($fileAbsPath);
 
         // Add use statement if missing
-        if (strpos($code, "use $interfaceUseName;") === false) 
+        if (!str_contains($code, "use $interfaceUseName;")) 
         {
             // insert after namespace declaration
             $code = preg_replace(
@@ -228,10 +234,10 @@ class InstallCommand extends Command
         
         // Add interface in class declaration if missing
         $code = preg_replace_callback('/class\s+(\w+)\s*(?:extends\s+(\w+))?\s*(?:implements\s+([^{]+))?/',
-            function ($m) use ($interfaceClassName, $output) 
+            function ($m) use ($interfaceClassName) 
             {
                 $className = $m[1];
-                $list = !empty($m[3]) ? array_map('trim', explode(',', $m[3])) : [];
+                $list = !empty($m[3]) ? array_map(trim(...), explode(',', $m[3])) : [];
                 
                 if (!in_array($interfaceClassName, $list)) // the interface is not present
                 {

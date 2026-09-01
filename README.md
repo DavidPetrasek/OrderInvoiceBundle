@@ -20,7 +20,7 @@
 ## Installation
 
 Minimal requirements:
-- Symfony 7.2
+- Symfony 7.4
 - PHP 8.2
 
 Run: 

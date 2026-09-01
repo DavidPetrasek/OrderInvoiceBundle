@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -14,16 +17,16 @@ trait MoneyTrait
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $payment_mode_bank_account = null;
     
-    #[ORM\Column(type: Types::DECIMAL, nullable: true, precision: 14, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2, nullable: true)]
     private ?string $price_vat_included = '0.00';
     
-    #[ORM\Column(type: Types::DECIMAL, nullable: true, precision: 14, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2, nullable: true)]
     private ?string $price_vat_excluded = '0.00';
     
-    #[ORM\Column(type: Types::DECIMAL, nullable: true, precision: 14, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2, nullable: true)]
     private ?string $price_vat_base = '0.00';
     
-    #[ORM\Column(type: Types::DECIMAL, nullable: true, precision: 14, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2, nullable: true)]
     private ?string $price_vat = '0.00';
 
     #[ORM\Column(length: 3, nullable: true, options:["fixed" => true, "comment" => "Three-letter alphabetic code (ISO 4217)"])]
@@ -118,9 +121,3 @@ trait MoneyTrait
         return $this;
     }
 }
-
-
-
-
-
-?>

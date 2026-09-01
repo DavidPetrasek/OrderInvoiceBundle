@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Model\Order;
 
 
@@ -8,4 +11,3 @@ enum PaymentMode :int
     case BANK_ACCOUNT_ONLINE = 2;
     case CREDIT_CARD = 3;
 }
-?>

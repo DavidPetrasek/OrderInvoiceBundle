@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Service\InvoiceManager;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -115,7 +118,7 @@ class InvoiceManager
 
         if (!empty($kodVarDB))
         {
-            $paymentReference = $this->generateUniquePaymentReference($length, $table);
+            return $this->generateUniquePaymentReference($length, $table);
         }
 
         return $paymentReference;

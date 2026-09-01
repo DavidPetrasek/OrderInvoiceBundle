@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Tests\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,16 +13,13 @@ use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\Order;
-use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
 use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
 use Symfony\Component\Filesystem\Filesystem;
 
 class FileDeleterTest extends TestCase
 {
-    /** @var MockObject&Filesystem */
-    private Filesystem $filesystem;
-    /** @var MockObject&EntityManagerInterface */
-    private EntityManagerInterface $em;
+    private MockObject $filesystem;
+    private MockObject $em;
     private FileDeleter $fileDeleter;
     private string $projectDir = '/app';
     private array $storagePath;
@@ -51,6 +50,7 @@ class FileDeleterTest extends TestCase
         $invoice = new InvoiceProforma();
         $file = new File();
         $file->setNameFileSystem('proforma_12345.pdf');
+
         $invoice->setFile($file);
         $order->setInvoiceProforma($invoice);
 
@@ -72,6 +72,7 @@ class FileDeleterTest extends TestCase
         $invoice = new InvoiceProforma();
         $file = new File();
         $file->setNameFileSystem('proforma_original.pdf');
+
         $invoice->setFile($file);
         $order->setInvoiceProforma($invoice);
 
@@ -95,6 +96,7 @@ class FileDeleterTest extends TestCase
         $advance = new InvoiceAdvance();
         $file = new File();
         $file->setNameFileSystem('advance_99999.pdf');
+
         $advance->setFile($file);
         $advance->setOrder($order);
 
@@ -116,6 +118,7 @@ class FileDeleterTest extends TestCase
         $invoice = new InvoiceFinal();
         $file = new File();
         $file->setNameFileSystem('final_55555.pdf');
+
         $invoice->setFile($file);
         $order->setInvoiceFinal($invoice);
 
@@ -137,6 +140,7 @@ class FileDeleterTest extends TestCase
         $invoice = new InvoiceRegular();
         $file = new File();
         $file->setNameFileSystem('regular_77777.pdf');
+
         $invoice->setFile($file);
         $order->setInvoiceRegular($invoice);
 
@@ -157,6 +161,7 @@ class FileDeleterTest extends TestCase
         $order = new Order();
         $invoice = new InvoiceProforma();
         $invoice->setFile(null);
+
         $order->setInvoiceProforma($invoice);
 
         $this->filesystem->expects($this->never())->method('remove');
@@ -185,6 +190,7 @@ class FileDeleterTest extends TestCase
         $order = new Order();
         $invoice = new InvoiceFinal();
         $invoice->setFile(null);
+
         $order->setInvoiceFinal($invoice);
 
         $this->filesystem->expects($this->never())->method('remove');
@@ -199,6 +205,7 @@ class FileDeleterTest extends TestCase
         $order = new Order();
         $invoice = new InvoiceRegular();
         $invoice->setFile(null);
+
         $order->setInvoiceRegular($invoice);
 
         $this->filesystem->expects($this->never())->method('remove');
@@ -214,12 +221,13 @@ class FileDeleterTest extends TestCase
         $invoice = new InvoiceProforma();
         $file = new File();
         $file->setNameFileSystem('test.pdf');
+
         $invoice->setFile($file);
         $order->setInvoiceProforma($invoice);
 
         $this->filesystem->expects($this->once())->method('remove');
         $this->em->expects($this->atLeastOnce())->method('persist')->willReturnCallback(
-            function ($entity) use ($invoice, $file) {
+            function ($entity) use ($invoice): void {
                 if ($entity === $invoice) {
                     // After deletion, file should be null
                     $this->assertNull($invoice->getFile());
@@ -235,18 +243,20 @@ class FileDeleterTest extends TestCase
     public function testMultipleFilesCanBeDeleted(): void
     {
         $order = new Order();
-        
+
         // Proforma invoice with file
         $proforma = new InvoiceProforma();
         $proformaFile = new File();
         $proformaFile->setNameFileSystem('proforma.pdf');
+
         $proforma->setFile($proformaFile);
         $order->setInvoiceProforma($proforma);
-        
+
         // Final invoice with file
         $final = new InvoiceFinal();
         $finalFile = new File();
         $finalFile->setNameFileSystem('final.pdf');
+
         $final->setFile($finalFile);
         $order->setInvoiceFinal($final);
 

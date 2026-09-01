@@ -1,7 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle\Service\FilePersister;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Psys\OrderInvoiceBundle\Entity\File;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Model\Invoice\InvoiceType;
@@ -12,7 +16,7 @@ use Symfony\Component\Mime\MimeTypes;
 
 class FilePersister
 {
-    private const FILE_ENTITY_FQCN_DEFAULT = 'Psys\OrderInvoiceBundle\Entity\File';
+    private const FILE_ENTITY_FQCN_DEFAULT = File::class;
 
     public function __construct
     (

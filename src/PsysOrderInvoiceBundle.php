@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Psys\OrderInvoiceBundle;
 
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
