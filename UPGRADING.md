@@ -1,5 +1,10 @@
 
-## 1.5.5 to 1.6.0
+## 1.6 to 1.7
+- The following methods now return string instead of float: `getPriceVatIncluded`, `getPriceVatExcluded`, `getVatRate`, `getVat`
+- The following methods now require string as an argument instead of float: `setPriceVatIncluded`, `setPriceVatExcluded`, `setVatRate`, `setVat`
+
+
+## 1.5 to 1.6
 - Change version in composer.json to `"psys/order-invoice-bundle": "^1.6",` and run: `composer update`
 - Backup your database and run: `symfony console oib:upgrade:15_to_16`
 - Make sure `setUniquePaymentReference` is executed after order was saved.
@@ -9,7 +14,7 @@
 - Optional: update your mPDF twig template or stylesheet: `symfony console make:oib:invoice:mpdf_twig_template`
 
 
-## 1.4.6 to 1.5.0
+## 1.4 to 1.5
 - Change version in composer.json to `"psys/order-invoice-bundle": "^1.5",` and run: `composer update`
 - Backup your database and run: `symfony console oib:upgrade:14_to_15`
 - Remove: `->getInvoice()`, `new Invoice()`
@@ -32,7 +37,7 @@
 - Optional: Update your mPDF twig template: `symfony console make:oib:invoice:mpdf_twig_template`
 
 
-## 1.3.3 to 1.4.0
+## 1.3 to 1.4
 - Change version in composer.json to `"psys/order-invoice-bundle": "^1.4",` and run: `composer update`
 - Run: `symfony console oib:upgrade:13_to_14`
 - Rename `State::NEW` to `State::UNPAID`

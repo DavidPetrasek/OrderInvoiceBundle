@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
@@ -60,7 +58,7 @@ class ItemTest extends TestCase
     public function testSetAndGetPriceVatIncluded(): void
     {
         $item = new Item();
-        $price = 120.50;
+        $price = '120.50';
 
         $result = $item->setPriceVatIncluded($price);
 
@@ -71,7 +69,7 @@ class ItemTest extends TestCase
     public function testSetAndGetPriceVatExcluded(): void
     {
         $item = new Item();
-        $price = 100.42;
+        $price = '100.42';
 
         $result = $item->setPriceVatExcluded($price);
 
@@ -82,7 +80,7 @@ class ItemTest extends TestCase
     public function testSetAndGetVatRate(): void
     {
         $item = new Item();
-        $rate = 20.00;
+        $rate = '20.00';
 
         $result = $item->setVatRate($rate);
 
@@ -93,7 +91,7 @@ class ItemTest extends TestCase
     public function testSetAndGetVat(): void
     {
         $item = new Item();
-        $vat = 20.08;
+        $vat = '20.08';
 
         $result = $item->setVat($vat);
 

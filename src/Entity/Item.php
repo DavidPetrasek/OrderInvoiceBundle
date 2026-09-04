@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Psys\OrderInvoiceBundle\Entity;
 
@@ -11,14 +9,13 @@ use Psys\OrderInvoiceBundle\Model\Item\AmountType;
 use Psys\OrderInvoiceBundle\Model\Item\CategoryInterface;
 use Psys\OrderInvoiceBundle\Repository\ItemRepository;
 
-
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
-#[ORM\Table (name: 'oi_item')]
+#[ORM\Table(name: 'oi_item')]
 class Item
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(options:["unsigned" => true])]
+    #[ORM\Column(options: ["unsigned" => true])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'items')]
@@ -36,8 +33,8 @@ class Item
     #[ORM\ManyToOne(inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: true)]
     private ?InvoiceRegular $invoice_regular = null;
-    
-    #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
+
+    #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ["unsigned" => true])]
     private ?int $category = null;
 
     #[ORM\Column(length: 80, nullable: true)]
@@ -46,24 +43,23 @@ class Item
     #[ORM\Column(length: 150, nullable: true)]
     private ?string $short_description = null;
 
-    #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true])]
+    #[ORM\Column(type: Types::SMALLINT, options: ["unsigned" => true])]
     private int $amount;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2)]
     private string $price_vat_included = '0.00';
-    
+
     #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2)]
     private string $price_vat_excluded = '0.00';
-    
+
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2)]
     private string $vat_rate = '0.00';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2)]
     private string $vat = '0.00';
 
-    #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true])]
+    #[ORM\Column(type: Types::SMALLINT, options: ["unsigned" => true])]
     private int $amount_type;
-
 
     public function getId(): ?int
     {
@@ -120,13 +116,16 @@ class Item
 
     public function getCategory(): ?CategoryInterface
     {
-        return CategoryInterface::from($this->category);
+        return $this->category !== null ? CategoryInterface::from($this->category) : null;
     }
 
     public function setCategory(int|CategoryInterface|null $category): self
     {
-        if ($category instanceof CategoryInterface) {$category = $category->value;}
-        
+        if ($category instanceof CategoryInterface)
+        {
+            $category = $category->value;
+        }
+
         $this->category = $category;
 
         return $this;
@@ -149,7 +148,7 @@ class Item
         return $this->short_description;
     }
 
-    public function setShortDescription(string $short_description): static
+    public function setShortDescription(?string $short_description): static
     {
         $this->short_description = $short_description;
 
@@ -168,51 +167,51 @@ class Item
         return $this;
     }
 
-    public function getPriceVatExcluded(): float
+    public function getPriceVatExcluded(): string
     {
         return $this->price_vat_excluded;
     }
-    
-    public function setPriceVatExcluded(float $price_vat_excluded): self
+
+    public function setPriceVatExcluded(string $price_vat_excluded): self
     {
         $this->price_vat_excluded = $price_vat_excluded;
-        
+
         return $this;
     }
 
-    public function getPriceVatIncluded(): float
+    public function getPriceVatIncluded(): string
     {
         return $this->price_vat_included;
     }
-    
-    public function setPriceVatIncluded(float $price_vat_included): self
+
+    public function setPriceVatIncluded(string $price_vat_included): self
     {
         $this->price_vat_included = $price_vat_included;
-        
+
         return $this;
     }
 
-    public function getVatRate(): float
+    public function getVatRate(): string
     {
         return $this->vat_rate;
     }
-    
-    public function setVatRate(float $vat_rate): self
+
+    public function setVatRate(string $vat_rate): self
     {
         $this->vat_rate = $vat_rate;
-        
+
         return $this;
     }
 
-    public function getVat(): float
+    public function getVat(): string
     {
         return $this->vat;
     }
-    
-    public function setVat(float $vat): self
+
+    public function setVat(string $vat): self
     {
         $this->vat = $vat;
-        
+
         return $this;
     }
 
@@ -223,8 +222,11 @@ class Item
 
     public function setAmountType(int|AmountType $amount_type): self
     {
-        if ($amount_type instanceof AmountType) {$amount_type = $amount_type->value;}
-        
+        if ($amount_type instanceof AmountType)
+        {
+            $amount_type = $amount_type->value;
+        }
+
         $this->amount_type = $amount_type;
 
         return $this;

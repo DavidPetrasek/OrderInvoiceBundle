@@ -2,6 +2,14 @@
 All notable changes to this project are documented in this file.
 
 
+## [1.7.0] - 2026-09-0X
+### Added
+- Strict types
+
+### Fixed
+- Calculations are done using BCMath
+
+
 ## [1.6.0] - 2026-05-07
 ### Added
 - Default invoice style for mPDF twig template
@@ -25,7 +33,6 @@ All notable changes to this project are documented in this file.
 - setUniquePaymentReference
 - Show exception when final is issued and order has no payment mode or currency set
 - Styler
-
 
 
 ## [1.5.0] - 2026-04-30

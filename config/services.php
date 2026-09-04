@@ -23,7 +23,6 @@ use Psys\OrderInvoiceBundle\Service\FilePersister\FilePersister;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
 use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
 use Psys\OrderInvoiceBundle\Twig\OrderRuntime;
-use Psys\Utils\Math;
 
 
 return function(ContainerConfigurator $container): void 
@@ -31,7 +30,6 @@ return function(ContainerConfigurator $container): void
     $services = $container->services();
 
     $services
-        ->set('psys_utils.math', Math::class)
         
         ->set('oi.order_manager', OrderManager::class)
             ->args([

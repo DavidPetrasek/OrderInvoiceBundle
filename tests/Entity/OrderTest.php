@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
@@ -290,7 +288,7 @@ class OrderTest extends TestCase
         $seller->setOrganization('My Company');
 
         $item = new Item();
-        $item->setName('Product')->setAmount(2)->setPriceVatIncluded(120.00)->setVatRate(20.00);
+        $item->setName('Product')->setAmount(2)->setPriceVatIncluded('120.00')->setVatRate('20.00');
 
         $order
             ->setCreatedAt($createdAt)

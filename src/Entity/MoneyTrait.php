@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Psys\OrderInvoiceBundle\Entity;
 
@@ -61,48 +59,48 @@ trait MoneyTrait
         return $this;
     }
     
-    public function getPriceVatIncluded(): ?float
+    public function getPriceVatIncluded(): ?string
     {
         return $this->price_vat_included;
     }
     
-    public function setPriceVatIncluded(?float $price_vat_included): self
+    public function setPriceVatIncluded(?string $price_vat_included): self
     {
         $this->price_vat_included = $price_vat_included;
         
         return $this;
     }
     
-    public function getPriceVatExcluded(): ?float
+    public function getPriceVatExcluded(): ?string
     {
         return $this->price_vat_excluded;
     }
     
-    public function setPriceVatExcluded(?float $price_vat_excluded): self
+    public function setPriceVatExcluded(?string $price_vat_excluded): self
     {
         $this->price_vat_excluded = $price_vat_excluded;
         
         return $this;
     }
     
-    public function getPriceVatBase(): ?float
+    public function getPriceVatBase(): ?string
     {
         return $this->price_vat_base;
     }
     
-    public function setPriceVatBase(?float $price_vat_base): self
+    public function setPriceVatBase(?string $price_vat_base): self
     {
         $this->price_vat_base = $price_vat_base;
         
         return $this;
     }
     
-    public function getPriceVat(): ?float
+    public function getPriceVat(): ?string
     {
         return $this->price_vat;
     }
     
-    public function setPriceVat(?float $price_vat): self
+    public function setPriceVat(?string $price_vat): self
     {
         $this->price_vat = $price_vat;
         

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
@@ -79,7 +77,7 @@ class MoneyTraitTest extends TestCase
     public function testSetAndGetPriceVatIncluded(): void
     {
         $order = new Order();
-        $price = 1200.50;
+        $price = '1200.50';
 
         $result = $order->setPriceVatIncluded($price);
 
@@ -90,7 +88,7 @@ class MoneyTraitTest extends TestCase
     public function testSetAndGetPriceVatExcluded(): void
     {
         $order = new Order();
-        $price = 1000.42;
+        $price = '1000.42';
 
         $result = $order->setPriceVatExcluded($price);
 
@@ -101,7 +99,7 @@ class MoneyTraitTest extends TestCase
     public function testSetAndGetPriceVatBase(): void
     {
         $order = new Order();
-        $price = 1000.00;
+        $price = '1000.00';
 
         $result = $order->setPriceVatBase($price);
 
@@ -112,7 +110,7 @@ class MoneyTraitTest extends TestCase
     public function testSetAndGetPriceVat(): void
     {
         $order = new Order();
-        $price = 200.00;
+        $price = '200.00';
 
         $result = $order->setPriceVat($price);
 
@@ -163,10 +161,10 @@ class MoneyTraitTest extends TestCase
         $order
             ->setPaymentMode(PaymentMode::BANK_ACCOUNT_REGULAR)
             ->setPaymentModeBankAccount('123456789/2010')
-            ->setPriceVatIncluded(1200.00)
-            ->setPriceVatExcluded(1000.00)
-            ->setPriceVatBase(1000.00)
-            ->setPriceVat(200.00)
+            ->setPriceVatIncluded('1200.00')
+            ->setPriceVatExcluded('1000.00')
+            ->setPriceVatBase('1000.00')
+            ->setPriceVat('200.00')
             ->setCurrency('CZK');
 
         $this->assertSame(PaymentMode::BANK_ACCOUNT_REGULAR, $order->getPaymentMode());
@@ -183,10 +181,10 @@ class MoneyTraitTest extends TestCase
         $order = new Order();
 
         $order
-            ->setPriceVatIncluded(0.00)
-            ->setPriceVatExcluded(0.00)
-            ->setPriceVatBase(0.00)
-            ->setPriceVat(0.00);
+            ->setPriceVatIncluded('0.00')
+            ->setPriceVatExcluded('0.00')
+            ->setPriceVatBase('0.00')
+            ->setPriceVat('0.00');
 
         $this->assertEquals(0.00, $order->getPriceVatIncluded());
         $this->assertEquals(0.00, $order->getPriceVatExcluded());
@@ -199,13 +197,13 @@ class MoneyTraitTest extends TestCase
         $order = new Order();
 
         $order
-            ->setPriceVatIncluded(-1200.00)
-            ->setPriceVatExcluded(-1000.00)
-            ->setPriceVat(-200.00);
+            ->setPriceVatIncluded('-1200.00')
+            ->setPriceVatExcluded('-1000.00')
+            ->setPriceVat('-200.00');
 
-        $this->assertEquals(-1200.00, $order->getPriceVatIncluded());
-        $this->assertEquals(-1000.00, $order->getPriceVatExcluded());
-        $this->assertEquals(-200.00, $order->getPriceVat());
+        $this->assertEquals('-1200.00', $order->getPriceVatIncluded());
+        $this->assertEquals('-1000.00', $order->getPriceVatExcluded());
+        $this->assertEquals('-200.00', $order->getPriceVat());
     }
 
     public function testDifferentPaymentModes(): void

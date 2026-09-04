@@ -48,12 +48,12 @@
         "symfony/string": ">=7.4",
         "symfony/filesystem": ">=7.4",
         "symfony/maker-bundle": ">=1.63.0",
-        "psys/utils": ">=1.0.10",
         "symfony/yaml": ">=7.4",
         "symfony/mime": ">=7.4",
         "symfony/routing": ">=7.4",
         "doctrine/doctrine-migrations-bundle": ">=3.7",
-        "symfony/twig-bundle": ">=7.4"
+        "symfony/twig-bundle": ">=7.4",
+        "nanasess/bcmath-polyfill": "^1.1"
     },
     "suggest": {
         "mpdf/mpdf": "Required by the MpdfGenerator"

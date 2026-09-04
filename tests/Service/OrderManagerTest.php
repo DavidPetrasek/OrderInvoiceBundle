@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Psys\OrderInvoiceBundle\Tests\Service;
 
@@ -9,8 +7,8 @@ use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
-use Psys\Utils\Math;
 use PHPUnit\Framework\TestCase;
+use Psys\OrderInvoiceBundle\Service\Math;
 
 class OrderManagerTest extends TestCase
 {
@@ -26,24 +24,24 @@ class OrderManagerTest extends TestCase
 
         $item1 = new Item();
         $item1->setAmount(1);
-        $item1->setPriceVatIncluded(120.00);
-        $item1->setVatRate(20.00);
+        $item1->setPriceVatIncluded('120.00');
+        $item1->setVatRate('20.00');
 
         $order->addItem($item1);
 
         $totals = $manager->calculateTotals($order);
 
-        $this->assertEquals(120.00, $totals['vatIncluded']);
-        $this->assertEquals(100.00, $totals['vatExcluded']);
-        $this->assertEquals(100.00, $totals['vatBase']);
-        $this->assertEquals(20.00, $totals['vat']);
+        $this->assertEquals('120.00', $totals['vatIncluded']);
+        $this->assertEquals('100.00', $totals['vatExcluded']);
+        $this->assertEquals('100.00', $totals['vatBase']);
+        $this->assertEquals('20.00', $totals['vat']);
     }
 
     public function testSavePersistsAndFlushesOrderAndAdvancesData(): void
     {
         $math = $this->createMock(Math::class);
-        $math->method('subtractPercentage')->willReturn(100.00);
-        $math->method('addPercentage')->willReturn(120.00);
+        $math->method('subtractPercentage')->willReturn('100.00');
+        $math->method('addPercentage')->willReturn('120.00');
 
         $em = $this->createMock(EntityManagerInterface::class);
         $em->expects($this->once())->method('persist');
@@ -64,8 +62,8 @@ class OrderManagerTest extends TestCase
 
         $item = new Item();
         $item->setAmount(2);
-        $item->setPriceVatIncluded(120.00);
-        $item->setVatRate(20.00);
+        $item->setPriceVatIncluded('120.00');
+        $item->setVatRate('20.00');
 
         $invoiceAdvance->addItem($item);
 
@@ -73,17 +71,17 @@ class OrderManagerTest extends TestCase
 
         $manager->save($order);
 
-        $this->assertSame(240.0, $order->getPriceVatIncluded());
-        $this->assertSame(200.0, $order->getPriceVatExcluded());
-        $this->assertSame(200.0, $order->getPriceVatBase());
-        $this->assertSame(40.0, $order->getPriceVat());
+        $this->assertSame('240.00', $order->getPriceVatIncluded());
+        $this->assertSame('200.00', $order->getPriceVatExcluded());
+        $this->assertSame('200.00', $order->getPriceVatBase());
+        $this->assertSame('40.00', $order->getPriceVat());
     }
 
     public function testSaveThrowsForAdvanceWithoutPaymentMode(): void
     {
         $math = $this->createMock(Math::class);
-        $math->method('subtractPercentage')->willReturn(100.00);
-        $math->method('addPercentage')->willReturn(120.00);
+        $math->method('subtractPercentage')->willReturn('100.00');
+        $math->method('addPercentage')->willReturn('120.00');
 
         $em = $this->createMock(EntityManagerInterface::class);
 
@@ -98,8 +96,8 @@ class OrderManagerTest extends TestCase
 
         $item = new Item();
         $item->setAmount(1);
-        $item->setPriceVatIncluded(120.00);
-        $item->setVatRate(20.00);
+        $item->setPriceVatIncluded('120.00');
+        $item->setVatRate('20.00');
 
         $invoiceAdvance->addItem($item);
         $order->addItem($item);
@@ -113,8 +111,8 @@ class OrderManagerTest extends TestCase
     public function testSaveThrowsForAdvanceWithoutCurrency(): void
     {
         $math = $this->createMock(Math::class);
-        $math->method('subtractPercentage')->willReturn(100.00);
-        $math->method('addPercentage')->willReturn(120.00);
+        $math->method('subtractPercentage')->willReturn('100.00');
+        $math->method('addPercentage')->willReturn('120.00');
 
         $em = $this->createMock(EntityManagerInterface::class);
 
@@ -131,8 +129,8 @@ class OrderManagerTest extends TestCase
 
         $item = new Item();
         $item->setAmount(1);
-        $item->setPriceVatIncluded(120.00);
-        $item->setVatRate(20.00);
+        $item->setPriceVatIncluded('120.00');
+        $item->setVatRate('20.00');
 
         $invoiceAdvance->addItem($item);
         $order->addItem($item);
@@ -155,23 +153,23 @@ class OrderManagerTest extends TestCase
 
         $item1 = new Item();
         $item1->setAmount(2);
-        $item1->setPriceVatIncluded(120.00);
-        $item1->setVatRate(20.00);
+        $item1->setPriceVatIncluded('120.00');
+        $item1->setVatRate('20.00');
 
         $item2 = new Item();
         $item2->setAmount(1);
-        $item2->setPriceVatIncluded(240.00);
-        $item2->setVatRate(20.00);
+        $item2->setPriceVatIncluded('240.00');
+        $item2->setVatRate('20.00');
 
         $order->addItem($item1);
         $order->addItem($item2);
 
         $totals = $manager->calculateTotals($order);
 
-        $this->assertEquals(480.00, $totals['vatIncluded']);
-        $this->assertEquals(400.00, $totals['vatExcluded']);
-        $this->assertEquals(400.00, $totals['vatBase']);
-        $this->assertEquals(80.00, $totals['vat']);
+        $this->assertEquals('480.00', $totals['vatIncluded']);
+        $this->assertEquals('400.00', $totals['vatExcluded']);
+        $this->assertEquals('400.00', $totals['vatBase']);
+        $this->assertEquals('80.00', $totals['vat']);
     }
 
     public function testCalculateTotalsWithZeroVatRate(): void
@@ -186,17 +184,17 @@ class OrderManagerTest extends TestCase
 
         $item = new Item();
         $item->setAmount(1);
-        $item->setPriceVatIncluded(100.00);
-        $item->setVatRate(0.00);
+        $item->setPriceVatIncluded('100.00');
+        $item->setVatRate('0.00');
 
         $order->addItem($item);
 
         $totals = $manager->calculateTotals($order);
 
-        $this->assertEquals(100.00, $totals['vatIncluded']);
-        $this->assertEquals(100.00, $totals['vatExcluded']);
-        $this->assertEquals(0.00, $totals['vatBase']);
-        $this->assertEquals(0.00, $totals['vat']);
+        $this->assertEquals('100.00', $totals['vatIncluded']);
+        $this->assertEquals('100.00', $totals['vatExcluded']);
+        $this->assertEquals('0.00', $totals['vatBase']);
+        $this->assertEquals('0.00', $totals['vat']);
     }
 
     public function testCalculateItemTotalsFromVatExcluded(): void
@@ -211,17 +209,17 @@ class OrderManagerTest extends TestCase
 
         $item = new Item();
         $item->setAmount(1);
-        $item->setPriceVatExcluded(100.00);
-        $item->setVatRate(20.00);
+        $item->setPriceVatExcluded('100.00');
+        $item->setVatRate('20.00');
 
         $order->addItem($item);
 
         $totals = $manager->calculateTotals($order);
 
-        $this->assertEquals(120.00, $totals['vatIncluded']);
-        $this->assertEquals(100.00, $totals['vatExcluded']);
-        $this->assertEquals(100.00, $totals['vatBase']);
-        $this->assertEquals(20.00, $totals['vat']);
+        $this->assertEquals('120.00', $totals['vatIncluded']);
+        $this->assertEquals('100.00', $totals['vatExcluded']);
+        $this->assertEquals('100.00', $totals['vatBase']);
+        $this->assertEquals('20.00', $totals['vat']);
     }
 
     public function testGetInvoicesAdvanceTotals(): void
@@ -233,27 +231,27 @@ class OrderManagerTest extends TestCase
         $order = new Order();
 
         $advance1 = new InvoiceAdvance();
-        $advance1->setPriceVatIncluded(240.00);
-        $advance1->setPriceVatExcluded(200.00);
-        $advance1->setPriceVatBase(200.00);
-        $advance1->setPriceVat(40.00);
+        $advance1->setPriceVatIncluded('240.00');
+        $advance1->setPriceVatExcluded('200.00');
+        $advance1->setPriceVatBase('200.00');
+        $advance1->setPriceVat('40.00');
 
         $order->addInvoiceAdvance($advance1);
 
         $advance2 = new InvoiceAdvance();
-        $advance2->setPriceVatIncluded(120.00);
-        $advance2->setPriceVatExcluded(100.00);
-        $advance2->setPriceVatBase(100.00);
-        $advance2->setPriceVat(20.00);
+        $advance2->setPriceVatIncluded('120.00');
+        $advance2->setPriceVatExcluded('100.00');
+        $advance2->setPriceVatBase('100.00');
+        $advance2->setPriceVat('20.00');
 
         $order->addInvoiceAdvance($advance2);
 
         $totals = $manager->getInvoicesAdvanceTotals($order);
 
-        $this->assertEquals(360.00, $totals['vatIncluded']);
-        $this->assertEquals(300.00, $totals['vatExcluded']);
-        $this->assertEquals(300.00, $totals['vatBase']);
-        $this->assertEquals(60.00, $totals['vat']);
+        $this->assertEquals('360.00', $totals['vatIncluded']);
+        $this->assertEquals('300.00', $totals['vatExcluded']);
+        $this->assertEquals('300.00', $totals['vatBase']);
+        $this->assertEquals('60.00', $totals['vat']);
     }
 
     public function testGetInvoicesAdvanceTotalsWithNoAdvances(): void
@@ -266,17 +264,17 @@ class OrderManagerTest extends TestCase
 
         $totals = $manager->getInvoicesAdvanceTotals($order);
 
-        $this->assertEquals(0.0, $totals['vatIncluded']);
-        $this->assertEquals(0.0, $totals['vatExcluded']);
-        $this->assertEquals(0.0, $totals['vatBase']);
-        $this->assertEquals(0.0, $totals['vat']);
+        $this->assertEquals('0.00', $totals['vatIncluded']);
+        $this->assertEquals('0.00', $totals['vatExcluded']);
+        $this->assertEquals('0.00', $totals['vatBase']);
+        $this->assertEquals('0.00', $totals['vat']);
     }
 
     public function testSaveWithProformaInvoice(): void
     {
         $math = $this->createMock(Math::class);
-        $math->method('subtractPercentage')->willReturn(100.00);
-        $math->method('addPercentage')->willReturn(120.00);
+        $math->method('subtractPercentage')->willReturn('100.00');
+        $math->method('addPercentage')->willReturn('120.00');
 
         $em = $this->createMock(EntityManagerInterface::class);
         $em->expects($this->once())->method('persist');
@@ -296,8 +294,8 @@ class OrderManagerTest extends TestCase
 
         $item = new Item();
         $item->setAmount(1);
-        $item->setPriceVatIncluded(120.00);
-        $item->setVatRate(20.00);
+        $item->setPriceVatIncluded('120.00');
+        $item->setVatRate('20.00');
 
         $proforma->addItem($item);
 
@@ -312,8 +310,8 @@ class OrderManagerTest extends TestCase
     public function testSaveThrowsForProformaWithoutCurrency(): void
     {
         $math = $this->createMock(Math::class);
-        $math->method('subtractPercentage')->willReturn(100.00);
-        $math->method('addPercentage')->willReturn(120.00);
+        $math->method('subtractPercentage')->willReturn('100.00');
+        $math->method('addPercentage')->willReturn('120.00');
 
         $em = $this->createMock(EntityManagerInterface::class);
 
@@ -330,8 +328,8 @@ class OrderManagerTest extends TestCase
 
         $item = new Item();
         $item->setAmount(1);
-        $item->setPriceVatIncluded(120.00);
-        $item->setVatRate(20.00);
+        $item->setPriceVatIncluded('120.00');
+        $item->setVatRate('20.00');
 
         $proforma->addItem($item);
 
@@ -346,8 +344,8 @@ class OrderManagerTest extends TestCase
     public function testSaveThrowsForProformaPayableWithoutPaymentMode(): void
     {
         $math = $this->createMock(Math::class);
-        $math->method('subtractPercentage')->willReturn(100.00);
-        $math->method('addPercentage')->willReturn(120.00);
+        $math->method('subtractPercentage')->willReturn('100.00');
+        $math->method('addPercentage')->willReturn('120.00');
 
         $em = $this->createMock(EntityManagerInterface::class);
 
@@ -365,8 +363,8 @@ class OrderManagerTest extends TestCase
 
         $item = new Item();
         $item->setAmount(1);
-        $item->setPriceVatIncluded(120.00);
-        $item->setVatRate(20.00);
+        $item->setPriceVatIncluded('120.00');
+        $item->setVatRate('20.00');
 
         $proforma->addItem($item);
 
@@ -419,7 +417,7 @@ class OrderManagerTest extends TestCase
         $manager->save($order);
 
         // When there are no items, price totals are not calculated
-        $this->assertEquals(0.0, $order->getPriceVatIncluded());
+        $this->assertEquals('0.00', $order->getPriceVatIncluded());
     }
 
     public function testCalculateTotalsWithDifferentVatRates(): void
@@ -434,19 +432,19 @@ class OrderManagerTest extends TestCase
 
         $item1 = new Item();
         $item1->setAmount(1);
-        $item1->setPriceVatIncluded(120.00);
-        $item1->setVatRate(20.00);
+        $item1->setPriceVatIncluded('120.00');
+        $item1->setVatRate('20.00');
 
         $item2 = new Item();
         $item2->setAmount(1);
-        $item2->setPriceVatIncluded(107.00);
-        $item2->setVatRate(7.00);
+        $item2->setPriceVatIncluded('107.00');
+        $item2->setVatRate('7.00');
 
         $order->addItem($item1);
         $order->addItem($item2);
 
         $totals = $manager->calculateTotals($order);
 
-        $this->assertEquals(227.00, $totals['vatIncluded']);
+        $this->assertEquals('227.00', $totals['vatIncluded']);
     }
 }

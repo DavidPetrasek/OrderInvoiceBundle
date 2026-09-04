@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Psys\OrderInvoiceBundle\Service\OrderManager;
 
@@ -15,8 +13,7 @@ use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\OrderInvoiceBundle\Model\Order\State;
 use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
-use Psys\Utils\Math;
-
+use Psys\OrderInvoiceBundle\Service\Math;
 
 class OrderManager
 {    
@@ -75,10 +72,10 @@ class OrderManager
         {
             // Calculate total amount due after deducting advance invoice payments
             $advancesTotals = $this->getInvoicesAdvanceTotals($order);
-            $totalAmountDue = $order->getPriceVatIncluded() - $advancesTotals['vatIncluded'];
+            $totalAmountDue = bcsub($order->getPriceVatIncluded(), $advancesTotals['vatIncluded'], 2);
 
-            // Mark final invoice as paid if no amount remains due
-            if (abs($totalAmountDue) < PHP_FLOAT_EPSILON)
+            // Mark final invoice as paid if no amount remains due (amount due <= 0.00)
+            if (bccomp($totalAmountDue, '0.00', 2) <= 0)
             {
                 $invoiceFinal->setPaid(true);
             }
@@ -197,18 +194,18 @@ class OrderManager
     public function getInvoicesAdvanceTotals(Order $order): array
     {
         $advanceTotals = [
-            'vatIncluded' => 0.0,
-            'vatExcluded' => 0.0,
-            'vatBase'     => 0.0,
-            'vat'         => 0.0,
+            'vatIncluded' => '0.00',
+            'vatExcluded' => '0.00',
+            'vatBase'     => '0.00',
+            'vat'         => '0.00',
         ];
 
         foreach ($order->getInvoicesAdvance() as $invoiceAdvance) 
         {
-            $advanceTotals['vatIncluded'] += $invoiceAdvance->getPriceVatIncluded();
-            $advanceTotals['vatExcluded'] += $invoiceAdvance->getPriceVatExcluded();
-            $advanceTotals['vatBase']     += $invoiceAdvance->getPriceVatBase();
-            $advanceTotals['vat']         += $invoiceAdvance->getPriceVat();
+            $advanceTotals['vatIncluded'] = bcadd($advanceTotals['vatIncluded'], $invoiceAdvance->getPriceVatIncluded(), 2);
+            $advanceTotals['vatExcluded'] = bcadd($advanceTotals['vatExcluded'], $invoiceAdvance->getPriceVatExcluded(), 2);
+            $advanceTotals['vatBase']     = bcadd($advanceTotals['vatBase'], $invoiceAdvance->getPriceVatBase(), 2);
+            $advanceTotals['vat']         = bcadd($advanceTotals['vat'], $invoiceAdvance->getPriceVat(), 2);
         }
 
         return $advanceTotals;
@@ -216,25 +213,30 @@ class OrderManager
     
     public function calculateTotals(Order|InvoiceProforma|InvoiceAdvance|InvoiceRegular $ent): array
     {
-        $priceVatExcludedTotal = 0;
-        $priceVatIncludedTotal = 0;
-        $vatBase = 0;
-        
+        $priceVatExcludedTotal = '0.00';
+        $priceVatIncludedTotal = '0.00';
+        $vatBase = '0.00';
+
         foreach ($ent->getItems() as $item)
         {
             $itemTotals = $this->calculateItemTotals($item);
-            $amount = $item->getAmount();
+            $amount = (string) $item->getAmount();
 
-            if ($item->getVatRate() > 0) {$vatBase += $itemTotals['priceVatExcluded'] * $amount;}
+            $itemVatExcluded = bcmul($itemTotals['priceVatExcluded'], $amount, 2);
+            $itemVatIncluded = bcmul($itemTotals['priceVatIncluded'], $amount, 2);
 
-            $priceVatIncludedTotal += $itemTotals['priceVatIncluded'] * $amount;
-            $priceVatExcludedTotal += $itemTotals['priceVatExcluded'] * $amount;
+            if (bccomp($item->getVatRate(), '0.00', 2) > 0)
+            {
+                $vatBase = bcadd($vatBase, $itemVatExcluded, 2);
+            }
+
+            $priceVatIncludedTotal = bcadd($priceVatIncludedTotal, $itemVatIncluded, 2);
+            $priceVatExcludedTotal = bcadd($priceVatExcludedTotal, $itemVatExcluded, 2);
         }
-        
-        $vatTotal = $priceVatIncludedTotal - $priceVatExcludedTotal;
-        
-        return
-        [
+
+        $vatTotal = bcsub($priceVatIncludedTotal, $priceVatExcludedTotal, 2);
+
+        return [
             'vatIncluded' => $priceVatIncludedTotal,
             'vatExcluded' => $priceVatExcludedTotal,
             'vatBase' => $vatBase,
@@ -242,29 +244,28 @@ class OrderManager
         ];
     }
 
-    private function calculateItemTotals(Item $item) : array
+    private function calculateItemTotals(Item $item): array
     {
         $priceVatIncluded = $item->getPriceVatIncluded();
         $priceVatExcluded = $item->getPriceVatExcluded();
+        $vatRate = $item->getVatRate();
 
-        // Calculate price exclusive of VAT from price inclusive of VAT
-        if (!empty($priceVatIncluded)) 
-        {            
-            $priceVatExcluded = $this->math->subtractPercentage($priceVatIncluded, $item->getVatRate());
+        // Check for non-zero price values using bccomp
+        if ($priceVatIncluded !== '' && bccomp($priceVatIncluded, '0.00', 2) !== 0)
+        {
+            $priceVatExcluded = $this->math->subtractPercentage($priceVatIncluded, $vatRate, 2);
             $item->setPriceVatExcluded($priceVatExcluded);
         }
-
-        // Calculate price inclusive of VAT from price exclusive of VAT
-        else if (!empty($priceVatExcluded)) 
+        else if ($priceVatExcluded !== '' && bccomp($priceVatExcluded, '0.00', 2) !== 0)
         {
-            $priceVatIncluded = $this->math->addPercentage($priceVatExcluded, $item->getVatRate());
+            $priceVatIncluded = $this->math->addPercentage($priceVatExcluded, $vatRate, 2);
             $item->setPriceVatIncluded($priceVatIncluded);
         }
-        
-        $item->setVat($priceVatIncluded - $priceVatExcluded);
 
-        return 
-        [
+        $vat = bcsub($priceVatIncluded, $priceVatExcluded, 2);
+        $item->setVat($vat);
+
+        return [
             'priceVatIncluded' => $priceVatIncluded,
             'priceVatExcluded' => $priceVatExcluded,
         ];
