@@ -3,14 +3,12 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Psys\OrderInvoiceBundle\Command\InstallCommand;
 use Psys\OrderInvoiceBundle\Command\StylerEnableCommand;
-use Psys\OrderInvoiceBundle\Command\Upgrade15To16Command;
 use Psys\OrderInvoiceBundle\Controller\Dev\OibStylerController;
 use Psys\OrderInvoiceBundle\EventSubscriber\DoctrineSubscriber;
 use Psys\OrderInvoiceBundle\Maker\Category;
 use Psys\OrderInvoiceBundle\Maker\CronController;
 use Psys\OrderInvoiceBundle\Maker\InitDatabase;
 use Psys\OrderInvoiceBundle\Maker\InvoiceMpdfTwigTemplate;
-use Psys\OrderInvoiceBundle\Maker\Upgrade15To16PreparedMigration;
 use Psys\OrderInvoiceBundle\Repository\InvoiceAdvanceRepository;
 use Psys\OrderInvoiceBundle\Repository\InvoiceFinalRepository;
 use Psys\OrderInvoiceBundle\Repository\InvoiceProformaRepository;
@@ -23,17 +21,20 @@ use Psys\OrderInvoiceBundle\Service\FilePersister\FilePersister;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
 use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
 use Psys\OrderInvoiceBundle\Service\Math;
+use Psys\OrderInvoiceBundle\Twig\Extension\InvoiceExtension;
 
 return function(ContainerConfigurator $container): void 
 {
     $services = $container->services();
 
     $services
+        ->set('oi.math', Math::class)
+            ->alias(Math::class, 'oi.math')
         ->set('oi.calculator', Calculator::class)
             ->args([
-                service(Math::class),
+                service('oi.math'),
             ])
-        ->alias(Calculator::class, 'oi.calculator')
+            ->alias(Calculator::class, 'oi.calculator')
 
         ->set('oi.order_manager', OrderManager::class)
             ->args([
@@ -42,7 +43,7 @@ return function(ContainerConfigurator $container): void
             ])
             ->alias(OrderManager::class, 'oi.order_manager')
         
-         ->set('oi.invoice_manager', InvoiceManager::class)
+        ->set('oi.invoice_manager', InvoiceManager::class)
             ->args([
                 service('doctrine.orm.default_entity_manager')
             ])
@@ -102,6 +103,12 @@ return function(ContainerConfigurator $container): void
             [
                 'event' => 'onFlush',
             ])
+
+        ->set(InvoiceExtension::class)
+            ->args([
+                service('oi.calculator'),
+            ])
+            ->tag('twig.attribute_extension')
     ;
 
     if ('dev' === $container->env()) 
@@ -113,17 +120,6 @@ return function(ContainerConfigurator $container): void
                 service('filesystem'),
             ])
             ->tag('console.command')
-        
-            ->set(Upgrade15To16Command::class)
-                ->args([
-                    param('kernel.project_dir'),
-                    service('filesystem'),
-                    service('doctrine.orm.default_entity_manager'),
-                ])
-                ->tag('console.command')
-
-            ->set(Upgrade15To16PreparedMigration::class)
-                ->tag('maker.command')
 
             ->set(InitDatabase::class)
                 ->tag('maker.command')

@@ -10,7 +10,6 @@ use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
-
 class InvoiceMpdfTwigTemplate extends AbstractMaker
 {
     private string $chosenStyle;
@@ -47,17 +46,33 @@ class InvoiceMpdfTwigTemplate extends AbstractMaker
 
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
+        $templatePath = $this->projectDir . '/templates/invoice/oi_mpdf_default.html.twig';
+
+        // Remove existing template file to allow automatic overwrite
+        if (is_file($templatePath))
+        {
+            unlink($templatePath);
+        }
+
         $generator->generateFile(
-             $this->projectDir.'/templates/invoice/oi_mpdf_default.html.twig',
-            __DIR__.'/Resources/skeleton/InvoiceMpdfTwig.tpl.html.twig',
+            $templatePath,
+            __DIR__ . '/Resources/skeleton/InvoiceMpdfTwig.tpl.html.twig',
             []
         );
 
         if ($this->chosenStyle !== 'none')
         {
+            $cssPath = $this->projectDir . '/assets/css/invoice/' . $this->chosenStyle . '_mpdf.css';
+
+            // Remove existing CSS file to allow automatic overwrite
+            if (is_file($cssPath))
+            {
+                unlink($cssPath);
+            }
+
             $generator->generateFile(
-                $this->projectDir.'/assets/css/invoice/'.$this->chosenStyle.'_mpdf.css',
-                __DIR__.'/Resources/skeleton/style_'.$this->chosenStyle.'_mpdf.tpl.css'
+                $cssPath,
+                __DIR__ . '/Resources/skeleton/style_' . $this->chosenStyle . '_mpdf.tpl.css'
             );
         }
 
