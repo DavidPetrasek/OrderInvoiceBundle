@@ -167,7 +167,7 @@ class InstallCommand extends Command
         if ($finderArr !== []) // At least one migration exists 
         {
             $latestMigration = $finderArr[array_key_first($finderArr)];
-            $latestMigrationDateStr = u($latestMigration)->match('/Version(\d+)/')[1];
+            $latestMigrationDateStr = u($latestMigration->getFilename())->match('/Version(\d+)/')[1];
             $DTI_latestMigration = new \DateTimeImmutable($latestMigrationDateStr);
             $DTI_newMigration = $DTI_latestMigration->modify('+1 second');
         }
