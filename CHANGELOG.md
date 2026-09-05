@@ -14,6 +14,7 @@ All notable changes to this project are documented in this file.
 ### Changed
 - Twig template
 - Tests
+- Minimal required Symfony version 7.4
 
 
 ## [1.6.0] - 2026-05-07
