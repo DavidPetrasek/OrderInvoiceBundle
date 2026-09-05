@@ -1,7 +1,6 @@
 <?php
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Psys\OrderInvoiceBundle\Twig\AppExtension;
 use Psys\OrderInvoiceBundle\Command\InstallCommand;
 use Psys\OrderInvoiceBundle\Command\StylerEnableCommand;
 use Psys\OrderInvoiceBundle\Command\Upgrade15To16Command;
@@ -22,7 +21,6 @@ use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
 use Psys\OrderInvoiceBundle\Service\FilePersister\FilePersister;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
 use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
-use Psys\OrderInvoiceBundle\Twig\OrderRuntime;
 
 
 return function(ContainerConfigurator $container): void 
@@ -97,14 +95,6 @@ return function(ContainerConfigurator $container): void
             ->tag('doctrine.event_listener', 
             [
                 'event' => 'onFlush',
-            ])
-
-        ->set(AppExtension::class)
-            ->tag('twig.extension')
-        ->set(OrderRuntime::class)
-            ->tag('twig.runtime')
-            ->args([
-                service('oi.order_manager'),
             ])
     ;
 

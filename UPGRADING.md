@@ -2,6 +2,7 @@
 ## 1.6 to 1.7
 - The following methods now return string instead of float: `getPriceVatIncluded`, `getPriceVatExcluded`, `getVatRate`, `getVat`
 - The following methods now require string as an argument instead of float: `setPriceVatIncluded`, `setPriceVatExcluded`, `setVatRate`, `setVat`
+- Optional: update your mPDF twig template or stylesheet: `symfony console make:oib:invoice:mpdf_twig_template`
 
 
 ## 1.5 to 1.6

@@ -217,6 +217,8 @@
 
     {% elseif invoiceType == 'FINAL' %}
 
+        {% set remainingTotals = order|remaining_totals %}
+
         {% if order.invoicesAdvance is not empty %}
             <h4 class="advance_invoices_heading">Deposits</h4>
 
@@ -253,68 +255,44 @@
                 </tfoot>
             </table>
 
-            {# Remaining / amount due calculation #}
-            {% set remaining_net = (order.priceVatExcluded - advancesTotals.vatExcluded) %}
-            {% set remaining_vat = (order.priceVat - advancesTotals.vat) %}
-            {% set remaining_incl = (order.priceVatIncluded - advancesTotals.vatIncluded) %}
-
-            <table class="remaining">
-                <tr>
-                    <td class="label">Net remaining (VAT excl.)</td>
-                    <td>{{ remaining_net|format_currency(currency) }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Remaining VAT</td>
-                    <td>{{ remaining_vat|format_currency(currency) }}</td>
-                </tr>
-                <tr>
-                    <td class="total_amount_due_desc label">Total amount due (incl. VAT)</td>
-                    <td class="total_amount_due">
-                        {% if remaining_incl < 0 %}
-                            <span class="credit">Credit due to customer:<br> {{ (remaining_incl * -1)|format_currency(currency) }}</span>
-                        {% else %}
-                            {{ remaining_incl|format_currency(currency) }}
-                        {% endif %}
-                    </td>
-                </tr>
-            </table>
-
         {% elseif order.invoiceProforma is not empty and order.invoiceProforma.payable %}
 
             {% set invProforma = order.invoiceProforma %}
 
-            {# Remaining / amount due calculation #}
-            {% set remaining_net = (order.priceVatExcluded - invProforma.priceVatExcluded) %}
-            {% set remaining_vat = (order.priceVat - invProforma.priceVat) %}
-            {% set remaining_incl = (order.priceVatIncluded - invProforma.priceVatIncluded) %}
-
-            <table class="remaining">
+            <table class="proforma_deduction">
                 <tr>
                     <td class="label">Payment received via Proforma [{{ invProforma.createdAt|format_datetime(pattern="d. MMMM y") }}]</td>
                     <td>- {{ invProforma.priceVatIncluded|format_currency(currency) }}</td>
                 </tr>
+            </table>
+
+        {% endif %}
+
+        {# Unified remaining table #}
+        {% if order.invoicesAdvance is not empty or (order.invoiceProforma is not empty and order.invoiceProforma.payable) %}
+            <table class="remaining">
                 <tr>
                     <td class="label">Net remaining (VAT excl.)</td>
-                    <td>{{ remaining_net|format_currency(currency) }}</td>
+                    <td>{{ remainingTotals.net|format_currency(currency) }}</td>
                 </tr>
                 <tr>
                     <td class="label">Remaining VAT</td>
-                    <td>{{ remaining_vat|format_currency(currency) }}</td>
+                    <td>{{ remainingTotals.vat|format_currency(currency) }}</td>
                 </tr>
                 <tr>
                     <td class="total_amount_due_desc label">Total amount due (incl. VAT)</td>
                     <td class="total_amount_due">
-                        {% if remaining_incl < 0 %}
-                            <span class="credit">Credit due to customer:<br> {{ (remaining_incl * -1)|format_currency(currency) }}</span>
+                        {% if remainingTotals.isCredit %}
+                            <span class="credit">Credit due to customer:<br> {{ remainingTotals.creditAmount|format_currency(currency) }}</span>
                         {% else %}
-                            {{ remaining_incl|format_currency(currency) }}
+                            {{ remainingTotals.incl|format_currency(currency) }}
                         {% endif %}
                     </td>
                 </tr>
             </table>
         {% endif %}
 
-    {% endif %}	
+    {% endif %}
 
 </body>
 </html>

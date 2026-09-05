@@ -3,24 +3,21 @@
 namespace Psys\OrderInvoiceBundle\Service\OrderManager;
 
 use Psys\OrderInvoiceBundle\Entity\Order;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Psys\OrderInvoiceBundle\Exception\InvalidInvoiceStateException;
-use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceFinal;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
-use Psys\OrderInvoiceBundle\Entity\Item;
 use Psys\OrderInvoiceBundle\Model\Order\State;
 use Psys\OrderInvoiceBundle\Model\Order\PaymentMode;
-use Psys\OrderInvoiceBundle\Service\Math;
+use Psys\OrderInvoiceBundle\Service\Calculator;
 
 class OrderManager
 {    
     public function __construct
     (
         private readonly EntityManagerInterface $em,
-        private readonly Math $math
+        private readonly Calculator $calculator
     )
     {}    
     
@@ -31,7 +28,7 @@ class OrderManager
         // Process order
         if (!$order->getItems()->isEmpty())
         {
-            $orderTotals = $this->calculateTotals($order);
+            $orderTotals = $this->calculator->calculateTotals($order);
             $order->setPriceVatIncluded($orderTotals['vatIncluded'])
                     ->setPriceVatExcluded($orderTotals['vatExcluded'])
                     ->setPriceVatBase($orderTotals['vatBase'])
@@ -42,7 +39,7 @@ class OrderManager
         $invoiceProforma = $order->getInvoiceProforma();
         if ($invoiceProforma instanceof InvoiceProforma)
         {
-            $proformaTotals = $this->calculateTotals($invoiceProforma);
+            $proformaTotals = $this->calculator->calculateTotals($invoiceProforma);
             $invoiceProforma->setPriceVatIncluded($proformaTotals['vatIncluded'])
                                 ->setPriceVatExcluded($proformaTotals['vatExcluded'])
                                 ->setPriceVatBase($proformaTotals['vatBase'])
@@ -53,7 +50,7 @@ class OrderManager
         $invoiceRegular = $order->getInvoiceRegular();
         if ($invoiceRegular instanceof InvoiceRegular)
         {
-            $regularTotals = $this->calculateTotals($invoiceRegular);
+            $regularTotals = $this->calculator->calculateTotals($invoiceRegular);
             $invoiceRegular->setPriceVatIncluded($regularTotals['vatIncluded'])
                             ->setPriceVatExcluded($regularTotals['vatExcluded'])
                             ->setPriceVatBase($regularTotals['vatBase'])
@@ -71,7 +68,7 @@ class OrderManager
         if ($invoiceFinal instanceof InvoiceFinal)
         {
             // Calculate total amount due after deducting advance invoice payments
-            $advancesTotals = $this->getInvoicesAdvanceTotals($order);
+            $advancesTotals = $this->calculator->getInvoicesAdvanceTotals($order);
             $totalAmountDue = bcsub($order->getPriceVatIncluded(), $advancesTotals['vatIncluded'], 2);
 
             // Mark final invoice as paid if no amount remains due (amount due <= 0.00)
@@ -95,7 +92,7 @@ class OrderManager
                 $allAdvancesWerePaid = false;
             }
 
-            $invoiceAdvanceTotals = $this->calculateTotals($invoiceAdvance);
+            $invoiceAdvanceTotals = $this->calculator->calculateTotals($invoiceAdvance);
 
             $invoiceAdvance->setPriceVatIncluded($invoiceAdvanceTotals['vatIncluded'])
                     ->setPriceVatExcluded($invoiceAdvanceTotals['vatExcluded'])
@@ -186,88 +183,5 @@ class OrderManager
                 throw new InvalidInvoiceStateException('Advance invoice has no currency set.');
             }
         }
-    }
-
-    /**
-     * Adds up totals of all advance invoices
-     */
-    public function getInvoicesAdvanceTotals(Order $order): array
-    {
-        $advanceTotals = [
-            'vatIncluded' => '0.00',
-            'vatExcluded' => '0.00',
-            'vatBase'     => '0.00',
-            'vat'         => '0.00',
-        ];
-
-        foreach ($order->getInvoicesAdvance() as $invoiceAdvance) 
-        {
-            $advanceTotals['vatIncluded'] = bcadd($advanceTotals['vatIncluded'], $invoiceAdvance->getPriceVatIncluded(), 2);
-            $advanceTotals['vatExcluded'] = bcadd($advanceTotals['vatExcluded'], $invoiceAdvance->getPriceVatExcluded(), 2);
-            $advanceTotals['vatBase']     = bcadd($advanceTotals['vatBase'], $invoiceAdvance->getPriceVatBase(), 2);
-            $advanceTotals['vat']         = bcadd($advanceTotals['vat'], $invoiceAdvance->getPriceVat(), 2);
-        }
-
-        return $advanceTotals;
-    }
-    
-    public function calculateTotals(Order|InvoiceProforma|InvoiceAdvance|InvoiceRegular $ent): array
-    {
-        $priceVatExcludedTotal = '0.00';
-        $priceVatIncludedTotal = '0.00';
-        $vatBase = '0.00';
-
-        foreach ($ent->getItems() as $item)
-        {
-            $itemTotals = $this->calculateItemTotals($item);
-            $amount = (string) $item->getAmount();
-
-            $itemVatExcluded = bcmul($itemTotals['priceVatExcluded'], $amount, 2);
-            $itemVatIncluded = bcmul($itemTotals['priceVatIncluded'], $amount, 2);
-
-            if (bccomp($item->getVatRate(), '0.00', 2) > 0)
-            {
-                $vatBase = bcadd($vatBase, $itemVatExcluded, 2);
-            }
-
-            $priceVatIncludedTotal = bcadd($priceVatIncludedTotal, $itemVatIncluded, 2);
-            $priceVatExcludedTotal = bcadd($priceVatExcludedTotal, $itemVatExcluded, 2);
-        }
-
-        $vatTotal = bcsub($priceVatIncludedTotal, $priceVatExcludedTotal, 2);
-
-        return [
-            'vatIncluded' => $priceVatIncludedTotal,
-            'vatExcluded' => $priceVatExcludedTotal,
-            'vatBase' => $vatBase,
-            'vat' => $vatTotal,
-        ];
-    }
-
-    private function calculateItemTotals(Item $item): array
-    {
-        $priceVatIncluded = $item->getPriceVatIncluded();
-        $priceVatExcluded = $item->getPriceVatExcluded();
-        $vatRate = $item->getVatRate();
-
-        // Check for non-zero price values using bccomp
-        if ($priceVatIncluded !== '' && bccomp($priceVatIncluded, '0.00', 2) !== 0)
-        {
-            $priceVatExcluded = $this->math->subtractPercentage($priceVatIncluded, $vatRate, 2);
-            $item->setPriceVatExcluded($priceVatExcluded);
-        }
-        else if ($priceVatExcluded !== '' && bccomp($priceVatExcluded, '0.00', 2) !== 0)
-        {
-            $priceVatIncluded = $this->math->addPercentage($priceVatExcluded, $vatRate, 2);
-            $item->setPriceVatIncluded($priceVatIncluded);
-        }
-
-        $vat = bcsub($priceVatIncluded, $priceVatExcluded, 2);
-        $item->setVat($vat);
-
-        return [
-            'priceVatIncluded' => $priceVatIncluded,
-            'priceVatExcluded' => $priceVatExcluded,
-        ];
     }
 }

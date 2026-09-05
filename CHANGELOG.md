@@ -5,9 +5,13 @@ All notable changes to this project are documented in this file.
 ## [1.7.0] - 2026-09-0X
 ### Added
 - Strict types
+- Twig filter `remaining_totals`
 
 ### Fixed
 - Calculations are done using BCMath
+
+### Changed
+- Twig template
 
 
 ## [1.6.0] - 2026-05-07
