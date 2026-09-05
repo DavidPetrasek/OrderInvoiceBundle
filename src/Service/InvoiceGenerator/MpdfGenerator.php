@@ -17,7 +17,7 @@ class MpdfGenerator
     public function useCss(string $cssFilePath): self
     {
         $this->cssFilePath = $cssFilePath;
-        
+
         return $this;
     }
 
@@ -54,7 +54,7 @@ class MpdfGenerator
                 }
 
                 $stylesheet = file_get_contents($this->cssFilePath);
-                
+
                 $mpdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
                 $mpdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
             } 

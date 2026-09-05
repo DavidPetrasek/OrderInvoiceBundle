@@ -13,7 +13,7 @@ class Settings
 {    
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true])]
+    #[ORM\Column(type: Types::SMALLINT, options:['unsigned' => true])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
@@ -59,11 +59,11 @@ class Settings
     {
         return $this->changed_at;
     }
-    
+
     public function setChangedAt(\DateTimeImmutable $changed_at): self
     {        
         $this->changed_at = $changed_at;
-        
+
         return $this;
     }
 }

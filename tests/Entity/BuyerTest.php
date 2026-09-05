@@ -4,8 +4,6 @@ namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
 use Psys\OrderInvoiceBundle\Entity\Buyer;
-use Psys\OrderInvoiceBundle\Entity\Seller;
-use Psys\OrderInvoiceBundle\Entity\Order;
 
 class BuyerTest extends TestCase
 {

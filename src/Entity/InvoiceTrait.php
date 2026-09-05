@@ -11,7 +11,7 @@ trait InvoiceTrait
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(options:["unsigned" => true])]
+    #[ORM\Column(options:['unsigned' => true])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::BIGINT)]
@@ -20,7 +20,7 @@ trait InvoiceTrait
     #[ORM\Column(type: Types::BIGINT)]
     private ?string $reference_number = null;
 
-    #[ORM\Column(type: Types::BIGINT, nullable: true, options:["unsigned" => true])]
+    #[ORM\Column(type: Types::BIGINT, nullable: true, options:['unsigned' => true])]
     private ?string $payment_reference = null;
 
     #[ORM\Column(insertable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
@@ -79,11 +79,11 @@ trait InvoiceTrait
     {
         return $this->created_at;
     }
-    
+
     public function setCreatedAt(\DateTimeImmutable $created_at): self
     {        
         $this->created_at = $created_at;
-        
+
         return $this;
     }
 

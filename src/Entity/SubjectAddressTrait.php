@@ -12,7 +12,7 @@ trait SubjectAddressTrait
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $organization = null;
-    
+
     #[ORM\Column(length: 128, nullable: true)]
     private ?string $street_address_1 = null;
 
@@ -42,7 +42,7 @@ trait SubjectAddressTrait
      */
     #[ORM\Column(length: 200, nullable: true)]
     private ?string $legal_entity_registration_details = null;
-    
+
 
     public function getId(): ?int
     {
@@ -53,16 +53,16 @@ trait SubjectAddressTrait
     {
         return $this->order;
     }
-    
+
     public function getFullName(): ?string
     {
         return $this->full_name;
     }
-    
+
     public function setFullName(string $full_name): self
     {
         $this->full_name = $full_name;
-        
+
         return $this;
     }
 
@@ -70,11 +70,11 @@ trait SubjectAddressTrait
     {
         return $this->organization;
     }
-    
+
     public function setOrganization(string $organization): self
     {
         $this->organization = $organization;
-        
+
         return $this;
     }
 
@@ -149,7 +149,7 @@ trait SubjectAddressTrait
 
         return $this;
     }
-    
+
     public function getVatIdentificationNumber(): ?string
     {
         return $this->vat_identification_number;
@@ -178,11 +178,11 @@ trait SubjectAddressTrait
     {
         return $this->legal_entity_registration_details;
     }
-    
+
     public function setLegalEntityRegistrationDetails(string $legal_entity_registration_details): self
     {
         $this->legal_entity_registration_details = $legal_entity_registration_details;
-        
+
         return $this;
     }
 }

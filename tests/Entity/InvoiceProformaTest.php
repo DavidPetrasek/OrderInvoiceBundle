@@ -2,7 +2,6 @@
 
 namespace Psys\OrderInvoiceBundle\Tests\Entity;
 
-use Doctrine\Common\Collections\Collection;
 use PHPUnit\Framework\TestCase;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\Item;

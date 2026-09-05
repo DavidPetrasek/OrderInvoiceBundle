@@ -32,7 +32,7 @@ class InvoiceRegular
         return $this->order;
     }
 
-    
+
     /**
      * @return Collection<int, Item>
      */

@@ -4,7 +4,6 @@ namespace Psys\OrderInvoiceBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Model\Item\AmountType;
 use Psys\OrderInvoiceBundle\Model\Item\CategoryInterface;
 use Psys\OrderInvoiceBundle\Repository\ItemRepository;
@@ -15,7 +14,7 @@ class Item
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(options: ["unsigned" => true])]
+    #[ORM\Column(options: ['unsigned' => true])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'items')]
@@ -34,7 +33,7 @@ class Item
     #[ORM\JoinColumn(nullable: true)]
     private ?InvoiceRegular $invoice_regular = null;
 
-    #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ["unsigned" => true])]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $category = null;
 
     #[ORM\Column(length: 80, nullable: true)]
@@ -43,7 +42,7 @@ class Item
     #[ORM\Column(length: 150, nullable: true)]
     private ?string $short_description = null;
 
-    #[ORM\Column(type: Types::SMALLINT, options: ["unsigned" => true])]
+    #[ORM\Column(type: Types::SMALLINT, options: ['unsigned' => true])]
     private int $amount;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2)]
@@ -58,7 +57,7 @@ class Item
     #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2)]
     private string $vat = '0.00';
 
-    #[ORM\Column(type: Types::SMALLINT, options: ["unsigned" => true])]
+    #[ORM\Column(type: Types::SMALLINT, options: ['unsigned' => true])]
     private int $amount_type;
 
     public function getId(): ?int

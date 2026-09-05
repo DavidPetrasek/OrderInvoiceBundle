@@ -14,7 +14,7 @@ class Buyer
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(options:["unsigned" => true])]
+    #[ORM\Column(options:['unsigned' => true])]
     private ?int $id = null;
 
     #[ORM\OneToOne(mappedBy: 'buyer', cascade: ['persist'])]

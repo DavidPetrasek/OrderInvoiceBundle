@@ -83,7 +83,7 @@ class FilePersister
         $mimeTypes = new MimeTypes();
         $extensions = $mimeTypes->getExtensions($mimeType);
         $extension = $extensions[0];
-        
+
         if ($invoiceType === InvoiceType::PROFORMA)
         {
             $storagePath = $this->storagePath['proforma'];
@@ -131,7 +131,7 @@ class FilePersister
         $absPath = $this->filesystem->tempnam($this->projectDir.$storagePath, '', '.'.$extension); 
         $this->filesystem->dumpFile($absPath, $binary);
         $nameFileSystem = basename($absPath);
-        
+
         // Save reference to the file in the database using the default File entity
         if ($this->fileEntityFQCN === self::FILE_ENTITY_FQCN_DEFAULT)
         {
@@ -163,7 +163,7 @@ class FilePersister
                 $invoiceRegular->setFile($file);
                 $this->em->persist($invoiceRegular);
             }
-            
+
             $this->em->flush();
             return null;
         }

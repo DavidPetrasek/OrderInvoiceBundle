@@ -15,7 +15,7 @@ class InvoiceAdvance
     use InvoiceTrait;
     use MoneyTrait;
     use PaidTrait;
-    
+
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'invoices_advance')]
     private Order $order;
 

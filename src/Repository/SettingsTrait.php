@@ -9,12 +9,12 @@ trait SettingsTrait
     {
         $nastaveni = $this->findAll();
         $r = [];
-        
+
         foreach ($nastaveni as $nast)
         {
             $r[$nast->getMoznost()] = $nast->getHodnota();
         }
-        
+
         return $r;
     }
 }

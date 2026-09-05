@@ -26,14 +26,14 @@ class FileDeleterTest extends TestCase
     {
         $this->filesystem = $this->createMock(Filesystem::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
-        
+
         $this->storagePath = [
             'proforma' => '/storage/invoices/proforma',
             'advance' => '/storage/invoices/advance',
             'final' => '/storage/invoices/final',
             'regular' => '/storage/invoices/regular',
         ];
-        
+
         $this->fileDeleter = new FileDeleter(
             $this->filesystem,
             $this->em,

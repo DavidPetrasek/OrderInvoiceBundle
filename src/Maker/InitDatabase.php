@@ -39,7 +39,7 @@ class InitDatabase extends AbstractMaker
         // $dependencies->addClassDependency(Form::class, 'symfony/form');
         // ORMDependencyBuilder::buildDependencies($dependencies);
     }
-    
+
 
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {

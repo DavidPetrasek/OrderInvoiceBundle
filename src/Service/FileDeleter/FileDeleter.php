@@ -89,7 +89,7 @@ class FileDeleter
 
         // Delete from disk
         $this->filesystem->remove($this->projectDir.$storagePath.'/'.$nameFileSystem);
-        
+
         // Remove reference to the file from the database
         if ($invoiceType === InvoiceType::PROFORMA)
         {
@@ -111,7 +111,7 @@ class FileDeleter
             $invoiceRegular->setFile(null);
             $this->em->persist($invoiceRegular);
         }
-        
+
         $this->em->remove($file);
         $this->em->flush();
     }

@@ -157,7 +157,7 @@ class OibStylerController extends AbstractController
             ->setPaymentReference('123456789');
         $invoiceFinal->setReferenceNumber(date('Y').$invoiceFinal->getSequentialNumber());
 
-        
+
         $invoiceRegular = (new InvoiceRegular())
             ->setCreatedAt(new \DateTimeImmutable())
             ->setDueDate(new \DateTimeImmutable('+14 days'))
@@ -179,7 +179,7 @@ class OibStylerController extends AbstractController
                 ->setAmountType(AmountType::ITEM));
         $invoiceRegular->setReferenceNumber(date('Y').$invoiceRegular->getSequentialNumber());
 
-        
+
          $order
             ->setInvoiceProforma($invoiceProforma)
             ->setInvoiceFinal($invoiceFinal)
@@ -219,7 +219,7 @@ class OibStylerController extends AbstractController
                   ->setPriceVatExcluded($orderTotals['vatExcluded'])
                   ->setPriceVatBase($orderTotals['vatBase'])
                   ->setPriceVat($orderTotals['vat']);
-                
+
         $proformaTotals = $this->calculator->calculateTotals($invoiceProforma);
         $invoiceProforma->setPriceVatIncluded($proformaTotals['vatIncluded'])
                             ->setPriceVatExcluded($proformaTotals['vatExcluded'])

@@ -20,7 +20,7 @@ class OrderManager
         private readonly Calculator $calculator
     )
     {}    
-    
+
     public function save(Order $order): void
     {
         $this->saveChecks($order);
@@ -64,7 +64,7 @@ class OrderManager
 
         // Process final invoice
         $invoiceFinal = $order->getInvoiceFinal();
-        
+
         if ($invoiceFinal instanceof InvoiceFinal)
         {
             // Calculate total amount due after deducting advance invoice payments
@@ -77,7 +77,7 @@ class OrderManager
                 $invoiceFinal->setPaid(true);
             }
         }
-        
+
         // Process advance invoices
         $allAdvancesWerePaid = true;
 

@@ -63,7 +63,7 @@ class DoctrineSubscriberTest extends TestCase
     {
         $order = $this->createMock(Order::class);
         $finalInvoice = new InvoiceFinal();
-        
+
         // Mocking requirements for the "Final invoice issuance" check
         $order->method('getInvoicesAdvance')->willReturn(new ArrayCollection([new InvoiceAdvance()]));
         $order->method('getInvoiceProforma')->willReturn(null);

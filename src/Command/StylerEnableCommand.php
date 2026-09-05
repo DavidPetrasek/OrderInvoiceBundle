@@ -47,7 +47,7 @@ class StylerEnableCommand extends Command
 
         $updateConfigResult = $this->updateConfig($output, $getEntitiesFromInputResult);
         if (is_int($updateConfigResult)) {return $updateConfigResult;}
-        
+
         $generateConfigResult = $this->generateRouteConfig($output);
         if (is_int($generateConfigResult)) {return $generateConfigResult;}
 
@@ -87,7 +87,7 @@ class StylerEnableCommand extends Command
 
         $data = Yaml::parseFile($cfgYamlAbs);
         $data['psys_order_invoice']['invoice_binary_provider'] =  $getEntitiesFromInputResult['invoiceBinaryProviderFQCN'];
-     
+
         file_put_contents($cfgYamlAbs, Yaml::dump($data, 6));
         $output->writeln('<info>Updated config/packages/psys_order_invoice.yaml</info>');
 
@@ -112,7 +112,7 @@ class StylerEnableCommand extends Command
                 ]
             ]
         ];
-       
+
         file_put_contents($yamlAbs, Yaml::dump($data, 6));
         $output->writeln('<info>Created config/routes/psys_order_invoice.yaml</info>');
 

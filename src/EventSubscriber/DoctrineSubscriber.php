@@ -28,16 +28,16 @@ class DoctrineSubscriber
         {
             /** @var Order $order_insert  */
             if ($entInsert instanceof Order) {$order_insert = $entInsert;}
-            
+
             /** @var InvoiceRegular $invoiceRegular_insert  */
             if ($entInsert instanceof InvoiceRegular) {$invoiceRegular_insert = $entInsert;}
 
             /** @var InvoiceProforma $invoiceProforma_insert  */
             if ($entInsert instanceof InvoiceProforma) {$invoiceProforma_insert = $entInsert;}
-            
+
             /** @var InvoiceAdvance $invoiceAdvance_insert  */
             if ($entInsert instanceof InvoiceAdvance) {$invoiceAdvance_insert = $entInsert;}
-            
+
             /** @var InvoiceFinal $invoiceFinal_insert  */
             if ($entInsert instanceof InvoiceFinal) {$invoiceFinal_insert = $entInsert;}
         }
@@ -52,7 +52,7 @@ class DoctrineSubscriber
         {
             $this->checkInvoice($order_insert);
         }
-        
+
         if ($order_update instanceof Order) // Editing existing order
         {
             $this->checkInvoice($order_update);
@@ -105,5 +105,5 @@ class DoctrineSubscriber
             throw new InvalidInvoiceStateException('Final invoice requires proforma or advance invoice to be issued first.');
         }
     }
- 
+
 }

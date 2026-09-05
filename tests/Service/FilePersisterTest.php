@@ -29,14 +29,14 @@ class FilePersisterTest extends TestCase
         $this->filesystem = $this->createMock(Filesystem::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->fileDeleter = $this->createMock(FileDeleter::class);
-        
+
         $this->storagePath = [
             'proforma' => '/storage/invoices/proforma',
             'advance' => '/storage/invoices/advance',
             'final' => '/storage/invoices/final',
             'regular' => '/storage/invoices/regular',
         ];
-        
+
         $this->filePersister = new FilePersister(
             $this->filesystem,
             $this->em,
@@ -52,7 +52,7 @@ class FilePersisterTest extends TestCase
         $order = new Order();
         $invoice = new InvoiceProforma();
         $order->setInvoiceProforma($invoice);
-        
+
         $binary = '%PDF-1.4 test content';
 
         $this->filesystem

@@ -68,7 +68,7 @@ class InstallCommand extends Command
             $implementInterfaceRes = $this->implementInterface($output, $getEntitiesFromInputResult['fileEntAbsPath'], 'Psys\OrderInvoiceBundle\Model\FileInterface as OIBFileInterface', 'OIBFileInterface');
             if (is_int($implementInterfaceRes)) {return $implementInterfaceRes;}
         }
-        
+
         $generateConfigResult = $this->generateConfig($input, $output, $getEntitiesFromInputResult['fileEntFQCN']);
         if (is_int($generateConfigResult)) {return $generateConfigResult;}
 
@@ -91,7 +91,7 @@ class InstallCommand extends Command
         }
 
         $fileEntFQCN = $this->qHelper->ask($input, $output, new Question(PHP_EOL.'Entity describing invoice file saved to disk (defaults to '.self::FILE_ENTITY_FQCN_DEFAULT.'): ', self::FILE_ENTITY_FQCN_DEFAULT));
-        
+
         try 
         {
             $refFile = new \ReflectionClass($fileEntFQCN);
@@ -158,7 +158,7 @@ class InstallCommand extends Command
         }
         $output->writeln('<info>Migration generated!</info>');
 
-        
+
         // Generate init migration
         $migrationsDir = $this->projectDir.'/migrations';
         $finder = new Finder();
@@ -176,7 +176,7 @@ class InstallCommand extends Command
             $DTI_newMigration = new \DateTimeImmutable();
         }
         $newMigrationName = 'Version'.$DTI_newMigration->format('YmdHis');
-        
+
         $output->writeln('Generating migration to initialize the database...');
         $initDbMigrationProcess = new Process(['bin/console', 'make:oib:init_database', $newMigrationName]);
         $initDbMigrationProcess->run();
@@ -229,14 +229,14 @@ class InstallCommand extends Command
                 $code
             );
         }
-        
+
         // Add interface in class declaration if missing
         $code = preg_replace_callback('/class\s+(\w+)\s*(?:extends\s+(\w+))?\s*(?:implements\s+([^{]+))?/',
             function ($m) use ($interfaceClassName) 
             {
                 $className = $m[1];
                 $list = !empty($m[3]) ? array_map(trim(...), explode(',', $m[3])) : [];
-                
+
                 if (!in_array($interfaceClassName, $list)) // the interface is not present
                 {
                     $list[] = $interfaceClassName;
@@ -292,7 +292,7 @@ class InstallCommand extends Command
                 ]
             ]
         ];
-       
+
         file_put_contents($yamlAbs, Yaml::dump($data, 6));
         $output->writeln('<info>Created config/packages/psys_order_invoice.yaml</info>');
 

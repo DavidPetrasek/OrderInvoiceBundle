@@ -7,7 +7,6 @@ use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\InvoiceProforma;
 use Psys\OrderInvoiceBundle\Entity\InvoiceRegular;
 use Psys\OrderInvoiceBundle\Entity\Item;
-use Psys\OrderInvoiceBundle\Service\Math;
 
 class Calculator
 {    
@@ -77,7 +76,7 @@ class Calculator
             'creditAmount' => $isCredit ? bcmul($remainingIncl, '-1', 2) : '0.00',
         ];
     }
-    
+
     public function calculateTotals(Order|InvoiceProforma|InvoiceAdvance|InvoiceRegular $ent): array
     {
         $priceVatExcludedTotal = '0.00';

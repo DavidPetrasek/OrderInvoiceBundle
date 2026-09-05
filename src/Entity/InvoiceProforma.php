@@ -15,7 +15,7 @@ class InvoiceProforma
     use InvoiceTrait;
     use MoneyTrait;
     use PaidTrait;
-    
+
     #[ORM\OneToOne(mappedBy: 'invoice_proforma', cascade: ['persist'])]
     private Order $order;
 

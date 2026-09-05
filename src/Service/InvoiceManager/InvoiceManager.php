@@ -17,7 +17,7 @@ class InvoiceManager
         private readonly EntityManagerInterface $em,
     )
     {}  
-    
+
     /**
      * Sets a unique payment reference number for the given invoice.
      * The payment reference number is a numeric string of specified length that is not already used in the database.
@@ -45,9 +45,9 @@ class InvoiceManager
         }
 
         $this->em->getConnection()->executeStatement("LOCK TABLES {$table} WRITE;");
-        
+
         $paymentReference = $this->generateUniquePaymentReference($length, $table);
-        
+
         $dbConn->executeStatement
         (
             "UPDATE {$table} SET payment_reference = :payment_reference WHERE id = :invoice_id;",
@@ -56,7 +56,7 @@ class InvoiceManager
                 'invoice_id' => $invoiceSpecific->getId()
             ]
         );
-        
+
         $dbConn->executeStatement('UNLOCK TABLES;');
 
         $invoiceSpecific->setPaymentReference($paymentReference);
@@ -69,7 +69,7 @@ class InvoiceManager
     {        
         $dbConn = $this->em->getConnection();
         $this->em->getConnection()->executeStatement('LOCK TABLES oi_settings WRITE;');
-        
+
         if      ($invoiceSpecific instanceof InvoiceProforma) {$type = 'proforma';}
         else if ($invoiceSpecific instanceof InvoiceFinal)    {$type = 'final';}
         else if ($invoiceSpecific instanceof InvoiceRegular)  {$type = 'regular';}
@@ -77,24 +77,24 @@ class InvoiceManager
 
         $resultSet = $dbConn->executeQuery
         (
-            "SELECT value FROM oi_settings WHERE option = :option;",
+            'SELECT value FROM oi_settings WHERE option = :option;',
             [
                 'option' => "invoice_{$type}_sequential_number"
             ]
         );
         $invoiceSpecific->setSequentialNumber($resultSet->fetchOne());
-        
+
         $dbConn->executeStatement
         (
-            "UPDATE oi_settings SET value = value+1 WHERE option = :option;",
+            'UPDATE oi_settings SET value = value+1 WHERE option = :option;',
             [
                 'option' => "invoice_{$type}_sequential_number"
             ]
             );
-        
+
         $dbConn->executeStatement('UNLOCK TABLES;');
     }  
-    
+
     /**
      * Generates numeric string that is not already used in the database
      */
@@ -131,7 +131,7 @@ class InvoiceManager
         }
         return $result;
     }
-    
+
 
     /**
      * Resets the sequential numbers for invoices every year. It's meant to be called inside a cron which needs to be run between 1 minute and the specified number of minutes before the new year. It checks if the current year is different from the next year. If the years are different, it waits until the next year and then performs the reset.
@@ -143,17 +143,17 @@ class InvoiceManager
     {
         $debug = '';
 
-        $currYear = date("Y");
+        $currYear = date('Y');
         $debug .= '<br> Current year: ' . $currYear;
 
         $xMinutesInFuture = time() + (60 * $checkMinutesInAdvance);
-        $nextYear = date("Y", $xMinutesInFuture);
+        $nextYear = date('Y', $xMinutesInFuture);
         $debug .= '<br> Next year ('.$checkMinutesInAdvance.' minutes in the future): ' . $nextYear;
 
         if ($currYear !== $nextYear) {
             // Wait for the next year
             sleep(60);
-            while (date("Y") === $currYear) {
+            while (date('Y') === $currYear) {
                 sleep(10);
                 $debug .= '<br> Waiting for the next year: ' . $nextYear;
             }

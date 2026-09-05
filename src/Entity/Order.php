@@ -20,23 +20,23 @@ class Order
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(options:["unsigned" => true])]
+    #[ORM\Column(options:['unsigned' => true])]
     private ?int $id = null;
 
     #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'order', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $items;
-    
+
     #[ORM\Column(insertable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private \DateTimeImmutable $created_at;
 
-    #[ORM\Column(type: Types::SMALLINT, nullable: true, options:["unsigned" => true])]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true, options:['unsigned' => true])]
     private ?int $category = null;
 
     #[ORM\ManyToOne(targetEntity: CustomerInterface::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?CustomerInterface $customer = null;
 
-    #[ORM\Column(type: Types::SMALLINT, options:["unsigned" => true, 'default' => 1])]
+    #[ORM\Column(type: Types::SMALLINT, options:['unsigned' => true, 'default' => 1])]
     private ?int $state = 1;
 
 
@@ -47,7 +47,7 @@ class Order
     #[ORM\OneToOne(inversedBy: 'order', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?InvoiceProforma $invoice_proforma = null;
-    
+
     /**
      * @var Collection<int, InvoiceAdvance>
      */
@@ -72,12 +72,12 @@ class Order
         $this->items = new ArrayCollection();
         $this->invoices_advance = new ArrayCollection();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
     }
-    
+
     /**
      * @return Collection<int, Item>
      */
@@ -107,16 +107,16 @@ class Order
 
         return $this;
     }
-    
+
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->created_at;
     }
-    
+
     public function setCreatedAt(\DateTimeImmutable $created_at): self
     {        
         $this->created_at = $created_at;
-        
+
         return $this;
     }
 
@@ -128,7 +128,7 @@ class Order
     public function setCategory(int|CategoryInterface|null $category): self
     {
         if ($category instanceof CategoryInterface) {$category = $category->value;}
-        
+
         $this->category = $category;
 
         return $this;
@@ -154,7 +154,7 @@ class Order
     public function setState(int|State $state): self
     {
         if ($state instanceof State) {$state = $state->value;}
-        
+
         $this->state = $state;
 
         return $this;

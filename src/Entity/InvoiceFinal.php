@@ -12,7 +12,7 @@ class InvoiceFinal
 {
     use InvoiceTrait;
     use PaidTrait;
-    
+
     #[ORM\OneToOne(mappedBy: 'invoice_final', cascade: ['persist'])]
     private Order $order;
 

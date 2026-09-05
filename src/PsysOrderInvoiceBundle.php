@@ -17,7 +17,7 @@ class PsysOrderInvoiceBundle extends AbstractBundle
                 // Required
                 ->stringNode('file_entity')->defaultValue(null)->end()
                 ->stringNode('invoice_binary_provider')->defaultValue(null)->end()
-                
+
                 // Optional
                 ->arrayNode('storage_path')->addDefaultsIfNotSet()
                     ->children()
@@ -26,7 +26,7 @@ class PsysOrderInvoiceBundle extends AbstractBundle
                         ->stringNode('final')->end()
                         ->stringNode('regular')->end()
                     ->end()
-                
+
 
             ->end()
         ;

@@ -42,13 +42,13 @@ return function(ContainerConfigurator $container): void
                 service('oi.calculator'),
             ])
             ->alias(OrderManager::class, 'oi.order_manager')
-        
+
         ->set('oi.invoice_manager', InvoiceManager::class)
             ->args([
                 service('doctrine.orm.default_entity_manager')
             ])
             ->alias(InvoiceManager::class, 'oi.invoice_manager')
-        
+
         ->set(OrderRepository::class)
             ->args([
                 service('doctrine')
@@ -97,7 +97,7 @@ return function(ContainerConfigurator $container): void
                 param('oi.storage_path')
             ])
             ->alias(FileDeleter::class, 'oi.file_deleter')
-        
+
         ->set(DoctrineSubscriber::class)
             ->tag('doctrine.event_listener', 
             [
@@ -126,7 +126,7 @@ return function(ContainerConfigurator $container): void
 
             ->set(Category::class)
                 ->tag('maker.command')
-            
+
             ->set(CronController::class)
                 ->tag('maker.command')
 
@@ -142,7 +142,7 @@ return function(ContainerConfigurator $container): void
                     service('filesystem')
                 ])
                 ->tag('console.command')
-            
+
             ->set(OibStylerController::class)
                 ->public()
                 ->autowire(true)
