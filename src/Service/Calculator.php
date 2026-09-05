@@ -117,12 +117,13 @@ class Calculator
         $priceVatExcluded = $item->getPriceVatExcluded();
         $vatRate = $item->getVatRate();
 
-        // Check for non-zero price values using bccomp
+        // Calculate price exclusive of VAT from price inclusive of VAT
         if ($priceVatIncluded !== '' && bccomp($priceVatIncluded, '0.00', 2) !== 0)
         {
-            $priceVatExcluded = $this->math->subtractPercentage($priceVatIncluded, $vatRate, 2);
+            $priceVatExcluded = $this->math->extractPercentage($priceVatIncluded, $vatRate, 2);
             $item->setPriceVatExcluded($priceVatExcluded);
         }
+        // Calculate price inclusive of VAT from price exclusive of VAT
         else if ($priceVatExcluded !== '' && bccomp($priceVatExcluded, '0.00', 2) !== 0)
         {
             $priceVatIncluded = $this->math->addPercentage($priceVatExcluded, $vatRate, 2);

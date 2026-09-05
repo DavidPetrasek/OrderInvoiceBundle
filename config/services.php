@@ -16,23 +16,29 @@ use Psys\OrderInvoiceBundle\Repository\InvoiceFinalRepository;
 use Psys\OrderInvoiceBundle\Repository\InvoiceProformaRepository;
 use Psys\OrderInvoiceBundle\Repository\InvoiceRegularRepository;
 use Psys\OrderInvoiceBundle\Service\OrderManager\OrderManager;
+use Psys\OrderInvoiceBundle\Service\Calculator;
 use Psys\OrderInvoiceBundle\Repository\OrderRepository;
 use Psys\OrderInvoiceBundle\Service\FileDeleter\FileDeleter;
 use Psys\OrderInvoiceBundle\Service\FilePersister\FilePersister;
 use Psys\OrderInvoiceBundle\Service\InvoiceManager\InvoiceManager;
 use Psys\OrderInvoiceBundle\Service\InvoiceGenerator\MpdfGenerator;
-
+use Psys\OrderInvoiceBundle\Service\Math;
 
 return function(ContainerConfigurator $container): void 
 {
     $services = $container->services();
 
     $services
-        
+        ->set('oi.calculator', Calculator::class)
+            ->args([
+                service(Math::class),
+            ])
+        ->alias(Calculator::class, 'oi.calculator')
+
         ->set('oi.order_manager', OrderManager::class)
             ->args([
                 service('doctrine.orm.default_entity_manager'),
-                service('psys_utils.math'),
+                service('oi.calculator'),
             ])
             ->alias(OrderManager::class, 'oi.order_manager')
         
