@@ -39,6 +39,9 @@ class Calculator
         return $advanceTotals;
     }
 
+    /**
+     * Calculates remaining totals of an order after deducting advance invoices or proforma invoice if present and payable
+     */
     public function calculateRemainingTotals(Order $order): array
     {
         $deductedNet = '0.00';

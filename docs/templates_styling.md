@@ -18,6 +18,7 @@ symfony console make:oib:invoice:mpdf_twig_template
 
 ### Available twig filters:
 - `invoices_advance_totals` - Adds up totals of all advance invoices
+- `remaining_totals` - Calculates remaining totals of an order after deducting advance invoices or proforma invoice if present and payable
 
 ## Invoice styler
 - Is available only in the `dev` environment

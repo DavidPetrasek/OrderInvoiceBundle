@@ -8,13 +8,13 @@ All notable changes to this project are documented in this file.
 - Twig filter `remaining_totals`
 
 ### Fixed
-- Calculations are done using BCMath
+- Updated calculations to use BCMath via polyfill (ext-bcmath is not required)
 - Twig template maker now overwrites existing template or style
 
 ### Changed
 - Twig template
 - Tests
-- Minimal required Symfony version 7.4
+- Minimum required Symfony version to 7.4
 
 
 ## [1.6.0] - 2026-05-07
