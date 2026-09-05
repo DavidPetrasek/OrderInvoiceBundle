@@ -105,10 +105,10 @@ return function(ContainerConfigurator $container): void
             ])
 
         ->set(InvoiceExtension::class)
+            ->autoconfigure(true)
             ->args([
                 service('oi.calculator'),
             ])
-            ->tag('twig.attribute_extension')
     ;
 
     if ('dev' === $container->env()) 
