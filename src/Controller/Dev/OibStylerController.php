@@ -61,6 +61,10 @@ class OibStylerController extends AbstractController
         {
             $binary = $this->invoiceBinaryProvider->getRegular($order);
         }
+        else
+        {
+            throw new \InvalidArgumentException('Invalid invoice type.');
+        }
 
         return new Response(
             $binary,

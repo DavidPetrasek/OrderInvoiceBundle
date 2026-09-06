@@ -64,7 +64,7 @@ class FileDeleterTest extends TestCase
         $this->fileDeleter->deleteProforma($order);
     }
 
-    public function testDeleteProformaInvoiceWithCustomFileName(): void
+    public function testDeleteProformaInvoiceWithCustomFileNameThrows(): void
     {
         $order = new Order();
         $invoice = new InvoiceProforma();
@@ -76,14 +76,13 @@ class FileDeleterTest extends TestCase
 
         $customFileName = 'custom_proforma_file.pdf';
 
-        $this->filesystem
-            ->expects($this->once())
-            ->method('remove')
-            ->with($this->projectDir . $this->storagePath['proforma'] . '/' . $customFileName);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot provide a custom file name when a default File entity is being used.');
 
-        $this->em->expects($this->atLeastOnce())->method('persist');
-        $this->em->expects($this->once())->method('remove')->with($file);
-        $this->em->expects($this->once())->method('flush');
+        $this->filesystem->expects($this->never())->method('remove');
+        $this->em->expects($this->never())->method('persist');
+        $this->em->expects($this->never())->method('remove');
+        $this->em->expects($this->never())->method('flush');
 
         $this->fileDeleter->deleteProforma($order, $customFileName);
     }
@@ -154,7 +153,7 @@ class FileDeleterTest extends TestCase
         $this->fileDeleter->deleteRegular($order);
     }
 
-    public function testDeleteProformaWithoutFileDoesNotThrow(): void
+    public function testDeleteProformaWithoutFileThrowsRuntimeException(): void
     {
         $order = new Order();
         $invoice = new InvoiceProforma();
@@ -162,28 +161,36 @@ class FileDeleterTest extends TestCase
 
         $order->setInvoiceProforma($invoice);
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('No file associated with the invoice.');
+
         $this->filesystem->expects($this->never())->method('remove');
+        $this->em->expects($this->never())->method('persist');
         $this->em->expects($this->never())->method('remove');
         $this->em->expects($this->never())->method('flush');
 
         $this->fileDeleter->deleteProforma($order);
     }
 
-    public function testDeleteAdvanceWithoutFileDoesNotThrow(): void
+    public function testDeleteAdvanceWithoutFileThrowsRuntimeException(): void
     {
         $order = new Order();
         $advance = new InvoiceAdvance();
         $advance->setOrder($order);
         $advance->setFile(null);
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('No file associated with the invoice.');
+
         $this->filesystem->expects($this->never())->method('remove');
+        $this->em->expects($this->never())->method('persist');
         $this->em->expects($this->never())->method('remove');
         $this->em->expects($this->never())->method('flush');
 
         $this->fileDeleter->deleteAdvance($advance);
     }
 
-    public function testDeleteFinalWithoutFileDoesNotThrow(): void
+    public function testDeleteFinalWithoutFileThrowsRuntimeException(): void
     {
         $order = new Order();
         $invoice = new InvoiceFinal();
@@ -191,14 +198,18 @@ class FileDeleterTest extends TestCase
 
         $order->setInvoiceFinal($invoice);
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('No file associated with the invoice.');
+
         $this->filesystem->expects($this->never())->method('remove');
+        $this->em->expects($this->never())->method('persist');
         $this->em->expects($this->never())->method('remove');
         $this->em->expects($this->never())->method('flush');
 
         $this->fileDeleter->deleteFinal($order);
     }
 
-    public function testDeleteRegularWithoutFileDoesNotThrow(): void
+    public function testDeleteRegularWithoutFileThrowsRuntimeException(): void
     {
         $order = new Order();
         $invoice = new InvoiceRegular();
@@ -206,7 +217,11 @@ class FileDeleterTest extends TestCase
 
         $order->setInvoiceRegular($invoice);
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('No file associated with the invoice.');
+
         $this->filesystem->expects($this->never())->method('remove');
+        $this->em->expects($this->never())->method('persist');
         $this->em->expects($this->never())->method('remove');
         $this->em->expects($this->never())->method('flush');
 

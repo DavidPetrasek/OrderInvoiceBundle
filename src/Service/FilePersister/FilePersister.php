@@ -14,8 +14,6 @@ use Symfony\Component\Mime\MimeTypes;
 
 class FilePersister
 {
-    private const FILE_ENTITY_FQCN_DEFAULT = File::class;
-
     public function __construct
     (
         private readonly Filesystem $filesystem,
@@ -104,9 +102,13 @@ class FilePersister
             $storagePath = $this->storagePath['regular'];
             $nameDisplay = 'regular_invoice.'.$extension;
         }
+        else
+        {
+            throw new \InvalidArgumentException('Invalid invoice type.');
+        }
 
         // Default File entity is being used
-        if ($this->fileEntityFQCN === self::FILE_ENTITY_FQCN_DEFAULT)
+        if ($this->fileEntityFQCN === File::class)
         {
             // Remove existing file to avoid orphaned files
             if ($invoiceType === InvoiceType::PROFORMA)
@@ -133,8 +135,9 @@ class FilePersister
         $nameFileSystem = basename($absPath);
 
         // Save reference to the file in the database using the default File entity
-        if ($this->fileEntityFQCN === self::FILE_ENTITY_FQCN_DEFAULT)
+        if ($this->fileEntityFQCN === File::class)
         {
+            /** @var File $file */
             $file = (new $this->fileEntityFQCN())
                 ->setMimeType($mimeType)
                 ->setNameFileSystem($nameFileSystem)

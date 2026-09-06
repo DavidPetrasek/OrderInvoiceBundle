@@ -3,6 +3,7 @@
 namespace Psys\OrderInvoiceBundle\Service\FileDeleter;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Psys\OrderInvoiceBundle\Entity\File;
 use Psys\OrderInvoiceBundle\Entity\InvoiceAdvance;
 use Psys\OrderInvoiceBundle\Entity\Order;
 use Psys\OrderInvoiceBundle\Model\FileInterface;
@@ -57,7 +58,11 @@ class FileDeleter
      * Deletes the file from disk and removes its reference from the database.
      */
     private function delete(Order $order, InvoiceType $invoiceType, ?string $nameFileSystem = null, ?InvoiceAdvance $invoiceAdvance = null): void
-    {        
+    {
+        $invoiceProforma = null;
+        $invoiceFinal = null;
+        $invoiceRegular = null;
+
         if ($invoiceType === InvoiceType::PROFORMA)
         {
             $storagePath = $this->storagePath['proforma'];
@@ -81,11 +86,22 @@ class FileDeleter
             $invoiceRegular = $order->getInvoiceRegular();
             $file = $invoiceRegular->getFile();
         }
+        else
+        {
+            throw new \InvalidArgumentException('Invalid invoice type.');
+        }
 
-        // No file to delete
-        if (!$file instanceof FileInterface) {return;}
+        if (!$file instanceof FileInterface) 
+        {
+            throw new \RuntimeException('No file associated with the invoice.');
+        }
 
-        $nameFileSystem ??= $file->getNameFileSystem();
+        if ($file instanceof File && $nameFileSystem !== null) 
+        {
+            throw new \InvalidArgumentException('Cannot provide a custom file name when a default File entity is being used.');
+        }
+
+        if ($file instanceof File) {$nameFileSystem = $file->getNameFileSystem();}
 
         // Delete from disk
         $this->filesystem->remove($this->projectDir.$storagePath.'/'.$nameFileSystem);

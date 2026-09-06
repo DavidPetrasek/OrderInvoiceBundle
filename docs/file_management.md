@@ -43,5 +43,5 @@ If using the default File entity, no more work is needed.
 
 If a custom File entity is used you need to also provide the file name you stored earlier: 
 ``` php
-$fileDeleter->deleteProforma($order, 'invoice123.pdf');
+$fileDeleter->deleteProforma($order, '9a823d36.pdf');
 ```
